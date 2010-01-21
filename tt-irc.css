@@ -1,0 +1,420 @@
+body {
+	background : white;
+	color : black;
+	margin : 0px;
+	padding : 0px;
+	font-family : "Lucida Grande", Arial, sans-serif;
+}
+
+body.main {
+	background : #f8fbff;
+}
+
+a {
+	color : black;
+	text-decoration : none;
+}
+
+a:hover {
+	color : #4684ff;
+}
+
+
+div.topLinks {
+	float : right;
+	color : gray;
+	font-size : 12px;
+}
+
+div.topLinks a {
+	color : #4684ff;	
+}
+
+div.topLinks a:hover {
+	color : black;
+}
+
+div.topLinks a.feedback {
+	color : #009900;
+}
+
+table.loginForm2 {
+	padding : 1em;
+}
+
+table.loginForm2 .loginTop {
+	border-width : 0px 0px 1px 0px;
+	border-color : #88b0f0;
+	border-style : solid;
+	padding : 0.5em;
+}
+
+table.loginForm2 .loginMiddle {
+	padding : 3em;
+}
+
+table.loginForm2 .loginBottom {
+	border-width : 1px 0px 0px 0px;
+	border-color : #88b0f0;
+	border-style : solid;
+	font-size : 12px;
+	text-align : center;
+	color : #909090;
+	padding : 0.5em;
+}
+
+table.loginForm2 .loginBottom a {
+	color : gray;
+}
+
+table.loginForm2 .loginBottom a:hover {
+	color : #4684ff;
+}
+
+table.loginForm2 .loginError {
+	color : red;
+	margin : 0.5em;
+}
+
+table.loginForm2 .innerLoginCell {
+	padding-top : 0.5em;
+}
+
+#header {
+	color : #4684ff;
+	font-size : 12px;
+	margin : 10px;
+	height : 33px;
+}
+
+#input {
+	border-width : 1px 0px 0px 1px;
+	border-style : solid;
+	border-color : #88b0f0;
+	bottom : 0px;
+	height : 25px;
+	left : 0px;
+	right : 200px;
+	position : absolute;
+	overflow : auto;
+	border-collapse : collapse;
+	padding : 5px;
+}
+
+#input input {
+	width : 99%;
+}
+
+#toolbar {
+	border-width : 1px 0px 0px 0px;
+	border-style : solid;
+	background : #f8fbff;
+	border-color : #88b0f0;
+	top : 40px;
+	right : 200px;
+	left : 0px;
+	position : absolute;
+	overflow : auto;
+	height : 30px;
+	border-collapse : collapse;
+	line-height : 30px;
+	padding-left : 5px;
+	font-size : 12px;
+}
+
+#toolbar a {
+	color : #88b0f0;
+}
+
+#tabs div {
+	float : left;
+	border-width : 1px 1px 0px 1px;
+	border-color : transparent;;
+	border-style : solid;
+	margin : 0px 0px 0px 5px;
+	padding : 3px 5px 3px 5px;
+	font-size : 12px;
+	font-family : "Lucida Grande", "Segoe UI", Tahoma, Arial, sans-serif;
+	border-collapse : collapse;
+	min-width : 100px;
+	text-align : center;
+	cursor : pointer;
+	position : relative;
+	bottom : -1px;
+	height : 30px;
+}
+
+#tabs div.first {
+	width : 10px;
+	min-width : 0px;
+	padding : 0px;
+	margin : 0px;
+}
+
+#tabs div:hover {
+	border-color : #88b0f0;
+}
+
+#tabs div.attention {
+	color : red;
+}
+
+#tabs div.selected {
+	float : left;
+	border-width : 1px 1px 0px 1px;
+	border-color : #88b0f0;
+	border-style : solid;
+	margin : 0px 0px 0px 5px;
+	padding : 3px 5px 3px 5px;
+	background-color : white;
+	font-size : 12px;
+	font-family : "Lucida Grande", "Segoe UI", Tahoma, Arial, sans-serif;
+	border-collapse : collapse;
+	font-weight : bold;
+	min-width : 100px;
+	text-align : center;
+	cursor : pointer;
+	position : relative;
+	bottom : -1px;
+	z-index : 3;
+	height : 30px;
+}
+
+#log-outer {
+	background : white;
+	border-width : 1px 0px 0px 1px;
+	border-style : solid;
+	border-color : #88b0f0;
+	top : 80px;
+	right : 201px;
+	left : 0px;
+	position : absolute;
+	bottom : 36px;
+}
+
+#log {	
+	background : white;
+	position : absolute;
+	top : 0px;
+	right : 0px;
+	left : 0px;
+	bottom : 0px;
+	overflow : auto;
+	z-index : 4;
+}
+
+#userlist {
+	border-width : 1px 0px 0px 1px;
+	border-style : solid;
+	border-color : #88b0f0;
+	top : 80px;
+	right : 0px;
+	position : absolute;
+	width : 200px;
+	overflow : auto;
+	bottom : 0px;
+	background : #f8fbff;
+	border-collapse : collapse;
+}
+
+#log-inner {
+	padding : 5px;
+}
+
+#userlist-inner {
+	padding : 5px;
+	font-size : 13px;
+}
+
+#debug_output {
+	position : absolute;
+	width : 400px;
+	height : 200px;
+	right : 20px;
+	bottom : 20px;
+	z-index : 999;
+	background-color : white;
+	border : 1px solid #c0c0c0;
+	overflow : auto;
+	margin : 0px;
+	padding : 0px;
+	list-style-type : none;
+}
+
+#debug_output li {
+	margin : 0px;
+	padding : 0px;
+	font-size : 11px;
+}
+
+#dialog_overlay {
+	left : 0;
+	top : 0;
+	height : 100%;
+	width : 100%;
+	z-index : 4;
+	position : absolute;
+	background-image : url("images/shadow_white.png");
+}
+
+#overlay {
+	background : white;
+	left : 0;
+	top : 0;
+	height : 100%;
+	width : 100%;
+	z-index : 100;
+	position : absolute;
+}
+
+#overlay_inner {
+	font-weight : bold;
+	margin : 10px;
+}
+
+div#errorBox div#xebTitle {
+	background-color : #ff0000;
+	color : white;
+	padding : 4px 2px 4px 10px;
+	color : white;
+	font-weight : bold;
+	font-size : 12px;
+}
+
+div#errorBox div#xebContent {
+	font-size : 12px;
+	padding : 10px;
+}
+
+div#errorBox textarea {
+	width : 100%;
+	height : 200px;
+}
+
+div#errorBox input {
+	margin-bottom : 10px;
+}
+
+/* shadow stuff from http://www.sixapart.com/pronet/articles/ydsf_-_robust_c.html */
+
+#infoBox {	
+	border-width : 1px 1px 1px 1px;
+	border-style : solid;
+	border-color : #659a4c;
+	background-color : #f8fcf5;
+	position: relative;
+	overflow : hidden;
+	left : -4px;
+	top : -4px;
+}
+
+div#errorBox {
+	background-color : #ffcccc;
+	border : 1px solid #ff0000;
+	font-size : 12px;
+	position: relative;
+	overflow : hidden;
+	left : -4px;
+	top : -4px;
+}
+
+html>body #infoBox, html>body #errorBox {
+	left : -10px;
+	top : -10px;
+	margin : 0;
+}
+
+#infoBoxShadow:before, #infoBoxShadow:after, 
+#errorBoxShadow:before, #errorBoxShadow:after {
+	content : " ";
+	display : block;
+	background : inherit;
+	width : 10px;
+	height : 10px;
+}
+
+#infoBoxShadow:before, #errorBoxShadow:before {
+	position : absolute;
+	top : 0;
+	right : 0;
+	margin : -10px 0 0 auto;
+	background-position : right top;
+}
+
+#infoBoxShadow:after, #errorBoxShadow:after {
+	margin : -10px 0 0 -10px;
+	background-position : left bottom;
+}
+
+#infoBoxShadow, #errorBoxShadow {
+	background-image : url("images/shadow.png");
+	background-position : bottom right;
+	left : 25%;
+	top : 50px;
+	width : 50%;
+	position : absolute;
+	min-width : 600px;
+} 
+
+#infoBoxShadow {
+	z-index : 5;
+}
+
+#errorBoxShadow {
+	z-index : 400;
+}
+
+div.infoBoxContents {
+	padding : 10px;
+	margin-bottom : 5px;
+	font-size : 12px;
+}
+
+div.infoBoxContents td {
+	font-size : 12px;
+}
+
+div.infoBoxContents a {
+	color : #527040;
+}
+
+div.infoBoxContents a:hover {
+	color : black;
+}
+
+pre {
+	margin : 5px;
+}
+
+#log ul#log-list {
+  list-style-type : none;
+  margin : 0px;
+  padding : 0px;
+}  
+
+#log span.timestamp {
+	color : gray;
+	margin-right : 0.5em;
+}
+
+#log span.sender {
+	color : green;
+	margin-right : 0.5em;
+}
+
+#log span.message {
+	color : black;
+}
+
+ul#userlist-list {
+	list-style-type : none;
+	margin : 0px;
+	padding : 0px;
+	font-size : 16px;
+
+}
+
+#actions {
+	float : right;
+	margin-right : 5px;
+}

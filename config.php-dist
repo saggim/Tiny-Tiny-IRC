@@ -1,0 +1,38 @@
+<?php
+
+	define('DB_TYPE', "pgsql"); // or mysql
+	define('DB_HOST', "localhost");
+	define('DB_USER', "");
+	define('DB_NAME', "");
+	define('DB_PASS', "");
+	define('DB_PORT', '5432'); // when neeeded, PG-only
+
+	define('DATABASE_BACKED_SESSIONS', true);
+	// Store session information in a database, recommended for multiuser 
+	// configurations. Doesn't seem to work for everyone, so enable with caution.
+	// tt-rss uses default PHP session storing mechanism if disabled.
+
+	define('SESSION_CHECK_ADDRESS', false);
+	// Bind session to client IP address (recommended)
+
+	define('SESSION_COOKIE_LIFETIME', 2592000);
+	// Default lifetime of a session cookie. In seconds, 
+	// 0 means delete on browser close
+
+	define('SESSION_COOKIE_LIFETIME_REMEMBER', 2592000);
+	// Session cookie lifetime if "remember me" is checked on login.
+
+	define('SESSION_EXPIRE_TIME', 2592000);
+	// Hard expiration limit for sessions. Should be
+	// >= SESSION_COOKIE_LIFETIME_REMEMBER
+
+	define('SINGLE_USER_MODE', false);
+	// Operate in single user mode, disables all functionality related to
+	// multiple users.
+
+	define('LOCK_DIRECTORY', '/var/tmp');
+	// Directory for lockfiles, must be writable to the user you run
+	// daemon process or cronjobs under.
+
+	define('CONFIG_VERSION', 1);
+?>
