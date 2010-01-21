@@ -448,8 +448,23 @@
 		}
 	}
 
+	function handle_command($link, $connection_id, $destination, $message) {
+
+		$keywords = array();
+
+		preg_match("/^\/([^ ]+) ?(.*)$/", $message, $keywords);
+
+		$command = $keywords[1];
+		$arguments = $keywords[2];
+
+		push_message($link, $connection_id, $destination,
+			"$command:$arguments", false, 1);
+
+	}
+
+
 	function push_message($link, $connection_id, $destination, $message, 
-		$incoming = false) {
+		$incoming = false, $message_type = 0) {
 
 		$incoming = bool_to_sql_bool($incoming);
 
@@ -460,8 +475,9 @@
 		}
 
 		db_query($link, "INSERT INTO ttirc_messages 
-			(incoming, connection_id, destination, sender, message) VALUES
-			($incoming, $connection_id, '$destination', '$my_nick', '$message')");
+			(incoming, connection_id, destination, sender, message, message_type) VALUES
+			($incoming, $connection_id, '$destination', '$my_nick', '$message', 
+			'$message_type')");
 	}
 
 	function get_new_lines($link, $last_id) {
@@ -471,6 +487,7 @@
 			FROM ttirc_messages, ttirc_connections WHERE
 			connection_id = ttirc_connections.id AND
 			active = true AND
+			message_type = 0 AND
 			ts > NOW() - INTERVAL '1 hour' AND
 			ttirc_messages.id > '$last_id' AND 
 			owner_uid = ".$_SESSION["uid"]." ORDER BY ttirc_messages.id");

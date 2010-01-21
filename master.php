@@ -38,6 +38,8 @@
 
 		db_query($link, "UPDATE ttirc_connections SET active = false");
 
+		db_query($link, "DELETE FROM ttirc_destinations");
+
 		db_query($link, "UPDATE ttirc_system SET value = 'false' WHERE
 			key = 'MASTER_RUNNING'");
 
@@ -64,6 +66,11 @@
 		die("error: Can't create lockfile. ".
 			"Maybe another daemon is already running.\n");
 	}
+
+	$link = db_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);	
+	init_connection($link);
+	db_query($link, "DELETE FROM ttirc_destinations");
+	db_close($link);
 
 	while (true) {
 
@@ -143,6 +150,9 @@
 
 					db_query($link, "UPDATE ttirc_connections SET
 						active = false WHERE id = '$id'");
+
+					db_query($link, "DELETE FROM ttirc_destinations WHERE
+						connection_id = '$id'");
 
 					db_close($link);
 

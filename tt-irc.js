@@ -2,6 +2,7 @@ var last_id = 0;
 var delay = 1000;
 var buffers = [];
 var nicklists = [];
+var li_classes = [];
 
 function create_tab_if_needed(chan) {
 	try {
@@ -44,7 +45,7 @@ function init_second_stage(transport) {
 
 		var params = _eval(transport.responseText);
 
-		last_id = params.max_id;
+//		last_id = params.max_id;
 
 		Element.hide("overlay");
 
@@ -120,9 +121,19 @@ function handle_update(transport) {
 		for (var i = 0; i < lines.length; i++) {
 	
 			var chan = lines[i].destination;
-			var tab_id = create_tab_if_needed(lines[i].destination);
+			var tab_id = "tab-" + lines[i].destination;
 	
-			var tmp_html = "<li><span class='timestamp'>" + 
+			if (!li_classes[chan]) {
+				li_classes[chan] = "odd";
+			} else {
+				if (li_classes[chan] == "odd") {
+					li_classes[chan] = "even";
+				} else {
+					li_classes[chan] = "odd";
+				}
+			}
+
+			var tmp_html = "<li class=\""+li_classes[chan]+"\"><span class='timestamp'>" + 
 				lines[i].ts + "</span><span class='sender'>&lt;" +
 				lines[i].sender + "&gt;</span><span class='message'>" + 
 				lines[i].message + "</span>";
@@ -137,7 +148,7 @@ function handle_update(transport) {
 				buffers[chan].shift();
 			}
 
-			if (get_selected_buffer() != chan) {
+			if (get_selected_buffer() != chan && $(tab_id)) {
 				$(tab_id).className = "attention";
 			}
 
@@ -231,9 +242,16 @@ function update_buffer() {
 			$("userlist-list").innerHTML = "";
 
 			for (var i = 0; i < nicklist.length; i++) {				
-				var tmp_html = "<li>" + nicklist[i] + "</li>";
+
+				var row_class = (i % 2) ? "even" : "odd";
+
+				var tmp_html = "<li class=\""+row_class+"\">" + 
+					nicklist[i] + "</li>";
+
 				$("userlist-list").innerHTML += tmp_html;
 			}
+		} else {
+			$("userlist-list").innerHTML = "";
 		}
 
 	} catch (e) {

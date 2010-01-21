@@ -28,14 +28,6 @@
 		$connection->setServer($line["server"], $line["port"]);
 	
 		if ($connection->connect()) {
-
-			$result = db_query($link, "SELECT destination FROM ttirc_destinations
-				WHERE connection_id = $connection_id AND auto_join = true");
-
-			while ($line = db_fetch_assoc($result)) {
-				$connection->join($line["destination"]);
-			}
-
 			$connection->run();
 		}
 	}

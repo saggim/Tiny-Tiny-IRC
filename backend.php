@@ -34,7 +34,11 @@
 		$connection_id = 1;
 		$chan = db_escape_string($_REQUEST["chan"]);
 
-		push_message($link, $connection_id, $chan, $message);
+		if (strpos($message, "/") === 0) {
+			handle_command($link, $connection_id, $chan, $message);
+		} else {
+			push_message($link, $connection_id, $chan, $message);
+		}
 
 		$lines = get_new_lines($link, $last_id);
 		$conn = get_conn_info($link);

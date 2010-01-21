@@ -84,7 +84,7 @@ table.loginForm2 .innerLoginCell {
 	color : #4684ff;
 	font-size : 12px;
 	margin : 10px;
-	height : 33px;
+	height : 35px;
 }
 
 #input {
@@ -135,13 +135,12 @@ table.loginForm2 .innerLoginCell {
 	padding : 3px 5px 3px 5px;
 	font-size : 12px;
 	font-family : "Lucida Grande", "Segoe UI", Tahoma, Arial, sans-serif;
-	border-collapse : collapse;
 	min-width : 100px;
 	text-align : center;
 	cursor : pointer;
 	position : relative;
 	bottom : -1px;
-	height : 30px;
+	height : 20px;
 }
 
 #tabs div.first {
@@ -169,7 +168,6 @@ table.loginForm2 .innerLoginCell {
 	background-color : white;
 	font-size : 12px;
 	font-family : "Lucida Grande", "Segoe UI", Tahoma, Arial, sans-serif;
-	border-collapse : collapse;
 	font-weight : bold;
 	min-width : 100px;
 	text-align : center;
@@ -177,7 +175,6 @@ table.loginForm2 .innerLoginCell {
 	position : relative;
 	bottom : -1px;
 	z-index : 3;
-	height : 30px;
 }
 
 #log-outer {
@@ -417,4 +414,26 @@ ul#userlist-list {
 #actions {
 	float : right;
 	margin-right : 5px;
+}
+
+.even, .even td {
+	border-width : 0px 0px 1px 0px;
+	border-style : solid;
+	border-color : #c0c0c0;
+	background-color : #f0f0f0;
+	border-collapse : collapse;
+	padding : 2px 5px 2px 5px;
+}
+
+.odd, .odd td {
+	border-width : 0px 0px 1px 0px;
+	border-style : solid;
+	border-color : #c0c0c0;
+	border-collapse : collapse;
+	padding : 2px 5px 2px 5px;
+}
+
+#userlist-list li.odd, #userlist-list li.even {
+	border-color : transparent;
+	background : transparent;
 }

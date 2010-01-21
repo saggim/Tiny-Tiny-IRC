@@ -1,4 +1,5 @@
 drop table ttirc_messages;
+drop table ttirc_preset_destinations;
 drop table ttirc_destinations;
 drop table ttirc_connections;
 drop table ttirc_users;
@@ -47,10 +48,13 @@ insert into ttirc_connections (title,server,port, encoding,owner_uid,nick,ident,
 create table ttirc_destinations(id serial not null primary key,
 	connection_id integer not null references ttirc_connections(id) ON DELETE CASCADE,
 	destination varchar(120) not null,
-	auto_join boolean not null default true,
 	nicklist text not null default '');
 
-insert into ttirc_destinations (connection_id, destination) values (1, '#test');
+create table ttirc_preset_destinations(id serial not null primary key,
+	connection_id integer not null references ttirc_connections(id) ON DELETE CASCADE,
+	destination varchar(120) not null);
+
+insert into ttirc_preset_destinations (connection_id, destination) values (1, '#test');
 
 create table ttirc_messages(id serial not null primary key,
 	ts timestamp not null default NOW(),
