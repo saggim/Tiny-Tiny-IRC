@@ -37,6 +37,10 @@
 		init_connection($link);
 
 		db_query($link, "UPDATE ttirc_connections SET active = false");
+
+		db_query($link, "UPDATE ttirc_system SET value = 'false' WHERE
+			key = 'MASTER_RUNNING'");
+
 		db_close($link);
 
 		die("[SIGINT] removing lockfile and exiting.\n");
@@ -69,7 +73,13 @@
 
 			$link = db_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);	
 			init_connection($link);
+
+			db_query($link, "UPDATE ttirc_system SET value = 'true' WHERE
+				key = 'MASTER_RUNNING'");
 	
+			db_query($link, "UPDATE ttirc_system SET value = NOW() WHERE
+				key = 'MASTER_HEARTBEAT'");
+
 			$result = db_query($link, "SELECT * FROM ttirc_connections 
 				WHERE enabled = true");
 

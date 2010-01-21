@@ -186,6 +186,11 @@ class Connection extends Yapircl {
 
 	function update_nicklist($destination) {
 
+		$my_nick = db_escape_string($this->to_utf($this->_usednick));
+
+		db_query($this->link, "UPDATE ttirc_connections SET active_nick = '$my_nick'
+			WHERE id = " . $this->connection_id);
+
 		if ($destination) {
 			$nicklist = db_escape_string($this->to_utf(
 				json_encode($this->getNickList($destination))));

@@ -1,6 +1,7 @@
 <?php
 	require_once "config.php";
 	require_once "lib/gettext/gettext.inc";
+	require_once "errors.php";
 
 	if (DB_TYPE == "pgsql") {
 		define('SUBSTRING_FOR_DATE', 'SUBSTRING_FOR_DATE');
@@ -437,11 +438,11 @@
 
 	# TODO return actual nick, not hardcoded one
 	function get_nick($link, $connection_id) {
-		$result = db_query($link, "SELECT nick FROM ttirc_connections
+		$result = db_query($link, "SELECT active_nick FROM ttirc_connections
 			WHERE id ='$connection_id'");
 
 		if (db_num_rows($result) == 1) {
-			return db_fetch_result($result, 0, "nick");
+			return db_fetch_result($result, 0, "active_nick");
 		} else {
 			return "?UNKNOWN?";
 		}
@@ -511,7 +512,8 @@
 
 	function get_conn_info($link) {
 
-		$result = db_query($link, "SELECT * FROM ttirc_connections
+		$result = db_query($link, "SELECT id,server,active_nick,active 
+			FROM ttirc_connections
 			WHERE owner_uid = ".$_SESSION["uid"]);
 	
 		$conn = array();
@@ -550,6 +552,8 @@
 
 	function sanity_check($link) {
 
+		global $ERRORS;
+
 		error_reporting(0);
 
 		$error_code = 0;
@@ -572,8 +576,18 @@
 
 		error_reporting (DEFAULT_ERROR_LEVEL);
 
+		$result = db_query($link, "SELECT value FROM ttirc_system WHERE
+			key = 'MASTER_RUNNING'");
+
+		$master_running = db_fetch_result($result, 0, "value") == "true";
+
+		if (!$master_running) {
+			$error_code = 13;
+		}
+
 		if ($error_code != 0) {
-			print json_encode(array("error" => $error_code));
+			print json_encode(array("error" => $error_code, 
+				"errormsg" => $ERRORS[$error_code]));
 			return false;
 		} else {
 			return true;

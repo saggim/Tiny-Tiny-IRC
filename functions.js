@@ -217,7 +217,7 @@ function fatal_error(code, msg, ext_info) {
 	
 				ebc.innerHTML = 
 					"<div><b>Error message:</b></div>" +
-					"<pre>" + msg + "</pre>" +
+					"<pre>" + msg + " (" + code + ")" + "</pre>" +
 					"<div><b>Additional information:</b></div>" +
 					"<textarea readonly=\"1\">" + ext_info + "</textarea>";
 			}

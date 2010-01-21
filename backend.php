@@ -27,12 +27,20 @@
 	switch ($op) {
 	case "send":
 		$message = db_escape_string($_REQUEST["message"]);
+		$last_id = (int) db_escape_string($_REQUEST["last_id"]);
+		$active_buf = db_escape_string($_REQUEST["active"]);
 
 		# TODO
 		$connection_id = 1;
 		$chan = db_escape_string($_REQUEST["chan"]);
 
 		push_message($link, $connection_id, $chan, $message);
+
+		$lines = get_new_lines($link, $last_id);
+		$conn = get_conn_info($link);
+		$nicklist = get_nick_list($link, $active_buf);
+
+		print json_encode(array($conn, $lines, $nicklist));
 
 		break;
 	case "update":
