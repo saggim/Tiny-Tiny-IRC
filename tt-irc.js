@@ -127,41 +127,45 @@ function handle_update(transport) {
 		var prev_last_id = last_id;
 	
 		for (var i = 0; i < lines.length; i++) {
+
+			if (last_id < lines[i].id) {
 	
-			var chan = lines[i].destination;
-			var tab_id = "tab-" + lines[i].destination;
-	
-			if (!li_classes[chan]) {
-				li_classes[chan] = "odd";
-			} else {
-				if (li_classes[chan] == "odd") {
-					li_classes[chan] = "even";
-				} else {
+				var chan = lines[i].destination;
+				var tab_id = "tab-" + lines[i].destination;
+		
+				if (!li_classes[chan]) {
 					li_classes[chan] = "odd";
-				}
-			}
-
-			//lines[i].message += + lines[i].id + "/" + last_id;
-
-			var tmp_html = format_message(li_classes[chan],
-				lines[i]);
-
-			if (lines[i].message_type != 2) {
-				if (buffers[chan]) {
-					buffers[chan].push(tmp_html);
 				} else {
-					buffers[chan] = [tmp_html];
-				}
-			} else {
-				for (var b in buffers) {
-					if (typeof buffers[b] == 'object') {
-						buffers[b].push(tmp_html);
+					if (li_classes[chan] == "odd") {
+						li_classes[chan] = "even";
+					} else {
+						li_classes[chan] = "odd";
 					}
 				}
-			}
+	
+				//lines[i].message += " [" + lines[i].id + "/" + last_id + "]";
+	
+				var tmp_html = format_message(li_classes[chan],
+					lines[i]);
+	
+				if (lines[i].message_type != 2) {
+					if (buffers[chan]) {
+						buffers[chan].push(tmp_html);
+					} else {
+						buffers[chan] = [tmp_html];
+					}
+				} else {
+					for (var b in buffers) {
+						if (typeof buffers[b] == 'object') {
+							buffers[b].push(tmp_html);
+						}
+					}
+				}
+	
+				if (get_selected_buffer() != chan && $(tab_id)) {
+					$(tab_id).className = "attention";
+				}
 
-			if (get_selected_buffer() != chan && $(tab_id)) {
-				$(tab_id).className = "attention";
 			}
 
 			last_id = lines[i].id;
@@ -270,6 +274,8 @@ function update_buffer() {
 
 		if (topic) {
 			$("topic-input").value = topics[buf_id][0];
+		} else {
+			$("topic-input").value = "";
 		}
 
 	} catch (e) {
