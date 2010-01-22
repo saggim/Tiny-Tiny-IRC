@@ -42,7 +42,7 @@
 
 		$lines = get_new_lines($link, $last_id);
 		$conn = get_conn_info($link);
-		$nicklist = get_nick_list($link, $active_buf);
+		$nicklist = get_nick_list($link, false);
 
 		print json_encode(array($conn, $lines, $nicklist));
 
@@ -53,7 +53,7 @@
 
 		$lines = get_new_lines($link, $last_id);
 		$conn = get_conn_info($link);
-		$nicklist = get_nick_list($link, $active_buf);
+		$nicklist = get_nick_list($link, false);
 
 		print json_encode(array($conn, $lines, $nicklist));
 

@@ -48,6 +48,9 @@ insert into ttirc_connections (title,server,port, encoding,owner_uid,nick,ident,
 create table ttirc_destinations(id serial not null primary key,
 	connection_id integer not null references ttirc_connections(id) ON DELETE CASCADE,
 	destination varchar(120) not null,
+	topic text not null default '',
+	topic_owner varchar(120) not null default '',
+	topic_set timestamp not null default NOW(),
 	nicklist text not null default '');
 
 create table ttirc_preset_destinations(id serial not null primary key,

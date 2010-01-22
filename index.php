@@ -111,6 +111,7 @@
 </div>
 
 <div id="log-outer">
+	<div id="topic"><input disabled id="topic-input" value=""></div>
 	<div id="log"><ul id="log-list"></ul></div>	
 </div>
 

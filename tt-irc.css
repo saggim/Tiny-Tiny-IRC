@@ -189,10 +189,33 @@ table.loginForm2 .innerLoginCell {
 	bottom : 36px;
 }
 
-#log {	
+#topic {
+	border-width : 0px 0px 0px 0px;
+	border-style : solid;
+	border-color : #88b0f0;
 	background : white;
+	z-index : 4;
 	position : absolute;
 	top : 0px;
+	height : 30px;
+	left : 0px;
+	right : 0px;	
+	padding : 5px;
+	text-align : center;
+	line-height : 30px;
+}
+
+#topic input {
+	width : 99%;
+}
+
+#log {	
+	border-width : 1px 0px 0px 0px;
+	border-color : #88b0f0;
+	border-style : solid;
+	background : white;
+	position : absolute;
+	top : 31px;
 	right : 0px;
 	left : 0px;
 	bottom : 0px;
@@ -401,6 +424,10 @@ pre {
 
 #log span.message {
 	color : black;
+}
+
+#log span.sys-message {
+	color : #88b0f0;
 }
 
 ul#userlist-list {

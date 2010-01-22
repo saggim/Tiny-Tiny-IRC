@@ -18,7 +18,7 @@
 
 		$line = db_fetch_assoc($result);
 
-		_debug("[CHILD] connecting to server " . $line["server"]);
+		_debug("[$connection_id] connecting to server " . $line["server"]);
 	
 		$connection = new Connection($link, $connection_id, $line["encoding"], 
 			$line["last_sent_id"]);
@@ -28,6 +28,7 @@
 		$connection->setServer($line["server"], $line["port"]);
 	
 		if ($connection->connect()) {
+			_debug("[$connection_id] connection established.");
 			$connection->run();
 		}
 	}

@@ -23,7 +23,7 @@ class Connection extends Yapircl {
 		$this->_resolution = 5000;
 	}
 
-	function handle_command($command, $arguments) {
+	function handle_command($command, $arguments, $destination) {
 
 		switch (strtolower($command)) {
 			case "join":
@@ -31,6 +31,9 @@ class Connection extends Yapircl {
 				break;
 			case "part":
 				$this->part($arguments);
+				break;
+			case "topic":
+				$this->topic($destination, $arguments);
 				break;
 			case "nick":
 				$this->nick($arguments);
@@ -65,7 +68,7 @@ class Connection extends Yapircl {
 						case 1:
 							echo "CMD $message\n";
 							list($cmd, $args) = explode(":", $message, 2);
-							$this->handle_command($cmd, $args);
+							$this->handle_command($cmd, $args, $line["destination"]);
 							break;
 					}
 					
@@ -92,7 +95,7 @@ class Connection extends Yapircl {
 	}
 
 	function run() {
-		$this->push_message('-IRC-', '---', 'Connection established.');
+		$this->push_message('---', '---', 'Connection established.');
 		$this->join_channels();
 		$this->update_nick();
 
@@ -119,33 +122,20 @@ class Connection extends Yapircl {
 
 	}
 
-	function push_message($sender, $destination, $message) {
+	function push_message($sender, $destination, $message, $message_type = 0) {
 
-		#FIXME convert sender/dest to unicode
 		$message = $this->to_utf($message);
 		$destination = $this->to_utf($destination);
 		$sender = $this->to_utf($sender);
-
+		
 		$connection_id = $this->connection_id;
 
-		db_query($this->link, "BEGIN");
-
-		$result = db_query($this->link, "SELECT id FROM ttirc_destinations
-			WHERE destination = '$destination' AND connection_id = '$connection_id'");
-
-		if (db_num_rows($result) == 0) {
-			db_query($this->link, "INSERT INTO ttirc_destinations 
-				(destination, connection_id) VALUES ('$destination', '$connection_id')");
-		}
-
-		db_query($this->link, "COMMIT");
-
 		$query = sprintf("INSERT INTO ttirc_messages (incoming,
-			connection_id, sender, 
-			destination, message) VALUES (true, %d, '%s', '%s', '%s')",
-			$connection_id,
-			db_escape_string($sender), db_escape_string($destination), 
-			db_escape_string($message));
+			connection_id, message_type, sender, 
+			destination, message) VALUES (true, %d, '%s', '%s', '%s', '%s')",
+				$connection_id, $message_type,
+				db_escape_string($sender), db_escape_string($destination), 
+				db_escape_string($message));
 
 		db_query($this->link, $query, false);
 	}
@@ -156,14 +146,16 @@ class Connection extends Yapircl {
 
 	function event_nick() {
 
+		$new_nick = ltrim($this->_xline[2], ':'); 
+
 		if ($this->nick == $this->_usednick) {
-			$new_nick = ltrim($this->_xline[2], ':'); 
 			$this->_usednick = $new_nick;
 			$this->update_nick();
 		}
 
-//		echo sprintf("NICKCH %s -- %s -- %s\n", $this->_usednick,
-//			$this->_xline[0], $this->_xline[2]);
+		$message = sprintf("%s is now known as %s", $this->nick, $new_nick);
+
+		$this->push_message('---', '---', $message, 2);
 
 		$this->update_nicklist(false);
 	}
@@ -198,7 +190,7 @@ class Connection extends Yapircl {
 	}
 
 	function event_public_ctcp_action() {
-		$this->push_message($this->nick, $this->from, $this->full);
+		$this->push_message($this->nick, $this->from, $this->full, 3);
 	}
 
 	function handle_ctcp_version() {
@@ -227,14 +219,83 @@ class Connection extends Yapircl {
 		$this->handle_ctcp_ping();
 	}
 
+	function check_destination($destination) {
+		$connection_id = $this->connection_id;
+
+		db_query($this->link, "BEGIN");
+
+		$result = db_query($this->link, "SELECT id FROM ttirc_destinations
+			WHERE destination = '$destination' AND connection_id = '$connection_id'");
+
+		if (db_num_rows($result) == 0) {
+			db_query($this->link, "INSERT INTO ttirc_destinations 
+				(destination, connection_id) VALUES ('$destination', '$connection_id')");
+		}
+
+		db_query($this->link, "COMMIT");
+	}
+
+	function event_topic() {
+
+		$topic = "";
+
+		for ($i=3; $i < $this->_xline_sizeof; $i++) {
+			$topic .=  ' ' . $this->_xline[$i];
+		}
+
+		$topic = substr(ltrim($topic), 1);
+
+		$this->set_topic($this->_xline[2], $topic, $this->nick, time());
+
+		$this->push_message($this->nick, $this->_xline[2], 
+			$topic, 4);
+	}
+
+
+	function set_topic($channel, $topic, $owner, $set_at) {
+		$channel = db_escape_string($this->to_utf($channel));
+		$topic = db_escape_string($this->to_utf($topic));
+		$owner = db_escape_string($this->to_utf($owner));
+		$set_at = db_escape_string($this->to_utf($set_at));
+
+		$parts = array();
+
+		if ($topic) array_push($parts, "topic = '$topic'");
+		if ($owner) array_push($parts, "topic_owner = '$owner'");
+		if ($set_at) array_push($parts, "topic_set = '".date("r", $set_at)."'");
+
+		db_query($this->link, "UPDATE ttirc_destinations SET ".
+			join(", ", $parts) . " WHERE 
+			destination = '$channel' AND connection_id = " .
+			$this->connection_id);
+	}
+
 	function event_rpl_endofnames() {
 		$nicklist = $this->channels[$this->_xline[3]];
 
-		$this->push_message('-IRC-', $this->_xline[3], 
+		$this->push_message('---', $this->_xline[3], 
 			__('You have joined the channel.'));
 
 		$this->update_nicklist($this->_xline[3]);
+	}
 
+	function event_rpl_topic() {
+		$this->check_destination($this->_xline[3]);
+
+		$topic = "";
+
+		for ($i=4; $i < $this->_xline_sizeof; $i++) {
+			$topic .=  ' ' . $this->_xline[$i];
+		}
+
+		$topic = substr(ltrim($topic), 1);
+
+		$this->set_topic($this->_xline[3], $topic, false, false);
+
+	}
+
+	function event_rpl_topic_ext() {
+		$this->set_topic(false, false, $this->_xline[4], $this->_xline[5]);
 	}
 
 	function to_utf($text) {

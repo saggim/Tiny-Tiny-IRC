@@ -34,5 +34,9 @@
 	// Directory for lockfiles, must be writable to the user you run
 	// daemon process or cronjobs under.
 
+	define('ENABLE_TRANSLATIONS', false);
+	// Enable experimental support for interface translations
+	// based on PHP-Gettext. This is of no much use right now.
+
 	define('CONFIG_VERSION', 1);
 ?>

@@ -3,6 +3,7 @@ var delay = 1000;
 var buffers = [];
 var nicklists = [];
 var li_classes = [];
+var topics = [];
 
 function create_tab_if_needed(chan) {
 	try {
@@ -26,8 +27,8 @@ function show_nicklist(show) {
 		debug("show_nicklist: " + show);
 		if (show) {
 			Element.show("userlist");
-			$("log-outer").style.right = ($("userlist").offsetWidth + 1) + "px";
-			$("input").style.right = ($("userlist").offsetWidth + 1) + "px";
+			$("log-outer").style.right = ($("userlist").offsetWidth + 0) + "px";
+			$("input").style.right = ($("userlist").offsetWidth + 0) + "px";
 
 		} else {
 			Element.hide("userlist");
@@ -100,7 +101,8 @@ function handle_update(transport) {
 		if (nicks != "") {
 			for (var chan in nicks) {
 				create_tab_if_needed(chan);
-				nicklists[chan] = nicks[chan];
+				nicklists[chan] = nicks[chan]["users"];
+				topics[chan] = nicks[chan]["topic"];
 			}
 		}
 	
@@ -116,7 +118,7 @@ function handle_update(transport) {
 		$('connect-btn').disabled = false;
 		$('input-prompt').disabled = (params[0].active != 't');
 	
-		var tmp_last_id = last_id;
+		var prev_last_id = last_id;
 	
 		for (var i = 0; i < lines.length; i++) {
 	
@@ -133,33 +135,36 @@ function handle_update(transport) {
 				}
 			}
 
-			var tmp_html = "<li class=\""+li_classes[chan]+"\"><span class='timestamp'>" + 
-				lines[i].ts + "</span><span class='sender'>&lt;" +
-				lines[i].sender + "&gt;</span><span class='message'>" + 
-				lines[i].message + "</span>";
-	
-			if (buffers[chan]) {
-				buffers[chan].push(tmp_html);
-			} else {
-				buffers[chan] = [tmp_html];
-			}
+			//lines[i].message += + lines[i].id + "/" + last_id;
 
-			while (buffers[chan].length > 1000) {
-				buffers[chan].shift();
+			var tmp_html = format_message(li_classes[chan],
+				lines[i]);
+
+			if (lines[i].message_type != 2) {
+				if (buffers[chan]) {
+					buffers[chan].push(tmp_html);
+				} else {
+					buffers[chan] = [tmp_html];
+				}
+			} else {
+				for (var b in buffers) {
+					if (typeof buffers[b] == 'object') {
+						buffers[b].push(tmp_html);
+					}
+				}
 			}
 
 			if (get_selected_buffer() != chan && $(tab_id)) {
 				$(tab_id).className = "attention";
 			}
 
-			tmp_last_id = lines[i].id;
+			last_id = lines[i].id;
 		}
 	
-		if (tmp_last_id == last_id) {
+		if (prev_last_id == last_id) {
 			if (delay < 3000) delay += 150;
 		} else {
 			delay = 1000;
-			last_id = tmp_last_id;
 		}
 	
 		update_buffer();
@@ -215,7 +220,8 @@ function update_buffer() {
 		var test_height = $("log").scrollHeight - $("log").offsetHeight;
 		var scroll_buffer = false;
 
-		if (test_height == $("log").scrollTop) scroll_buffer = true;
+		if (test_height - $("log").scrollTop < 50) scroll_buffer = true;
+
 
 		var buffer = buffers[buf_id];
 
@@ -252,6 +258,12 @@ function update_buffer() {
 			}
 		} else {
 			$("userlist-list").innerHTML = "";
+		}
+
+		var topic = topics[buf_id];
+
+		if (topic) {
+			$("topic-input").value = topics[buf_id][0];
 		}
 
 	} catch (e) {
@@ -321,5 +333,37 @@ function toggle_connect(elem) {
 
 	} catch (e) {
 		exception_error("change_tab", e);
+	}
+}
+
+function format_message(row_class, param) {
+	try {
+
+		var tmp;
+
+		if (param.message_type == 4) {
+			var message = param.sender + " has changed the topic to: " + 
+				param.message;
+
+			tmp = "<li class=\""+row_class+"\"><span class='timestamp'>" + 
+				param.ts + "</span>" +
+				"<span class='sys-message'>" + message + "</span>";
+
+		} else if (param.sender != "---") {
+			tmp = "<li class=\""+row_class+"\"><span class='timestamp'>" + 
+				param.ts + "</span><span class='sender'>&lt;" +
+				param.sender + "&gt;</span><span class='message'>" + 
+				param.message + "</span>";
+		} else {
+			tmp = "<li class=\""+row_class+"\"><span class='timestamp'>" + 
+				param.ts + "</span>" +
+				"<span class='sys-message'>" + 
+				param.message + "</span>";
+		}
+
+		return tmp;
+
+	} catch (e) {
+		exception_error("format_message", e);
 	}
 }

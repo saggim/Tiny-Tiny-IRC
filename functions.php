@@ -1,7 +1,5 @@
 <?php
 	require_once "config.php";
-	require_once "lib/gettext/gettext.inc";
-	require_once "errors.php";
 
 	if (DB_TYPE == "pgsql") {
 		define('SUBSTRING_FOR_DATE', 'SUBSTRING_FOR_DATE');
@@ -71,6 +69,8 @@
 			return true;
 		}
 	} // If translations are enabled.
+
+	require_once "errors.php";
 
 	function init_connection($link) {
 
@@ -471,7 +471,7 @@
 		if ($destination != "---") {
 			$my_nick = get_nick($link, $connection_id);
 		} else {
-			$my_nick = "-IRC-";
+			$my_nick = "---";
 		}
 
 		db_query($link, "INSERT INTO ttirc_messages 
@@ -483,11 +483,12 @@
 	function get_new_lines($link, $last_id) {
 
 		$result = db_query($link, "SELECT ttirc_messages.id,
-			sender, destination, message, ".SUBSTRING_FOR_DATE."(ts,12,8) AS ts
+			message_type, sender, destination, 
+			message, ".SUBSTRING_FOR_DATE."(ts,12,8) AS ts
 			FROM ttirc_messages, ttirc_connections WHERE
 			connection_id = ttirc_connections.id AND
 			active = true AND
-			message_type = 0 AND
+			message_type != 1 AND
 			ts > NOW() - INTERVAL '1 hour' AND
 			ttirc_messages.id > '$last_id' AND 
 			owner_uid = ".$_SESSION["uid"]." ORDER BY ttirc_messages.id");
@@ -511,7 +512,8 @@
 			$active_chan_qpart = "";
 		}
 
-		$result = db_query($link, "SELECT nicklist,destination
+		$result = db_query($link, "SELECT nicklist,destination,
+			topic,topic_owner,".SUBSTRING_FOR_DATE."(topic_set,1,16) AS topic_set
 			FROM ttirc_destinations, ttirc_connections 
 			WHERE connection_id = ttirc_connections.id AND 
 			active = true AND
@@ -521,7 +523,9 @@
 		$rv = array();
 
 		while ($line = db_fetch_assoc($result)) {
-			$rv[$line["destination"]] = json_decode($line["nicklist"]);
+			$rv[$line["destination"]]["users"] = json_decode($line["nicklist"]);
+			$rv[$line["destination"]]["topic"] = array(
+				$line["topic"], $line["topic_owner"], $line["topic_set"]);
 		}
 
 		return $rv;

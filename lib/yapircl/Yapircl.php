@@ -505,6 +505,7 @@ class Yapircl
             322 => 'RPL_LIST',
             331 => 'RPL_NOTOPIC',
             332 => 'RPL_TOPIC',
+            333 => 'RPL_TOPIC_EXT',
             341 => 'RPL_INVITING',
             351 => 'RPL_VERSION',
             352 => 'RPL_WHOREPLY',
@@ -864,6 +865,11 @@ class Yapircl
             $nicklist[$new_key] = $nicklist[$this->nick];
             unset($nicklist[$this->nick]);
         }
+    }
+
+    function _event_topic()
+    {
+        $this->_putUser($this->_xline[0]);
     }
 
     function _event_mode()
