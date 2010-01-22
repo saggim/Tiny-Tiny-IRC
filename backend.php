@@ -6,6 +6,7 @@
 	require_once "sanity_check.php";
 	require_once "version.php"; 
 	require_once "config.php";
+	require_once "prefs.php";
 
 	$link = db_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);	
 
@@ -75,8 +76,13 @@
 
 		break;
 	case "prefs":
-		require_once "prefs.php";
+		main_prefs($link);
 		break;
+	case "prefs-edit-con":
+		$connection_id = (int) db_escape_string($_REQUEST["id"]);
+		connection_editor($link, $connection_id);
+		break;
+
 	case "toggle-connection":
 		$connection_id = db_escape_string($_REQUEST["connection"]);
 		

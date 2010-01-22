@@ -11,8 +11,8 @@
 
 	$connection_id = db_escape_string($argv[1]);
 
-	$result = db_query($link, "SELECT * FROM ttirc_connections
-		WHERE id = $connection_id");
+	$result = db_query($link, "SELECT * FROM ttirc_connections, ttirc_users
+		WHERE ttirc_connections.id = $connection_id AND owner_uid = ttirc_users.id");
 
 	if (db_num_rows($result) == 1) {
 
@@ -35,7 +35,7 @@
 		$connection = new Connection($link, $connection_id, $server["encoding"], 
 			$line["last_sent_id"]);
 		$connection->setDebug(false);
-		$connection->setUser($line["ident"], $line['nick'], 
+		$connection->setUser($line["email"], $line['nick'], 
 			$line['realname'], '+i');
 		$connection->setServer($server["server"], $server["port"]);
 	

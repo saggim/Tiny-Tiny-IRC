@@ -493,7 +493,6 @@
 	function get_new_lines($link, $last_id) {
 
 		$result = db_query($link, "SELECT ttirc_messages.id,
-			nick_color,
 			message_type, sender, destination, connection_id,
 			message, ".SUBSTRING_FOR_DATE."(ts,12,8) AS ts
 			FROM ttirc_messages, ttirc_connections WHERE

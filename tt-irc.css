@@ -504,6 +504,24 @@ ul#userlist-list {
 	padding : 2px 5px 2px 5px;
 }
 
+.evenSelected, .evenSelected td {
+	background-color : #fff7d5;
+	border-style : solid;
+	border-color : #e7d796;
+	border-width : 0px 0px 1px 0px;
+	border-collapse : collapse;
+	padding : 2px 5px 2px 5px;
+}
+
+.oddSelected, .oddSelected td {
+	background-color : #fff7d5;
+	border-style : solid;
+	border-color : #e7d796;
+	border-width : 0px 0px 1px 0px;
+	border-collapse : collapse;
+	padding : 2px 5px 2px 5px;
+}
+
 #userlist-list li.odd, #userlist-list li.even {
 	border-color : transparent;
 	background : transparent;

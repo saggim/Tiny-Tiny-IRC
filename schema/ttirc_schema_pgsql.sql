@@ -21,29 +21,25 @@ create table ttirc_users (id serial not null primary key,
 	pwd_hash varchar(250) not null,
 	last_login timestamp default null,
 	access_level integer not null default 0,
-	email varchar(250) not null default '',
+	email varchar(250) not null,
 	nick varchar(120) not null,
 	heartbeat timestamp not null default NOW(),
 	quit_message varchar(120) not null default '',
-	ident varchar(120) not null,
 	realname varchar(120) not null,
 	created timestamp default null);
 
-insert into ttirc_users (login,pwd_hash,access_level, nick, ident, realname) values ('admin', 'SHA1:5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', 10, 'admin', 'admin', 'Admin');
+insert into ttirc_users (login,pwd_hash,access_level, nick, realname, email, quit_message) values ('admin', 'SHA1:5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', 10, 'test', 'Admin User', 'test@localhost', 'My hovercraft is full of eels');
 
 create table ttirc_connections(id serial not null primary key,
 	title varchar(120) not null,
-	nick varchar(120) not null,
 	active_nick varchar(120) not null default '',
-	ident varchar(120) not null,
-	realname varchar(120) not null,
 	enabled boolean not null default true,
 	active_server varchar(120) not null default '',
 	status integer not null default 0,
 	last_sent_id integer not null default 0,
 	owner_uid integer not null references ttirc_users(id) ON DELETE CASCADE);
 
-insert into ttirc_connections (title,owner_uid,nick,ident,realname) values ('GBU', 1, 'test', 'testuser', 'Test User');
+insert into ttirc_connections (title,owner_uid) values ('GBU', 1);
 
 create table ttirc_servers(id serial not null primary key,
 	connection_id integer not null references ttirc_connections(id) ON DELETE CASCADE,
