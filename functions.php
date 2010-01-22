@@ -145,9 +145,15 @@
 						time() + SESSION_COOKIE_LIFETIME);
 				}
 
-				/* bump counters stamp since we're getting reloaded anyway */
+				$tmp_result = db_query($link, "SELECT id FROM ttirc_connections
+					WHERE status != ".CS_DISCONNECTED." AND owner_uid = " .
+					$_SESSION["uid"]);
 
-				$_SESSION["get_all_counters_stamp"] = time();
+				while ($conn = db_fetch_assoc($tmp_result)) {
+					push_message($link, $conn['id'], "---",
+						"Accepted connection from " . $_SERVER["REMOTE_ADDR"], 
+						true);
+				}
 			}
 
 		} else {
