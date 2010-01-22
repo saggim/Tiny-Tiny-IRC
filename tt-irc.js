@@ -168,6 +168,10 @@ function handle_update(transport) {
 					}
 				}
 
+				while (buffers[connection_id][chan].length > 100) {
+					buffers[connection_id][chan].shift();
+				}
+
 				var tabs = get_all_tabs();
 
 				for (var j = 0; j < tabs.length; j++) {
