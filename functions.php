@@ -449,7 +449,7 @@
 		}
 	}
 
-	function handle_command($link, $connection_id, $destination, $message) {
+	function handle_command($link, $connection_id, $channel, $message) {
 
 		$keywords = array();
 
@@ -459,41 +459,41 @@
 		$arguments = $keywords[2];
 
 		if ($command == "j") $command = "join";
-		if ($command == "part" && !$arguments) $arguments = $destination;
+		if ($command == "part" && !$arguments) $arguments = $channel;
 
 		if ($command == "me") {
 			$command = "action";
-			push_message($link, $connection_id, $destination,
+			push_message($link, $connection_id, $channel,
 				"$arguments", true, MSGT_ACTION);
 		}
 
-		push_message($link, $connection_id, $destination,
+		push_message($link, $connection_id, $channel,
 			"$command:$arguments", false, MSGT_COMMAND);
 
 	}
 
 
-	function push_message($link, $connection_id, $destination, $message, 
+	function push_message($link, $connection_id, $channel, $message, 
 		$incoming = false, $message_type = MSGT_PRIVMSG) {
 
 		$incoming = bool_to_sql_bool($incoming);
 
-		if ($destination != "---") {
+		if ($channel != "---") {
 			$my_nick = get_nick($link, $connection_id);
 		} else {
 			$my_nick = "---";
 		}
 
 		db_query($link, "INSERT INTO ttirc_messages 
-			(incoming, connection_id, destination, sender, message, message_type) VALUES
-			($incoming, $connection_id, '$destination', '$my_nick', '$message', 
+			(incoming, connection_id, channel, sender, message, message_type) VALUES
+			($incoming, $connection_id, '$channel', '$my_nick', '$message', 
 			'$message_type')");
 	}
 
 	function get_new_lines($link, $last_id) {
 
 		$result = db_query($link, "SELECT ttirc_messages.id,
-			message_type, sender, destination, connection_id,
+			message_type, sender, channel, connection_id,
 			message, ".SUBSTRING_FOR_DATE."(ts,12,8) AS ts
 			FROM ttirc_messages, ttirc_connections WHERE
 			connection_id = ttirc_connections.id AND
@@ -518,14 +518,14 @@
 	function get_chan_data($link, $active_chan = false) {
 
 		if ($active_chan && $active_chan != "---") {
-			$active_chan_qpart = "destination = '$active_chan' AND";
+			$active_chan_qpart = "channel = '$active_chan' AND";
 		} else {
 			$active_chan_qpart = "";
 		}
 
-		$result = db_query($link, "SELECT nicklist,destination,connection_id,
+		$result = db_query($link, "SELECT nicklist,channel,connection_id,
 			topic,topic_owner,".SUBSTRING_FOR_DATE."(topic_set,1,16) AS topic_set
-			FROM ttirc_destinations, ttirc_connections 
+			FROM ttirc_channels, ttirc_connections 
 			WHERE connection_id = ttirc_connections.id AND 
 			status = ".CS_CONNECTED." AND
 			$active_chan_qpart
@@ -534,7 +534,7 @@
 		$rv = array();
 
 		while ($line = db_fetch_assoc($result)) {
-			$chan = $line["destination"];
+			$chan = $line["channel"];
 
 			$re = array();
 

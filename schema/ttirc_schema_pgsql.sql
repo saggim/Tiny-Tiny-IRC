@@ -1,6 +1,6 @@
 drop table ttirc_messages;
-drop table ttirc_preset_destinations;
-drop table ttirc_destinations;
+drop table ttirc_preset_channels;
+drop table ttirc_channels;
 drop table ttirc_servers;
 drop table ttirc_connections;
 drop table ttirc_users;
@@ -49,19 +49,19 @@ create table ttirc_servers(id serial not null primary key,
 
 insert into ttirc_servers (connection_id, server, encoding, port) values (1, 'irc.volgo-balt.ru', 'koi8-r', 6667);
 
-create table ttirc_destinations(id serial not null primary key,
+create table ttirc_channels(id serial not null primary key,
 	connection_id integer not null references ttirc_connections(id) ON DELETE CASCADE,
-	destination varchar(120) not null,
+	channel varchar(120) not null,
 	topic text not null default '',
 	topic_owner varchar(120) not null default '',
 	topic_set timestamp not null default NOW(),
 	nicklist text not null default '');
 
-create table ttirc_preset_destinations(id serial not null primary key,
+create table ttirc_preset_channels(id serial not null primary key,
 	connection_id integer not null references ttirc_connections(id) ON DELETE CASCADE,
-	destination varchar(120) not null);
+	channel varchar(120) not null);
 
-insert into ttirc_preset_destinations (connection_id, destination) values (1, '#test');
+insert into ttirc_preset_channels (connection_id, channel) values (1, '#test');
 
 create table ttirc_messages(id serial not null primary key,
 	ts timestamp not null default NOW(),
@@ -69,7 +69,7 @@ create table ttirc_messages(id serial not null primary key,
 	message text not null,
 	message_type integer not null default 0,
 	sender varchar(120) not null,
-	destination varchar(120) not null,
+	channel varchar(120) not null,
 	connection_id integer not null references ttirc_connections(id) ON DELETE CASCADE);
 	
 create table ttirc_sessions (id varchar(250) unique not null primary key,

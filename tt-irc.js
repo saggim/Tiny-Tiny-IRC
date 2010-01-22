@@ -157,7 +157,7 @@ function handle_update(transport) {
 
 			if (last_id < lines[i].id) {
 	
-				var chan = lines[i].destination;
+				var chan = lines[i].channel;
 				var connection_id = lines[i].connection_id;
 		
 				if (!li_classes[chan]) {

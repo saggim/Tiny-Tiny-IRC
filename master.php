@@ -38,7 +38,7 @@
 
 		db_query($link, "UPDATE ttirc_connections SET status = 0");
 
-		db_query($link, "DELETE FROM ttirc_destinations");
+		db_query($link, "DELETE FROM ttirc_channels");
 
 		db_query($link, "UPDATE ttirc_system SET value = 'false' WHERE
 			key = 'MASTER_RUNNING'");
@@ -69,7 +69,7 @@
 
 	$link = db_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);	
 	init_connection($link);
-	db_query($link, "DELETE FROM ttirc_destinations");
+	db_query($link, "DELETE FROM ttirc_channels");
 	db_close($link);
 
 	while (true) {
@@ -137,7 +137,7 @@
 					db_query($link, "UPDATE ttirc_connections SET
 						status = ".CS_CONNECTING." WHERE id = '$id'");
 
-					db_query($link, "UPDATE ttirc_destinations SET
+					db_query($link, "UPDATE ttirc_channels SET
 						nicklist = '' WHERE connection_id = '$id'");
 
 					push_message($link, $id, "---", "Requesting connection...", true);
@@ -154,7 +154,7 @@
 					db_query($link, "UPDATE ttirc_connections SET
 						status = ".CS_DISCONNECTED." WHERE id = '$id'");
 
-					db_query($link, "DELETE FROM ttirc_destinations WHERE
+					db_query($link, "DELETE FROM ttirc_channels WHERE
 						connection_id = '$id'");
 
 					db_close($link);

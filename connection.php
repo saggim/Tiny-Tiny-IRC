@@ -24,7 +24,7 @@ class Connection extends Yapircl {
 		$this->_resolution = 5000;
 	}
 
-	function handle_command($command, $arguments, $destination) {
+	function handle_command($command, $arguments, $channel) {
 
 		switch (strtolower($command)) {
 			case "join":
@@ -34,10 +34,10 @@ class Connection extends Yapircl {
 				$this->part($arguments);
 				break;
 			case "action":
-				$this->action($destination, $arguments);
+				$this->action($channel, $arguments);
 				break;
 			case "topic":
-				$this->topic($destination, $arguments);
+				$this->topic($channel, $arguments);
 				break;
 			case "nick":
 				$this->nick($arguments);
@@ -67,12 +67,12 @@ class Connection extends Yapircl {
 
 					switch ($line["message_type"]) {
 						case 0:
-							$this->privmsg($line["destination"], $message);
+							$this->privmsg($line["channel"], $message);
 							break;
 						case 1:
 							echo "CMD $message\n";
 							list($cmd, $args) = explode(":", $message, 2);
-							$this->handle_command($cmd, $args, $line["destination"]);
+							$this->handle_command($cmd, $args, $line["channel"]);
 							break;
 					}
 					
@@ -134,20 +134,20 @@ class Connection extends Yapircl {
 
 	}
 
-	function push_message($sender, $destination, $message, 
+	function push_message($sender, $channel, $message, 
 		$message_type = MSGT_PRIVMSG) {
 
 		$message = $this->to_utf($message);
-		$destination = $this->to_utf($destination);
+		$channel = $this->to_utf($channel);
 		$sender = $this->to_utf($sender);
 		
 		$connection_id = $this->connection_id;
 
 		$query = sprintf("INSERT INTO ttirc_messages (incoming,
 			connection_id, message_type, sender, 
-			destination, message) VALUES (true, %d, '%s', '%s', '%s', '%s')",
+			channel, message) VALUES (true, %d, '%s', '%s', '%s', '%s')",
 				$connection_id, $message_type,
-				db_escape_string($sender), db_escape_string($destination), 
+				db_escape_string($sender), db_escape_string($channel), 
 				db_escape_string($message));
 
 		db_query($this->link, $query, false);
@@ -180,10 +180,10 @@ class Connection extends Yapircl {
 	function event_part() {
 
 		if ($this->nick == $this->_usednick) {
-			$destination = $this->to_utf($this->_xline[2]);
+			$channel = $this->to_utf($this->_xline[2]);
 
-			$result = db_query($this->link, "DELETE FROM ttirc_destinations
-				WHERE destination = '$destination' AND connection_id = " .
+			$result = db_query($this->link, "DELETE FROM ttirc_channels
+				WHERE channel = '$channel' AND connection_id = " .
 				$this->connection_id);
 		}
 
@@ -236,17 +236,17 @@ class Connection extends Yapircl {
 		$this->handle_ctcp_ping();
 	}
 
-	function check_destination($destination) {
+	function check_channel($channel) {
 		$connection_id = $this->connection_id;
 
 		db_query($this->link, "BEGIN");
 
-		$result = db_query($this->link, "SELECT id FROM ttirc_destinations
-			WHERE destination = '$destination' AND connection_id = '$connection_id'");
+		$result = db_query($this->link, "SELECT id FROM ttirc_channels
+			WHERE channel = '$channel' AND connection_id = '$connection_id'");
 
 		if (db_num_rows($result) == 0) {
-			db_query($this->link, "INSERT INTO ttirc_destinations 
-				(destination, connection_id) VALUES ('$destination', '$connection_id')");
+			db_query($this->link, "INSERT INTO ttirc_channels 
+				(channel, connection_id) VALUES ('$channel', '$connection_id')");
 		}
 
 		db_query($this->link, "COMMIT");
@@ -281,14 +281,14 @@ class Connection extends Yapircl {
 		if ($owner) array_push($parts, "topic_owner = '$owner'");
 		if ($set_at) array_push($parts, "topic_set = '".date("r", $set_at)."'");
 
-		db_query($this->link, "UPDATE ttirc_destinations SET ".
+		db_query($this->link, "UPDATE ttirc_channels SET ".
 			join(", ", $parts) . " WHERE 
-			destination = '$channel' AND connection_id = " .
+			channel = '$channel' AND connection_id = " .
 			$this->connection_id);
 	}
 
 	function event_rpl_endofnames() {
-		$this->check_destination($this->_xline[3]);
+		$this->check_channel($this->_xline[3]);
 
 		$nicklist = $this->channels[$this->_xline[3]];
 
@@ -299,7 +299,7 @@ class Connection extends Yapircl {
 	}
 
 	function event_rpl_topic() {
-		$this->check_destination($this->_xline[3]);
+		$this->check_channel($this->_xline[3]);
 
 		$topic = "";
 
@@ -322,18 +322,18 @@ class Connection extends Yapircl {
 	}
 
 	function join_channels() {
-		$result = db_query($this->link, "SELECT destination FROM ttirc_preset_destinations
+		$result = db_query($this->link, "SELECT channel FROM ttirc_preset_channels
 			WHERE connection_id = " . $this->connection_id);
 
 		while ($line = db_fetch_assoc($result)) {
-			if (!array_key_exists($line["destination"], $this->channels)) {
-				$this->join($line["destination"]);
+			if (!array_key_exists($line["channel"], $this->channels)) {
+				$this->join($line["channel"]);
 			}
 		}
 	}
 
-	function get_unicode_nicklist($destination) {
-		$nicks = $this->getNickList($destination);
+	function get_unicode_nicklist($channel) {
+		$nicks = $this->getNickList($channel);
 
 		$tmp = array();
 
@@ -357,25 +357,25 @@ class Connection extends Yapircl {
 		}
 	}
 
-	function update_nicklist($destination) {
-		if ($destination) {
+	function update_nicklist($channel) {
+		if ($channel) {
 
 			$nicklist = db_escape_string(json_encode(
-				$this->get_unicode_nicklist($destination)));
-			$destination = db_escape_string($destination);
+				$this->get_unicode_nicklist($channel)));
+			$channel = db_escape_string($channel);
 
 
-			db_query($this->link, "UPDATE ttirc_destinations SET nicklist = '$nicklist'
-				WHERE destination = '$destination' AND connection_id = " . 
+			db_query($this->link, "UPDATE ttirc_channels SET nicklist = '$nicklist'
+				WHERE channel = '$channel' AND connection_id = " . 
 				$this->connection_id);
 		} else {
 			foreach (array_keys($this->channels) as $chan) {
 				$nicklist = db_escape_string(json_encode(
 					$this->get_unicode_nicklist($chan)));
-				$destination = db_escape_string($chan);
+				$channel = db_escape_string($chan);
 
-				db_query($this->link, "UPDATE ttirc_destinations SET nicklist = '$nicklist'
-					WHERE destination = '$destination' AND connection_id = " . 
+				db_query($this->link, "UPDATE ttirc_channels SET nicklist = '$nicklist'
+					WHERE channel = '$channel' AND connection_id = " . 
 					$this->connection_id);
 			}
 		}
