@@ -360,12 +360,12 @@ function send(elem) {
 	try {
 
 		var tab = get_selected_tab();
-		var channel = tab.getAttribute("channel");
-
-		if (tab.getAttribute("tab_type") == "S") channel = "---";
 
 		if (!tab) return;
 
+		var channel = tab.getAttribute("channel");
+
+		if (tab.getAttribute("tab_type") == "S") channel = "---";
 		var query = "?op=send&message=" + param_escape(elem.value) + 
 			"&chan=" + param_escape(channel) +			
 			"&connection=" + param_escape(tab.getAttribute("connection_id")) +
