@@ -334,7 +334,17 @@ function update_buffer() {
 		if (topic) {
 			$("topic-input").value = topics[connection_id][channel][0];
 		} else {
-			$("topic-input").value = "";
+
+			if (tab.getAttribute("tab_type") != "S") {
+				$("topic-input").value = "";
+			} else {
+				if (conndata_last[connection_id].status == "2") {
+					$("topic-input").value = __("Connected to: ") + 
+						conndata_last[connection_id]["active_server"];
+				} else {
+					$("topic-input").value = "";		
+				}
+			}
 		}
 
 		if (conndata_last && conndata_last[connection_id]) {
