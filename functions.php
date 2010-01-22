@@ -666,4 +666,13 @@
 		return $rcolors[$sum];
 	}
 
+	function update_heartbeat($link) {
+
+		if (time() - $_SESSION["heartbeat_last"] > 120) {
+			$result = db_query($link, "UPDATE ttirc_users SET heartbeat = NOW()
+				WHERE id = " . $_SESSION["uid"]);
+			$_SESSION["heartbeat_last"] = time();
+		}
+	}
+
 ?>

@@ -228,3 +228,38 @@ function fatal_error(code, msg, ext_info) {
 	}
 }
 
+function infobox_callback2(transport) {
+	try {
+		var box = $('infoBox');
+		
+		Element.show("dialog_overlay");
+
+		if (box) {			
+			box.innerHTML=transport.responseText;			
+			Element.show("infoBoxShadow");
+		}
+
+		disableHotkeys();
+	} catch (e) {
+		exception_error("infobox_callback2", e);
+	}
+}
+
+function close_infobox(cleanup) {
+
+	try {
+		enableHotkeys();
+
+		if (Element.visible("infoBoxShadow")) {
+			Element.hide("dialog_overlay");
+			Element.hide("infoBoxShadow");
+
+			if (cleanup) $("infoBoxShadow").innerHTML = "&nbsp;";
+		}
+	} catch (e) {
+		exception_error("closeInfoBox", e);
+	}
+	
+	return false;
+}
+

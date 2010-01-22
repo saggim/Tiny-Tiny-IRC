@@ -87,8 +87,11 @@
 			db_query($link, "UPDATE ttirc_system SET value = NOW() WHERE
 				key = 'MASTER_HEARTBEAT'");
 
-			$result = db_query($link, "SELECT * FROM ttirc_connections 
-				WHERE enabled = true");
+			$result = db_query($link, "SELECT ttirc_connections.id 
+				FROM ttirc_connections, ttirc_users 
+				WHERE owner_uid = ttirc_users.id AND
+				heartbeat > NOW() - INTERVAL '5 minutes' AND
+				enabled = true");
 
 			$ids_to_launch = array();
 

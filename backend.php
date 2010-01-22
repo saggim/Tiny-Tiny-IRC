@@ -24,6 +24,8 @@
 
 	$op = $_REQUEST["op"];
 
+	update_heartbeat($link);
+
 	switch ($op) {
 	case "send":
 		$message = db_escape_string(trim($_REQUEST["message"]));
@@ -71,6 +73,9 @@
 
 		print json_encode($rv);
 
+		break;
+	case "prefs":
+		require_once "prefs.php";
 		break;
 	case "toggle-connection":
 		$connection_id = db_escape_string($_REQUEST["connection"]);

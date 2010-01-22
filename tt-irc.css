@@ -344,6 +344,19 @@ div#errorBox input {
 	margin-bottom : 10px;
 }
 
+#infoBoxTitle {
+	border-width : 0px 0px 1px 0px;
+	border-style : solid;
+	border-color : #659a4c;
+	background-color : #99d67a;
+	padding : 4px 2px 4px 10px;
+	color : white;
+	font-weight : bold;
+	font-size : 16px;
+	text-shadow : #659a4c 0px 1px 0px;
+}
+
+
 /* shadow stuff from http://www.sixapart.com/pronet/articles/ydsf_-_robust_c.html */
 
 #infoBox {	
@@ -496,75 +509,46 @@ ul#userlist-list {
 	background : transparent;
 }
 
-#prefs {
-	background : #c0d8ff;
-	z-index : 5;
-	border-color : #88b0f0;
-	border-width : 1px 1px 1px 1px;
-	border-style : solid;
-	position : absolute;
-	top : 55px;
-	min-height : 400px;
-	left : 5px;
-	right : 5px;
+div.dlgSec {
+	font-size : 12px;
+	color : gray;
+	font-weight : bold;
+	clear : both;
+	height : 20px;
 }
 
-#prefs div.pref-title {
-	font-size : 16px;
-	text-shadow : #ffffff 0 1px;
-	color : black;
-	background : #88b0f0;
-	position : absolute;
-	top : 0px; 
-	left : 0px;
-	right : 0px;
-	height : 30px;
-	line-height : 30px;
-	text-indent : 5px;
+div.dlgSecCont {
+	position : relative;
+	left : 150px;
+	top : -20px;
+	float : left;
+	font-size : 12px;
+	font-weight : normal;
+	line-height : 200%;
 }
 
-#prefs div.pref-content {
+div.dlgButtons {
+	text-align : right;
+	clear : both;
+}
+
+ul.container {
+	height : 100px;
 	overflow : auto;
-	position : absolute;
-	top : 30px; 
-	left : 0px;
-	right : 0px;
-	bottom : 0px;
-	padding : 5px;
-
-}
-
-div.pref-content h1 {
-	font-size : 16px;
-	text-shadow : #ffffff 0 1px;
-	margin : 0px 0px 0.5em 0px;
+	list-style-type : none;
+	border : 1px solid #99d67a;
+	background-color : white;
+	margin : 0px 0px 5px 0px;
 	padding : 0px;
-	color : black;
 }
 
-div.pref-content h2 {
-	font-size : 14px;
-	text-shadow : #ffffff 0 1px;
-	margin : 0px 0px 0.5em 0px;
-	padding : 0px;
-	color : #293f67;
+ul.container li input {
+	vertical-align : middle;
 }
 
-form#prefs_form label {
-	width : 200px;
+div.dlgSecCont label {
+	width : 100px;
 	float : left;
 	text-align : right;
-	padding-right : 1em;
-}
-
-form#prefs_form fieldset {
-	clear : left;
-	margin : 0px;
-	padding : 0px;
-	border-width : 0px;
-	margin-bottom : 5px;
-	margin-left : 1em;
-}
-
-form#prefs_form input {
+	padding-right : 10px;
 }

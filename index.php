@@ -80,37 +80,6 @@
 	</div>
 </div>
 
-<div id="prefs" style="display : none">
-	<div class="pref-title"><?php echo __("Preferences") ?></div>
-	<div class="pref-content">
-
-		<form id="prefs_form" name="prefs_farm" onsubmit="return false;">
-
-		<h1>Personal Data</h1>
-
-		<fieldset>
-		<label>E-mail:</label>
-		<input name="email" value="">
-		<br clear="left"/>
-		</fieldset>
-
-		<fieldset>
-		<label>Change password:</label>
-		<input name="new_password" type="password" value="">
-		confirm:
-		<input name="confirm_password" type="password" value="">
-		</fieldset>
-
-		<fieldset>
-		<label>Quit message:</label>
-		<input name="quit_message" size="30" value="">
-		</fieldset>
-
-		<p><button type="submit" onclick="prefs_save()">Save preferences</button></p>
-		</form>
-	</div>
-</div>
-
 <div id="header">
 	<div class="topLinks" id="topLinks">
 

@@ -648,17 +648,25 @@ function update_title() {
 	}
 }
 
+function save_prefs() {
+	try {
+		var query = Form.serialize("prefs_form");
+
+		alert(query);
+
+	} catch (e) {
+		exception_error("save_prefs", e);
+	}
+}
+
 function show_prefs() {
 	try {
-		if (Element.visible("prefs")) {
-			Element.hide("dialog_overlay");
-			Element.hide("prefs");
+		new Ajax.Request("backend.php", {
+		parameters: "?op=prefs",
+		onComplete: function (transport) {
+			infobox_callback2(transport);
+		} });
 
-		} else {
-			Element.show("dialog_overlay");
-			Element.show("prefs");
-
-		}
 
 	} catch (e) {
 		exception_error("show_prefs", e);

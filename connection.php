@@ -112,15 +112,23 @@ class Connection extends Yapircl {
 	}
 
 	function disconnect_if_disabled() {
-		$result = db_query($this->link, "SELECT enabled FROM ttirc_connections
-			WHERE id = " . $this->connection_id);
 
-		if (db_num_rows($result) != 1) {
-			$this->quit("Tiny Tiny IRC");
-		} else {
-			$enabled = sql_bool_to_bool(db_fetch_result($result, 0, "enabled"));
-			if (!$enabled) {
-				$this->quit("Tiny Tiny IRC");
+		if ($this->connected()) {
+
+			$result = db_query($this->link, 
+				"SELECT enabled 
+				FROM ttirc_connections, ttirc_users
+				WHERE owner_uid = ttirc_users.id AND 
+				heartbeat > NOW() - INTERVAL '10 minutes' AND
+				ttirc_connections.id = " . $this->connection_id);
+	
+			if (db_num_rows($result) != 1) {
+				$this->quit($this->quit_message());
+			} else {
+				$enabled = sql_bool_to_bool(db_fetch_result($result, 0, "enabled"));
+				if (!$enabled) {
+					$this->quit($this->quit_message());
+				}
 			}
 		}
 
@@ -334,6 +342,19 @@ class Connection extends Yapircl {
 		}
 
 		return $tmp;
+	}
+
+	function quit_message() {
+		$result = db_query($this->link, "SELECT quit_message FROM
+			ttirc_users, ttirc_connections WHERE
+			ttirc_users.id = owner_uid AND ttirc_connections.id = ".
+			$this->connection_id);
+
+		if (db_num_rows($result) == 1) {
+			return db_fetch_result($result, 0, "quit_message");
+		} else {
+			return __("Tiny Tiny IRC");
+		}
 	}
 
 	function update_nicklist($destination) {
