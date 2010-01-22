@@ -30,7 +30,7 @@ function create_tab_if_needed(chan, connection_id, tab_type) {
 				"connection_id=\"" + connection_id + "\" " +
 		  		"onclick=\"change_tab(this)\">" + chan + "</div>";
 
-			debug(tab);
+			debug("creating tab: " + tab_id);
 
 			$("tabs").innerHTML += tab;
 		}
@@ -273,8 +273,8 @@ function get_all_tabs() {
 
 function update_buffer() {
 	try {
-		var tab = get_selected_tab();
 
+		var tab = get_selected_tab();
 		if (!tab) return;
 
 		var channel = tab.getAttribute("channel");
@@ -288,77 +288,117 @@ function update_buffer() {
 
 		if (test_height - $("log").scrollTop < 50) scroll_buffer = true;
 
-		var buffer = buffers[connection_id][channel];
+		if (buffers[connection_id]) {
 
-		if (buffer) {
-			var tmp = "";
+			var buffer = buffers[connection_id][channel];
+	
+			if (buffer) {
 
-			for (var i = 0; i < buffer.length; i++) {
-				tmp += buffer[i];
+				/* do we need to redraw everything? */
+
+				var log_channel = $("log-list").getAttribute("channel");
+				var log_connection = $("log-list").getAttribute("connection_id");
+				var log_line_id = parseInt($("log-list").getAttribute("last_id"));
+
+				if (log_channel != channel || log_connection != connection_id) {
+					var tmp = "";
+					var line_id = 0;
+					for (var i = 0; i < buffer.length; i++) {
+						tmp += buffer[i][1];
+						line_id = buffer[i][0];
+					}
+
+					$("log-list").innerHTML = tmp;
+
+				} else {
+
+					var line_id = parseInt(log_line_id);
+					var tmp = "";
+
+					for (var i = 0; i < buffer.length; i++) {
+						var tmp_id = parseInt(buffer[i][0]);
+						if (tmp_id > line_id) {
+							tmp += buffer[i][1];
+							line_id = tmp_id;
+						}
+					}
+
+					$("log-list").innerHTML += tmp;
+
+				}
+
+				$("log-list").setAttribute("last_id", line_id);
+				$("log-list").setAttribute("channel", channel);
+				$("log-list").setAttribute("connection_id", connection_id);
+
+				if (scroll_buffer) $("log").scrollTop = $("log").scrollHeight;
+			} else {
+				$("log-list").innerHTML = "&nbsp;";
 			}
-
-			$("log-list").innerHTML = tmp;
-
-			if (scroll_buffer) $("log").scrollTop = $("log").scrollHeight;
-		} else {
-			$("log-list").innerHTML = "&nbsp;";
 		}
 
 		//show_nicklist(get_selected_buffer() != "---");
 
-		var nicklist = nicklists[connection_id][channel];
+		if (nicklists[connection_id]) {
 
-		if (nicklist) {
-
-			$("userlist-list").innerHTML = "";
-
-			for (var i = 0; i < nicklist.length; i++) {				
-
-				var row_class = (i % 2) ? "even" : "odd";
-
-				var nick_image = "<img src=\"images/user_normal.png\" alt=\"\">";
-				var nick = nicklist[i];
-
-				switch (nick.substr(0,1)) {
-				case "@":
-					nick_image = "<img src=\"images/user_op.png\" alt=\"\">";
-					nick = nick.substr(1);
-					break;
-				case "+":
-					nick_image = "<img src=\"images/user_voice.png\" alt=\"\">";
-					nick = nick.substr(1);
-					break;
+			var nicklist = nicklists[connection_id][channel];
+	
+			if (nicklist) {
+	
+				$("userlist-list").innerHTML = "";
+	
+				for (var i = 0; i < nicklist.length; i++) {				
+	
+					var row_class = (i % 2) ? "even" : "odd";
+	
+					var nick_image = "<img src=\"images/user_normal.png\" alt=\"\">";
+					var nick = nicklist[i];
+	
+					switch (nick.substr(0,1)) {
+					case "@":
+						nick_image = "<img src=\"images/user_op.png\" alt=\"\">";
+						nick = nick.substr(1);
+						break;
+					case "+":
+						nick_image = "<img src=\"images/user_voice.png\" alt=\"\">";
+						nick = nick.substr(1);
+						break;
+					}
+	
+	/*				if (nick == active_nicks[connection_id]) {
+						nick_image = "<img src=\"images/user_me.png\" alt=\"\">";
+					} */
+	
+					var tmp_html = "<li class=\""+row_class+"\">" + 
+						nick_image + " " + nick + "</li>";
+	
+					$("userlist-list").innerHTML += tmp_html;
 				}
-
-/*				if (nick == active_nicks[connection_id]) {
-					nick_image = "<img src=\"images/user_me.png\" alt=\"\">";
-				} */
-
-				var tmp_html = "<li class=\""+row_class+"\">" + 
-					nick_image + " " + nick + "</li>";
-
-				$("userlist-list").innerHTML += tmp_html;
+			} else {
+				$("userlist-list").innerHTML = "";
 			}
-		} else {
-			$("userlist-list").innerHTML = "";
 		}
 
-		var topic = topics[connection_id][channel];
-
-		if (topic) {
-			$("topic-input").value = topics[connection_id][channel][0];
-		} else {
-
-			if (tab.getAttribute("tab_type") != "S") {
-				$("topic-input").value = "";
+		if (topics[connection_id]) {
+			var topic = topics[connection_id][channel];
+	
+			if (topic) {
+				$("topic-input").value = topics[connection_id][channel][0];
 			} else {
-				if (conndata_last[connection_id].status == "2") {
-					$("topic-input").value = __("Connected to: ") + 
-						conndata_last[connection_id]["active_server"];
+	
+				if (tab.getAttribute("tab_type") != "S") {
+					$("topic-input").value = "";
 				} else {
-					$("topic-input").value = "";		
+					if (conndata_last[connection_id].status == "2") {
+						$("topic-input").value = __("Connected to: ") + 
+							conndata_last[connection_id]["active_server"];
+					} else {
+						$("topic-input").value = __("Disconnected.");
+					}
 				}
 			}
+		} else if (tab.getAttribute("tab_type") == "S") {
+			$("topic-input").value = __("Disconnected.");
 		}
 
 		if (conndata_last && conndata_last[connection_id]) {
@@ -498,7 +538,7 @@ function format_message(row_class, param) {
 				param.message + "</span>";
 		}
 
-		return tmp;
+		return [param.id, tmp];
 
 	} catch (e) {
 		exception_error("format_message", e);
@@ -509,9 +549,16 @@ function handle_conn_data(conndata) {
 	try {
 		if (conndata != "") {
 			for (var i = 0; i < conndata.length; i++) {
+
 				create_tab_if_needed(conndata[i].title, conndata[i].id, "S");
-				active_nicks[conndata[i].id] = conndata[i].active_nick;
 				conndata_last[conndata[i].id] = conndata[i];
+
+				if (conndata[i].status == "2") {
+					active_nicks[conndata[i].id] = conndata[i].active_nick;
+				} else {
+					active_nicks[conndata[i].id] = [];
+					nicklists[conndata[i].id] = [];
+				}
 			}			
 		} else {
 			conndata_last = [];
@@ -544,13 +591,16 @@ function handle_chan_data(chandata) {
 			var chan = tabs[i].getAttribute("channel");
 			var connection_id = tabs[i].getAttribute("connection_id");
 
-			if (!chandata[connection_id][chan] && tabs[i].getAttribute("tab_type") != "S") {
+			if (chandata[connection_id]) {
+				if (!chandata[connection_id][chan] && 
+						tabs[i].getAttribute("tab_type") != "S") {
 
-//				if ($(tabs[i]).className == "selected") {
-//					change_tab("tab----");
-//				}
+//					if ($(tabs[i]).className == "selected") {
+//						change_tab("tab----");
+//					}
 			
-				$("tabs").removeChild(tabs[i]);
+					$("tabs").removeChild(tabs[i]);
+				}
 			}
 		}
 
@@ -570,12 +620,15 @@ function update_title() {
 			var title = __("Tiny Tiny IRC [%a @ %b / %c]");
 			var connection_id = tab.getAttribute("connection_id");
 
-			title = title.replace("%a", active_nicks[connection_id]);
-			title = title.replace("%b", conndata_last[connection_id].title);
-			title = title.replace("%c", tab.getAttribute("channel"));
+			if (conndata_last[connection_id]) {
+				title = title.replace("%a", active_nicks[connection_id]);
+				title = title.replace("%b", conndata_last[connection_id].title);
+				title = title.replace("%c", tab.getAttribute("channel"));
+				document.title = title;
+			} else {
+				document.title = __("Tiny Tiny IRC");
+			}
 
-
-			document.title = title;
 		} else {
 			document.title = __("Tiny Tiny IRC");
 		}
