@@ -7,7 +7,7 @@ var topics = [];
 var active_nicks = [];
 var conndata_last = [];
 
-var colormap = ["#cfcfcf", "#000000", "#0000cc", "#00cc00", 
+var default_colormap = ["#cfcfcf", "#000000", "#0000cc", "#00cc00", 
 	 "#dd0000", "#aa0000", "#bb00bb", "#ffaa00", "#eedd22", 
 	 "#33de55", "#00cccc", "#33eeff", "#0000ff", "#ee22ee", 
 	 "#777777", "#999999", "#cfcfcf", "#000000", "#0000cc", 
@@ -16,6 +16,16 @@ var colormap = ["#cfcfcf", "#000000", "#0000cc", "#00cc00",
 	 "#ee22ee", "#777777", "#999999", "#000000", "#a4dfff", 
 	 "#dfdfdf", "#000000", "#cc1010", "#8c1010", "#0000ff", 
 	 "#f50000", "#999999"];
+
+var colormap = ["#ffffff", "#000000", "#4141bd", "#40b883", 
+	 "#fa0501", "#873742", "#eb05fc", "#fb9304", "#fbf708", 
+	 "#03ff9e", "#67bdbd", "#81f4f6", "#5276e0", "#f704cc", 
+	 "#858282", "#d2cece", "#d8ba79", "#806546", "#003296", 
+	 "#796247", "#fc3200", "#976500", "#d30000", "#fb9304", 
+	 "#c04343", "#e68003", "#0169c9", "#b3defd", "#067bcb", 
+	 "#af8937", "#565248", "#fdd99b", "#fbf8f1", "#0169c9", 
+	 "#555147", "#f4eee3", "#c50603", "#ab9071", "#f30404", 
+	 "#e68003", "#959595"];
 
 function create_tab_if_needed(chan, connection_id, tab_type) {
 	try {
@@ -365,8 +375,8 @@ function update_buffer() {
 						break;
 					}
 	
-	/*				if (nick == active_nicks[connection_id]) {
-						nick_image = "<img src=\"images/user_me.png\" alt=\"\">";
+/*					if (nick == active_nicks[connection_id]) {
+						nick = "<strong>" + nick + "</strong>";
 					} */
 	
 					var tmp_html = "<li class=\""+row_class+"\">" + 
