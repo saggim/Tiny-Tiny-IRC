@@ -258,6 +258,10 @@ table.loginForm2 .innerLoginCell {
 	bottom : 5px;
 }
 
+#userlist img {
+	vertical-align : middle;
+}
+
 #log-inner {
 	padding : 5px;
 }

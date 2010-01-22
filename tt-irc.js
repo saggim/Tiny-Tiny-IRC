@@ -261,8 +261,22 @@ function update_buffer() {
 
 				var row_class = (i % 2) ? "even" : "odd";
 
+				var nick_image = "<img src=\"images/user_normal.png\" alt=\"\">";
+				var nick = nicklist[i];
+
+				switch (nick.substr(0,1)) {
+				case "@":
+					nick_image = "<img src=\"images/user_op.png\" alt=\"\">";
+					nick = nick.substr(1);
+					break;
+				case "+":
+					nick_image = "<img src=\"images/user_voice.png\" alt=\"\">";
+					nick = nick.substr(1);
+					break;
+				}
+
 				var tmp_html = "<li class=\""+row_class+"\">" + 
-					nicklist[i] + "</li>";
+					nick_image + " " + nick + "</li>";
 
 				$("userlist-list").innerHTML += tmp_html;
 			}
