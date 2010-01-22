@@ -147,8 +147,9 @@
 	</div>
 	</div>
 	<div id="log"><ul id="log-list"></ul></div>	
+	<div id="nick" onclick="change_nick()"></div>
 	<div id="input"><div class="wrapper">
-		<input disabled="true" id="input-prompt" onchange="send(this)"></input>
+		<input disabled="true" id="input-prompt" onkeypress="send(this, event)"></input>
 	</div></div>
 	<div id="userlist">
 		<div id="userlist-inner"><ul id="userlist-list"></ul></div>

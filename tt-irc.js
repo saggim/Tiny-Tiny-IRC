@@ -191,10 +191,12 @@ function handle_update(transport) {
 		} else {
 			delay = 1000;
 		}
+
+		if (!get_selected_tab()) {
+			change_tab(get_all_tabs()[0]);
+		}
 	
 		update_buffer();
-	
-		debug("delay = " + delay);
 
 	} catch (e) {
 		exception_error("handle_update", e);
@@ -205,8 +207,6 @@ function handle_update(transport) {
 
 function update() {
 	try {
-		debug("update...");		
-
 		new Ajax.Request("backend.php", {
 		parameters: "?op=update&last_id=" + last_id,
 		onComplete: function (transport) {
@@ -351,34 +351,46 @@ function update_buffer() {
 			$("input-prompt").disabled = conndata_last[connection_id].status != 2;
 		}
 
+		$("nick").innerHTML = active_nicks[connection_id];
+
 	} catch (e) {
 		exception_error("update_buffer", e);
 	}	
 }
 
-function send(elem) {
+function send(elem, evt) {
 	try {
 
-		var tab = get_selected_tab();
+     var key;
 
-		if (!tab) return;
+		if(window.event)
+			key = window.event.keyCode;     //IE
+		else
+			key = evt.which;     //firefox
 
-		var channel = tab.getAttribute("channel");
+		if (key == 13) {
 
-		if (tab.getAttribute("tab_type") == "S") channel = "---";
-		var query = "?op=send&message=" + param_escape(elem.value) + 
-			"&chan=" + param_escape(channel) +			
-			"&connection=" + param_escape(tab.getAttribute("connection_id")) +
-			"&last_id=" + last_id;
-
-		debug(query);
-
-		new Ajax.Request("backend.php", {
-		parameters: query,
-		onComplete: function (transport) {
-			elem.value = '';
-			handle_update(transport);
-		} });
+			var tab = get_selected_tab();
+	
+			if (!tab) return;
+	
+			var channel = tab.getAttribute("channel");
+	
+			if (tab.getAttribute("tab_type") == "S") channel = "---";
+			var query = "?op=send&message=" + param_escape(elem.value) + 
+				"&chan=" + param_escape(channel) +			
+				"&connection=" + param_escape(tab.getAttribute("connection_id")) +
+				"&last_id=" + last_id;
+	
+			debug(query);
+	
+			new Ajax.Request("backend.php", {
+			parameters: query,
+			onComplete: function (transport) {
+				elem.value = '';
+				handle_update(transport);
+			} });
+		}
 
 	} catch (e) {
 		exception_error("send", e);
@@ -522,8 +534,34 @@ function handle_chan_data(chandata) {
 			}
 		}
 
+		update_title(chandata);
+
 	} catch (e) {
 		exception_error("handle_chan_data", e);
+	}
+}
+
+function update_title() {
+	try {
+		
+		var tab = get_selected_tab();
+
+		if (tab) {
+			var title = __("Tiny Tiny IRC [%a @ %b / %c]");
+			var connection_id = tab.getAttribute("connection_id");
+
+			title = title.replace("%a", active_nicks[connection_id]);
+			title = title.replace("%b", conndata_last[connection_id].title);
+			title = title.replace("%c", tab.getAttribute("channel"));
+
+
+			document.title = title;
+		} else {
+			document.title = __("Tiny Tiny IRC");
+		}
+
+	} catch (e) {
+		exception_error("update_title", e);
 	}
 }
 
@@ -541,5 +579,18 @@ function show_prefs() {
 
 	} catch (e) {
 		exception_error("show_prefs", e);
+	}
+}
+
+function change_nick() {
+	try {
+		var tab = get_selected_tab();
+
+		if (tab) {
+
+
+		}
+	} catch (e) {
+		exception_error("change_nick", e);
 	}
 }

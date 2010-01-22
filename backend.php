@@ -26,15 +26,17 @@
 
 	switch ($op) {
 	case "send":
-		$message = db_escape_string($_REQUEST["message"]);
+		$message = db_escape_string(trim($_REQUEST["message"]));
 		$last_id = (int) db_escape_string($_REQUEST["last_id"]);
 		$chan = db_escape_string($_REQUEST["chan"]);
 		$connection_id = db_escape_string($_REQUEST["connection"]);
 
-		if (strpos($message, "/") === 0) {
-			handle_command($link, $connection_id, $chan, $message);
-		} else {
-			push_message($link, $connection_id, $chan, $message);
+		if ($message) {
+			if (strpos($message, "/") === 0) {
+				handle_command($link, $connection_id, $chan, $message);
+			} else {
+				push_message($link, $connection_id, $chan, $message);
+			}
 		}
 
 		$lines = get_new_lines($link, $last_id);
@@ -42,7 +44,6 @@
 		$chandata = get_chan_data($link, false);
 
 		print json_encode(array($conn, $lines, $chandata));
-
 		break;
 	case "update":
 		$last_id = (int) db_escape_string($_REQUEST["last_id"]);

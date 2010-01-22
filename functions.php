@@ -501,7 +501,7 @@
 			message_type != ".MSGT_COMMAND." AND
 			ts > NOW() - INTERVAL '1 hour' AND
 			ttirc_messages.id > '$last_id' AND 
-			owner_uid = ".$_SESSION["uid"]." ORDER BY ttirc_messages.id");
+			owner_uid = ".$_SESSION["uid"]." ORDER BY ttirc_messages.id LIMIT 50");
 
 		$lines = array();
 

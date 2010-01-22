@@ -90,11 +90,21 @@ table.loginForm2 .innerLoginCell {
 	border-color : #88b0f0;
 	bottom : 5px;
 	height : 25px;
-	left : 5px;
+	left : 100px;
 	right : 155px;
 	position : absolute;
 	border-collapse : collapse;
 	text-align : center;
+}
+
+#nick {
+	position : absolute;
+	left : 5px;
+	width : 90px;
+	bottom : 5px;
+	height : 25px;
+	line-height : 25px;
+	text-align : right;
 }
 
 #input div.wrapper {
