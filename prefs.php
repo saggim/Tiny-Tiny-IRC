@@ -1,6 +1,30 @@
 <?php
 	require_once "functions.php";
 
+	function print_servers($link, $id) {
+		$result = db_query($link, "SELECT * FROM ttirc_servers
+			WHERE connection_id = '$id'");
+
+		$lnum = 1;
+
+		while ($line = db_fetch_assoc($result)) {
+
+			$row_class = ($lnum % 2) ? "odd" : "even";
+
+			$id = $line['id'];
+
+			print "<li id='S-$id' class='$row_class'>";
+			print "<input type='checkbox' onchange='select_row(this)'
+				row_id='S-$id'>&nbsp;";
+			print $line['server'] . ":" . $line['port'] . " (" . $line['encoding'] .
+				")";
+			print "</li>";
+
+			++$lnum;
+		}
+	}
+
+
 	function connection_editor($link, $id) {
 		$result = db_query($link, "SELECT * FROM ttirc_connections
 			WHERE id = '$id' AND owner_uid = " . $_SESSION["uid"]);
@@ -35,6 +59,7 @@
 		<br clear='right'/><p>
 
 		<ul class="container">
+			<?php print_servers($link, $id); ?>
 		</ul>
 
 		<div class="dlgButtons">
@@ -64,7 +89,7 @@
 			print "<li id='C-$id' class='$row_class'>";
 			print "<input type='checkbox' onchange='select_row(this)'
 				row_id='C-$id'>";
-			print "<a href=\"#\" title=\"Click to edit connection\"
+			print "&nbsp;<a href=\"#\" title=\"Click to edit connection\"
 				onclick=\"edit_connection($id)\">".
 				$line['title']."</a>";
 			print "</li>";
