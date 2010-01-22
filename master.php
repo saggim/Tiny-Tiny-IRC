@@ -137,8 +137,8 @@
 					db_query($link, "UPDATE ttirc_destinations SET
 						nicklist = '' WHERE connection_id = '$id'");
 
-					push_message($link, $id, "---", "Connecting to server...", true);
-			
+					push_message($link, $id, "---", "Requesting connection...", true);
+
 					db_close($link);
 
 					system("./handle.php $id");

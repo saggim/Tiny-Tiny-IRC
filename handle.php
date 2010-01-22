@@ -18,20 +18,32 @@
 
 		$line = db_fetch_assoc($result);
 
-		_debug("[$connection_id] connecting to server " . $line["server"]);
-	
-		$connection = new Connection($link, $connection_id, $line["encoding"], 
+		$server = get_random_server($link, $connection_id);
+
+		if (!$server) {
+			_debug("[$connection_id] couldn't find any servers :(");
+			return;
+		}
+
+		_debug("[$connection_id] connecting to server " . $server["server"]);
+
+		$server_str = db_escape_string($server["server"] . ":" . $server["port"]);
+
+		push_message($link, $connection_id, "---", 
+			"Connecting to $server_str...", true);
+
+		$connection = new Connection($link, $connection_id, $server["encoding"], 
 			$line["last_sent_id"]);
 		$connection->setDebug(false);
 		$connection->setUser($line["ident"], $line['nick'], 
 			$line['realname'], '+i');
-		$connection->setServer($line["server"], $line["port"]);
+		$connection->setServer($server["server"], $server["port"]);
 	
 		if ($connection->connect()) {
 			_debug("[$connection_id] connection established.");
 
 			db_query($link, "UPDATE ttirc_connections SET
-				status = 2 WHERE id = '$connection_id'");
+				status = 2, active_server = '$server_str' WHERE id = '$connection_id'");
 
 			$connection->run();
 		}

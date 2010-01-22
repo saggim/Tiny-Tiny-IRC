@@ -5,6 +5,7 @@ var nicklists = [];
 var li_classes = [];
 var topics = [];
 var active_nicks = [];
+var conndata_last = [];
 
 function create_tab_if_needed(chan, connection_id, tab_type) {
 	try {
@@ -336,6 +337,10 @@ function update_buffer() {
 			$("topic-input").value = "";
 		}
 
+		if (conndata_last && conndata_last[connection_id]) {
+			$("input-prompt").disabled = conndata_last[connection_id].status != 2;
+		}
+
 	} catch (e) {
 		exception_error("update_buffer", e);
 	}	
@@ -391,9 +396,10 @@ function change_tab(elem) {
 
 		elem.className = "selected";
 
+		update_buffer();
+
 		$("input-prompt").focus();
 
-		update_buffer();
 	} catch (e) {
 		exception_error("change_tab", e);
 	}
@@ -462,8 +468,11 @@ function handle_conn_data(conndata) {
 		if (conndata != "") {
 			for (var i = 0; i < conndata.length; i++) {
 				create_tab_if_needed(conndata[i].title, conndata[i].id, "S");
-				active_nicks[conndata[i].id] = conndata[0].active_nick;
-			}
+				active_nicks[conndata[i].id] = conndata[i].active_nick;
+				conndata_last[conndata[i].id] = conndata[i];
+			}			
+		} else {
+			conndata_last = [];
 		}
 	} catch (e) {
 		exception_error("handle_conn_data", e);

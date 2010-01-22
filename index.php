@@ -148,7 +148,7 @@
 	</div>
 	<div id="log"><ul id="log-list"></ul></div>	
 	<div id="input"><div class="wrapper">
-		<input id="input-prompt" onchange="send(this)"></input>
+		<input disabled="true" id="input-prompt" onchange="send(this)"></input>
 	</div></div>
 	<div id="userlist">
 		<div id="userlist-inner"><ul id="userlist-list"></ul></div>

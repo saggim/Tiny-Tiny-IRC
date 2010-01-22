@@ -549,7 +549,7 @@
 
 	function get_conn_info($link) {
 
-		$result = db_query($link, "SELECT id,server,active_nick,status,title
+		$result = db_query($link, "SELECT id,active_server,active_nick,status,title
 			FROM ttirc_connections
 			WHERE owner_uid = ".$_SESSION["uid"]);
 	
@@ -631,5 +631,16 @@
 		}
 	}
 
+	function get_random_server($link, $connection_id) {
+		$result = db_query($link, "SELECT * FROM ttirc_servers WHERE
+			connection_id = '$connection_id' ORDER BY RANDOM() LIMIT 1");
+
+		if (db_num_rows($result) != 0) {
+			return db_fetch_assoc($result);
+		} else {
+			return false;
+		}
+
+	}
 
 ?>
