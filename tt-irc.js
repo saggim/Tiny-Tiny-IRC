@@ -4,15 +4,24 @@ var buffers = [];
 var nicklists = [];
 var li_classes = [];
 var topics = [];
+var active_nicks = [];
 
-function create_tab_if_needed(chan) {
+function create_tab_if_needed(chan, connection_id, tab_type) {
 	try {
-		var tab_id = "tab-" + chan;
-	
+		var tab_id = "tab-" + chan + ":" + connection_id;
+
+		if (!tab_type) tab_type = "C";
+
 		if (!$(tab_id)) {
-			$("tabs").innerHTML += "<div id=\"" + tab_id + "\" " +
+			var tab = "<div id=\"" + tab_id + "\" " +
 				"channel=\"" + chan + "\" " +
+				"tab_type=\"" + tab_type + "\" " +
+				"connection_id=\"" + connection_id + "\" " +
 		  		"onclick=\"change_tab(this)\">" + chan + "</div>";
+
+			debug(tab);
+
+			$("tabs").innerHTML += tab;
 		}
 
 		return tab_id;
@@ -94,19 +103,14 @@ function handle_update(transport) {
 
 		if (!handle_error(rv)) return false;
 
-		var params = rv[0];
+		var conn_data = rv[0];
 		var lines = rv[1];
-		var nicks = rv[2];
+		var chandata = rv[2];
 
-		if (nicks != "") {
-			for (var chan in nicks) {
-				create_tab_if_needed(chan);
-				nicklists[chan] = nicks[chan]["users"];
-				topics[chan] = nicks[chan]["topic"];
-			}
-		}
+		handle_conn_data(conn_data);
+		handle_chan_data(chandata);
 
-		switch (params[0].status) {
+/*		switch (params[0].status) {
 			case "0":
 				$('connect-btn').innerHTML = __("Connect");
 				$('connect-btn').disabled = false;
@@ -122,7 +126,9 @@ function handle_update(transport) {
 				$('connect-btn').disabled = false;
 				$('connect-btn').setAttribute("set_enabled", 0);
 				break;
-		}
+		} 
+
+		my_nick = params[0].active_nick; */
 	
 		var prev_last_id = last_id;
 	
@@ -131,7 +137,7 @@ function handle_update(transport) {
 			if (last_id < lines[i].id) {
 	
 				var chan = lines[i].destination;
-				var tab_id = "tab-" + lines[i].destination;
+				var connection_id = lines[i].connection_id;
 		
 				if (!li_classes[chan]) {
 					li_classes[chan] = "odd";
@@ -148,23 +154,31 @@ function handle_update(transport) {
 				var tmp_html = format_message(li_classes[chan],
 					lines[i]);
 	
+				if (!buffers[connection_id]) buffers[connection_id] = [];
+				if (!buffers[connection_id][chan]) buffers[connection_id][chan] = [];
+
 				if (lines[i].message_type != 2) {
-					if (buffers[chan]) {
-						buffers[chan].push(tmp_html);
-					} else {
-						buffers[chan] = [tmp_html];
-					}
+					buffers[connection_id][chan].push(tmp_html);
 				} else {
-					for (var b in buffers) {
-						if (typeof buffers[b] == 'object') {
-							buffers[b].push(tmp_html);
+					for (var b in buffers[connection_id]) {
+						if (typeof buffers[connection_id][b] == 'object') {
+							buffers[connection_id][b].push(tmp_html);						
 						}
 					}
 				}
-	
-				if (get_selected_buffer() != chan && $(tab_id)) {
-					$(tab_id).className = "attention";
-				}
+
+				var tabs = get_all_tabs();
+
+				for (var j = 0; j < tabs.length; j++) {
+					var tab = tabs[j];
+
+					if (tab.getAttribute("connection_id") == connection_id &&
+							tab.getAttribute("channel") == chan && 
+							tab != get_selected_tab()) {
+
+						tab.className = "attention";
+					}
+				}	
 
 			}
 
@@ -172,7 +186,7 @@ function handle_update(transport) {
 		}
 	
 		if (prev_last_id == last_id) {
-			if (delay < 3000) delay += 150;
+			if (delay < 4000) delay += 100;
 		} else {
 			delay = 1000;
 		}
@@ -193,8 +207,7 @@ function update() {
 		debug("update...");		
 
 		new Ajax.Request("backend.php", {
-		parameters: "?op=update&last_id=" + last_id + 
-			"&active=" + param_escape(get_selected_buffer()),
+		parameters: "?op=update&last_id=" + last_id,
 		onComplete: function (transport) {
 	
 			if (!handle_update(transport)) return;
@@ -208,32 +221,59 @@ function update() {
 	}
 }
 
-function get_selected_buffer() {
+function get_selected_tab() {
 	try {
 		var tabs = $("tabs").getElementsByTagName("div");
 
 		for (var i = 0; i < tabs.length; i++) {
-			if (tabs[i].className == "selected") return tabs[i].id.replace("tab-", "");
+			if (tabs[i].className == "selected") {
+				return tabs[i];
+			}
 		}
 
 		return false;
 
 	} catch (e) {
-		exception_error("get_selected_buffer", e);
+		exception_error("get_selected_tab", e);
+	}
+}
+
+function get_all_tabs() {
+	try {
+		var tabs = $("tabs").getElementsByTagName("div");
+		var rv = [];
+
+		for (var i = 0; i < tabs.length; i++) {
+			if (tabs[i].id && tabs[i].id.match("tab-")) {
+				rv.push(tabs[i]);
+			}
+		}
+
+		return rv;
+
+	} catch (e) {
+		exception_error("get_all_tabs", e);
 	}
 }
 
 function update_buffer() {
 	try {
-		var buf_id = get_selected_buffer();
+		var tab = get_selected_tab();
+
+		if (!tab) return;
+
+		var channel = tab.getAttribute("channel");
+
+		if (tab.getAttribute("tab_type") == "S") channel = "---";
+
+		var connection_id = tab.getAttribute("connection_id");
 
 		var test_height = $("log").scrollHeight - $("log").offsetHeight;
 		var scroll_buffer = false;
 
 		if (test_height - $("log").scrollTop < 50) scroll_buffer = true;
 
-
-		var buffer = buffers[buf_id];
+		var buffer = buffers[connection_id][channel];
 
 		if (buffer) {
 			var tmp = "";
@@ -249,9 +289,9 @@ function update_buffer() {
 			$("log-list").innerHTML = "&nbsp;";
 		}
 
-		show_nicklist(get_selected_buffer() != "---");
+		//show_nicklist(get_selected_buffer() != "---");
 
-		var nicklist = nicklists[buf_id];
+		var nicklist = nicklists[connection_id][channel];
 
 		if (nicklist) {
 
@@ -275,6 +315,10 @@ function update_buffer() {
 					break;
 				}
 
+				if (nick == active_nicks[connection_id]) {
+					nick_image = "<img src=\"images/user_me.png\" alt=\"\">";
+				} 
+
 				var tmp_html = "<li class=\""+row_class+"\">" + 
 					nick_image + " " + nick + "</li>";
 
@@ -284,10 +328,10 @@ function update_buffer() {
 			$("userlist-list").innerHTML = "";
 		}
 
-		var topic = topics[buf_id];
+		var topic = topics[connection_id][channel];
 
 		if (topic) {
-			$("topic-input").value = topics[buf_id][0];
+			$("topic-input").value = topics[connection_id][channel][0];
 		} else {
 			$("topic-input").value = "";
 		}
@@ -300,10 +344,17 @@ function update_buffer() {
 function send(elem) {
 	try {
 
+		var tab = get_selected_tab();
+		var channel = tab.getAttribute("channel");
+
+		if (tab.getAttribute("tab_type") == "S") channel = "---";
+
+		if (!tab) return;
+
 		var query = "?op=send&message=" + param_escape(elem.value) + 
-			"&chan=" + param_escape(get_selected_buffer()) +
-			"&last_id=" + last_id + 
-			"&active=" + param_escape(get_selected_buffer());
+			"&chan=" + param_escape(channel) +			
+			"&connection=" + param_escape(tab.getAttribute("connection_id")) +
+			"&last_id=" + last_id;
 
 		debug(query);
 
@@ -373,12 +424,19 @@ function format_message(row_class, param) {
 		var tmp;
 
 		if (param.message_type == 4) {
-			var message = param.sender + " has changed the topic to: " + 
+			var message = param.sender + __(" has changed the topic to: ") + 
 				param.message;
 
 			tmp = "<li class=\""+row_class+"\"><span class='timestamp'>" + 
 				param.ts + "</span>" +
 				"<span class='sys-message'>" + message + "</span>";
+		} else if (param.message_type == 3) {
+
+			message = "* " + param.sender + " " + param.message;
+
+			tmp = "<li class=\""+row_class+"\"><span class='timestamp'>" + 
+				param.ts + "</span>" +
+				"<span class='action'>" + message + "</span>";
 
 		} else if (param.sender != "---") {
 			tmp = "<li class=\""+row_class+"\"><span class='timestamp'>" + 
@@ -396,5 +454,73 @@ function format_message(row_class, param) {
 
 	} catch (e) {
 		exception_error("format_message", e);
+	}
+}
+
+function handle_conn_data(conndata) {
+	try {
+		if (conndata != "") {
+			for (var i = 0; i < conndata.length; i++) {
+				create_tab_if_needed(conndata[i].title, conndata[i].id, "S");
+				active_nicks[conndata[i].id] = conndata[0].active_nick;
+			}
+		}
+	} catch (e) {
+		exception_error("handle_conn_data", e);
+	}
+}
+
+function handle_chan_data(chandata) {
+	try {
+		if (chandata != "") {
+			for (var connection_id in chandata) {
+
+				if (!nicklists[connection_id]) nicklists[connection_id] = [];
+				if (!topics[connection_id]) topics[connection_id] = [];
+
+				for (var chan in chandata[connection_id]) {
+					create_tab_if_needed(chan, connection_id);
+
+					nicklists[connection_id][chan] = chandata[connection_id][chan]["users"];
+					topics[connection_id][chan] = chandata[connection_id][chan]["topic"];
+				}
+			}
+		}
+
+		var tabs = get_all_tabs();
+
+		for (var i = 0; i < tabs.length; i++) {
+			var chan = tabs[i].getAttribute("channel");
+			var connection_id = tabs[i].getAttribute("connection_id");
+
+			if (!chandata[connection_id][chan] && tabs[i].getAttribute("tab_type") != "S") {
+
+//				if ($(tabs[i]).className == "selected") {
+//					change_tab("tab----");
+//				}
+			
+				$("tabs").removeChild(tabs[i]);
+			}
+		}
+
+	} catch (e) {
+		exception_error("handle_chan_data", e);
+	}
+}
+
+function show_prefs() {
+	try {
+		if (Element.visible("prefs")) {
+			Element.hide("dialog_overlay");
+			Element.hide("prefs");
+
+		} else {
+			Element.show("dialog_overlay");
+			Element.show("prefs");
+
+		}
+
+	} catch (e) {
+		exception_error("show_prefs", e);
 	}
 }

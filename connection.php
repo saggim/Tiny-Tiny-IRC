@@ -33,6 +33,9 @@ class Connection extends Yapircl {
 			case "part":
 				$this->part($arguments);
 				break;
+			case "action":
+				$this->action($destination, $arguments);
+				break;
 			case "topic":
 				$this->topic($destination, $arguments);
 				break;
@@ -277,6 +280,8 @@ class Connection extends Yapircl {
 	}
 
 	function event_rpl_endofnames() {
+		$this->check_destination($this->_xline[3]);
+
 		$nicklist = $this->channels[$this->_xline[3]];
 
 		$this->push_message('---', $this->_xline[3], 

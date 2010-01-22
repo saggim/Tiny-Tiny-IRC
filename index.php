@@ -80,6 +80,37 @@
 	</div>
 </div>
 
+<div id="prefs" style="display : none">
+	<div class="pref-title"><?php echo __("Preferences") ?></div>
+	<div class="pref-content">
+
+		<form id="prefs_form" name="prefs_farm" onsubmit="return false;">
+
+		<h1>Personal Data</h1>
+
+		<fieldset>
+		<label>E-mail:</label>
+		<input name="email" value="">
+		<br clear="left"/>
+		</fieldset>
+
+		<fieldset>
+		<label>Change password:</label>
+		<input name="new_password" type="password" value="">
+		confirm:
+		<input name="confirm_password" type="password" value="">
+		</fieldset>
+
+		<fieldset>
+		<label>Quit message:</label>
+		<input name="quit_message" size="30" value="">
+		</fieldset>
+
+		<p><button type="submit" onclick="prefs_save()">Save preferences</button></p>
+		</form>
+	</div>
+</div>
+
 <div id="header">
 	<div class="topLinks" id="topLinks">
 
@@ -88,7 +119,7 @@
 	<?php if (!SINGLE_USER_MODE) { ?>
 			<?php echo __('Hello,') ?> <b><?php echo $_SESSION["name"] ?></b> |
 	<?php } ?>
-	<a href="#" onclick="showPreferences()"><?php echo __('Preferences') ?></a>
+	<a href="#" onclick="show_prefs()"><?php echo __('Preferences') ?></a>
 
 	<?php if (!SINGLE_USER_MODE) { ?>
 			| <a href="logout.php"><?php echo __('Logout') ?></a>
@@ -101,15 +132,13 @@
 
 <div id="actions">
 	<button onclick="toggle_debug()">Debug</button> 
-	<button id="connect-btn" disabled='true' c_status="0" onclick="toggle_connect(this)">
-		<?php echo __("Connect") ?></button>
+	<!-- <button id="connect-btn" disabled='true' c_status="0" onclick="toggle_connect(this)">
+		<?php echo __("Connect") ?></button> -->
 </div>
 
 <div id="tabs">
 	<div class="first">&nbsp;</div>
-	<div class="selected" onclick="change_tab(this)" id="tab----">Console</div>
-	<!-- <div>#test</div>
-	<div>#wtf</div> -->
+	<!-- <div class="selected" onclick="change_tab(this.id)" id="tab----">Console</div> -->
 </div>
 
 <div id="content">

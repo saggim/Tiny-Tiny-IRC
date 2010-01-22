@@ -455,17 +455,26 @@
 
 		preg_match("/^\/([^ ]+) ?(.*)$/", $message, $keywords);
 
-		$command = $keywords[1];
+		$command = strtolower($keywords[1]);
 		$arguments = $keywords[2];
 
+		if ($command == "j") $command = "join";
+		if ($command == "part" && !$arguments) $arguments = $destination;
+
+		if ($command == "me") {
+			$command = "action";
+			push_message($link, $connection_id, $destination,
+				"$arguments", true, MSGT_ACTION);
+		}
+
 		push_message($link, $connection_id, $destination,
-			"$command:$arguments", false, 1);
+			"$command:$arguments", false, MSGT_COMMAND);
 
 	}
 
 
 	function push_message($link, $connection_id, $destination, $message, 
-		$incoming = false, $message_type = 0) {
+		$incoming = false, $message_type = MSGT_PRIVMSG) {
 
 		$incoming = bool_to_sql_bool($incoming);
 
@@ -484,12 +493,12 @@
 	function get_new_lines($link, $last_id) {
 
 		$result = db_query($link, "SELECT ttirc_messages.id,
-			message_type, sender, destination, 
+			message_type, sender, destination, connection_id,
 			message, ".SUBSTRING_FOR_DATE."(ts,12,8) AS ts
 			FROM ttirc_messages, ttirc_connections WHERE
 			connection_id = ttirc_connections.id AND
 			status != ".CS_DISCONNECTED." AND
-			message_type != 1 AND
+			message_type != ".MSGT_COMMAND." AND
 			ts > NOW() - INTERVAL '1 hour' AND
 			ttirc_messages.id > '$last_id' AND 
 			owner_uid = ".$_SESSION["uid"]." ORDER BY ttirc_messages.id");
@@ -505,7 +514,7 @@
 
 	}
 
-	function get_nick_list($link, $active_chan = false) {
+	function get_chan_data($link, $active_chan = false) {
 
 		if ($active_chan && $active_chan != "---") {
 			$active_chan_qpart = "destination = '$active_chan' AND";
@@ -513,7 +522,7 @@
 			$active_chan_qpart = "";
 		}
 
-		$result = db_query($link, "SELECT nicklist,destination,
+		$result = db_query($link, "SELECT nicklist,destination,connection_id,
 			topic,topic_owner,".SUBSTRING_FOR_DATE."(topic_set,1,16) AS topic_set
 			FROM ttirc_destinations, ttirc_connections 
 			WHERE connection_id = ttirc_connections.id AND 
@@ -524,9 +533,15 @@
 		$rv = array();
 
 		while ($line = db_fetch_assoc($result)) {
-			$rv[$line["destination"]]["users"] = json_decode($line["nicklist"]);
-			$rv[$line["destination"]]["topic"] = array(
+			$chan = $line["destination"];
+
+			$re = array();
+
+			$re["users"] = json_decode($line["nicklist"]);
+			$re["topic"] = array(
 				$line["topic"], $line["topic_owner"], $line["topic_set"]);
+
+			$rv[$line["connection_id"]][$chan] = $re;
 		}
 
 		return $rv;
@@ -534,7 +549,7 @@
 
 	function get_conn_info($link) {
 
-		$result = db_query($link, "SELECT id,server,active_nick,status 
+		$result = db_query($link, "SELECT id,server,active_nick,status,title
 			FROM ttirc_connections
 			WHERE owner_uid = ".$_SESSION["uid"]);
 	
@@ -615,5 +630,6 @@
 			return true;
 		}
 	}
+
 
 ?>

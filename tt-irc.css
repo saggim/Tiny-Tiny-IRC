@@ -7,10 +7,6 @@ body {
 	font-size : 13px;
 }
 
-body.main {
-	/*background : #f8fbff;*/
-}
-
 a {
 	color : black;
 	text-decoration : none;
@@ -453,6 +449,10 @@ pre {
 	color : #88b0f0;
 }
 
+#log span.action {
+	color : gray;
+}
+
 ul#userlist-list {
 	list-style-type : none;
 	margin : 0px;
@@ -484,4 +484,77 @@ ul#userlist-list {
 #userlist-list li.odd, #userlist-list li.even {
 	border-color : transparent;
 	background : transparent;
+}
+
+#prefs {
+	background : #c0d8ff;
+	z-index : 5;
+	border-color : #88b0f0;
+	border-width : 1px 1px 1px 1px;
+	border-style : solid;
+	position : absolute;
+	top : 55px;
+	min-height : 400px;
+	left : 5px;
+	right : 5px;
+}
+
+#prefs div.pref-title {
+	font-size : 16px;
+	text-shadow : #ffffff 0 1px;
+	color : black;
+	background : #88b0f0;
+	position : absolute;
+	top : 0px; 
+	left : 0px;
+	right : 0px;
+	height : 30px;
+	line-height : 30px;
+	text-indent : 5px;
+}
+
+#prefs div.pref-content {
+	overflow : auto;
+	position : absolute;
+	top : 30px; 
+	left : 0px;
+	right : 0px;
+	bottom : 0px;
+	padding : 5px;
+
+}
+
+div.pref-content h1 {
+	font-size : 16px;
+	text-shadow : #ffffff 0 1px;
+	margin : 0px 0px 0.5em 0px;
+	padding : 0px;
+	color : black;
+}
+
+div.pref-content h2 {
+	font-size : 14px;
+	text-shadow : #ffffff 0 1px;
+	margin : 0px 0px 0.5em 0px;
+	padding : 0px;
+	color : #293f67;
+}
+
+form#prefs_form label {
+	width : 200px;
+	float : left;
+	text-align : right;
+	padding-right : 1em;
+}
+
+form#prefs_form fieldset {
+	clear : left;
+	margin : 0px;
+	padding : 0px;
+	border-width : 0px;
+	margin-bottom : 5px;
+	margin-left : 1em;
+}
+
+form#prefs_form input {
 }
