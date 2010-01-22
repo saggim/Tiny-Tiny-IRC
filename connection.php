@@ -3,6 +3,7 @@
 require_once "config.php";
 require_once "lib/yapircl/Yapircl.php";
 require_once "db.php";
+require_once "functions.php";
 
 class Connection extends Yapircl {
 
@@ -122,7 +123,8 @@ class Connection extends Yapircl {
 
 	}
 
-	function push_message($sender, $destination, $message, $message_type = 0) {
+	function push_message($sender, $destination, $message, 
+		$message_type = MSGT_PRIVMSG) {
 
 		$message = $this->to_utf($message);
 		$destination = $this->to_utf($destination);
@@ -155,7 +157,7 @@ class Connection extends Yapircl {
 
 		$message = sprintf("%s is now known as %s", $this->nick, $new_nick);
 
-		$this->push_message('---', '---', $message, 2);
+		$this->push_message('---', '---', $message, MSGT_BROADCAST);
 
 		$this->update_nicklist(false);
 	}
@@ -190,7 +192,7 @@ class Connection extends Yapircl {
 	}
 
 	function event_public_ctcp_action() {
-		$this->push_message($this->nick, $this->from, $this->full, 3);
+		$this->push_message($this->nick, $this->from, $this->full, MSGT_ACTION);
 	}
 
 	function handle_ctcp_version() {
@@ -248,7 +250,7 @@ class Connection extends Yapircl {
 		$this->set_topic($this->_xline[2], $topic, $this->nick, time());
 
 		$this->push_message($this->nick, $this->_xline[2], 
-			$topic, 4);
+			$topic, MSGT_TOPIC);
 	}
 
 

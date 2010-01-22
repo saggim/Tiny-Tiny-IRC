@@ -29,6 +29,10 @@
 	
 		if ($connection->connect()) {
 			_debug("[$connection_id] connection established.");
+
+			db_query($link, "UPDATE ttirc_connections SET
+				status = 2 WHERE id = '$connection_id'");
+
 			$connection->run();
 		}
 	}

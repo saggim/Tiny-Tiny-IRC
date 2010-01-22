@@ -105,18 +105,24 @@ function handle_update(transport) {
 				topics[chan] = nicks[chan]["topic"];
 			}
 		}
-	
-		if (params[0].active != 't') {
-			$('connect-btn').innerHTML = "Connect";
-			$('connect-btn').status = 0;
 
-		} else {
-			$('connect-btn').innerHTML = "Disconnect";
-			$('connect-btn').status = 1;
+		switch (params[0].status) {
+			case "0":
+				$('connect-btn').innerHTML = __("Connect");
+				$('connect-btn').disabled = false;
+				$('connect-btn').setAttribute("set_enabled", 1);
+				break;
+			case "1":
+				$('connect-btn').innerHTML = __("Connecting...");
+				$('connect-btn').disabled = true;
+				$('connect-btn').setAttribute("set_enabled", 0);
+				break;
+			case "2":
+				$('connect-btn').innerHTML = __("Disconnect");
+				$('connect-btn').disabled = false;
+				$('connect-btn').setAttribute("set_enabled", 0);
+				break;
 		}
-
-		$('connect-btn').disabled = false;
-		$('input-prompt').disabled = (params[0].active != 't');
 	
 		var prev_last_id = last_id;
 	
@@ -314,6 +320,8 @@ function change_tab(elem) {
 
 		elem.className = "selected";
 
+		$("input-prompt").focus();
+
 		update_buffer();
 	} catch (e) {
 		exception_error("change_tab", e);
@@ -325,8 +333,11 @@ function toggle_connect(elem) {
 
 		elem.disabled = true;
 
+		var query = "?op=toggle-connection&set_enabled=" + 
+			elem.getAttribute("set_enabled");
+
 		new Ajax.Request("backend.php", {
-		parameters: "?op=toggle-connection&status=" + elem.status,
+		parameters: query, 
 		onComplete: function (transport) {
 			delay = 500;
 		} });

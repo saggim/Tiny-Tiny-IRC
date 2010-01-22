@@ -36,7 +36,7 @@
 		$link = db_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);	
 		init_connection($link);
 
-		db_query($link, "UPDATE ttirc_connections SET active = false");
+		db_query($link, "UPDATE ttirc_connections SET status = 0");
 
 		db_query($link, "DELETE FROM ttirc_destinations");
 
@@ -132,7 +132,7 @@
 					init_connection($link);
 
 					db_query($link, "UPDATE ttirc_connections SET
-						active = true WHERE id = '$id'");
+						status = ".CS_CONNECTING." WHERE id = '$id'");
 
 					db_query($link, "UPDATE ttirc_destinations SET
 						nicklist = '' WHERE connection_id = '$id'");
@@ -149,7 +149,7 @@
 					push_message($link, $id, "---", "Connection terminated.", true);
 
 					db_query($link, "UPDATE ttirc_connections SET
-						active = false WHERE id = '$id'");
+						status = ".CS_DISCONNECTED." WHERE id = '$id'");
 
 					db_query($link, "DELETE FROM ttirc_destinations WHERE
 						connection_id = '$id'");

@@ -133,7 +133,7 @@ window.onload = init;
 					value="<?php if ($return_to != 'none') { echo $return_to; } ?>">
 			</td></tr>
 
-			<tr><td colspan="2" align="right" class="innerLoginCell">
+			<!-- <tr><td colspan="2" align="right" class="innerLoginCell">
 
 			<div class="small">
 			<input name="bw_limit" id="bw_limit" type="checkbox"
@@ -141,14 +141,13 @@ window.onload = init;
 			<label for="bw_limit">
 			<?php echo __("Limit bandwidth usage") ?></label></div>
 
-			</td></tr>
-
+			</td></tr> -->
 
 		</table>
 	</td>
 </tr><tr>
 	<td align="center" class="loginBottom">
-		<a href="http://tt-rss.org/">Tiny Tiny IRC</a> &copy; 2005&ndash;2010 <a href="http://bah.org.ru/">Andrew Dolgov</a>
+		<a href="http://tt-rss.org/">Tiny Tiny IRC</a> &copy; 2010 <a href="http://bah.org.ru/">Andrew Dolgov</a>
 	</td>
 </tr>
 

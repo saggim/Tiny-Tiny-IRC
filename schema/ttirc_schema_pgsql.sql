@@ -23,6 +23,7 @@ create table ttirc_users (id serial not null primary key,
 	email varchar(250) not null default '',
 	nick varchar(120) not null,
 	hearbeat timestamp not null default NOW(),
+	quit_message varchar(120) not null default '',
 	ident varchar(120) not null,
 	realname varchar(120) not null,
 	created timestamp default null);
@@ -39,7 +40,7 @@ create table ttirc_connections(id serial not null primary key,
 	port int not null,
 	encoding varchar(120) not null,
 	enabled boolean not null default true,
-	active boolean not null default false,
+	status integer not null default 0,
 	last_sent_id integer not null default 0,
 	owner_uid integer not null references ttirc_users(id) ON DELETE CASCADE);
 

@@ -1,5 +1,6 @@
 <?php
 	require_once "config.php";
+	require_once "message_types.php";
 
 	if (DB_TYPE == "pgsql") {
 		define('SUBSTRING_FOR_DATE', 'SUBSTRING_FOR_DATE');
@@ -487,7 +488,7 @@
 			message, ".SUBSTRING_FOR_DATE."(ts,12,8) AS ts
 			FROM ttirc_messages, ttirc_connections WHERE
 			connection_id = ttirc_connections.id AND
-			active = true AND
+			status != ".CS_DISCONNECTED." AND
 			message_type != 1 AND
 			ts > NOW() - INTERVAL '1 hour' AND
 			ttirc_messages.id > '$last_id' AND 
@@ -516,7 +517,7 @@
 			topic,topic_owner,".SUBSTRING_FOR_DATE."(topic_set,1,16) AS topic_set
 			FROM ttirc_destinations, ttirc_connections 
 			WHERE connection_id = ttirc_connections.id AND 
-			active = true AND
+			status = ".CS_CONNECTED." AND
 			$active_chan_qpart
 			owner_uid = ".$_SESSION["uid"]);
 
@@ -533,7 +534,7 @@
 
 	function get_conn_info($link) {
 
-		$result = db_query($link, "SELECT id,server,active_nick,active 
+		$result = db_query($link, "SELECT id,server,active_nick,status 
 			FROM ttirc_connections
 			WHERE owner_uid = ".$_SESSION["uid"]);
 	
