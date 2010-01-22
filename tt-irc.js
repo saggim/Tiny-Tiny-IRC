@@ -7,7 +7,7 @@ var topics = [];
 var active_nicks = [];
 var conndata_last = [];
 
-var default_colormap = ["#cfcfcf", "#000000", "#0000cc", "#00cc00", 
+var colormap = ["#cfcfcf", "#000000", "#0000cc", "#00cc00", 
 	 "#dd0000", "#aa0000", "#bb00bb", "#ffaa00", "#eedd22", 
 	 "#33de55", "#00cccc", "#33eeff", "#0000ff", "#ee22ee", 
 	 "#777777", "#999999", "#cfcfcf", "#000000", "#0000cc", 
@@ -17,7 +17,7 @@ var default_colormap = ["#cfcfcf", "#000000", "#0000cc", "#00cc00",
 	 "#dfdfdf", "#000000", "#cc1010", "#8c1010", "#0000ff", 
 	 "#f50000", "#999999"];
 
-var colormap = ["#ffffff", "#000000", "#4141bd", "#40b883", 
+var _colormap = ["#ffffff", "#000000", "#4141bd", "#40b883", 
 	 "#fa0501", "#873742", "#eb05fc", "#fb9304", "#fbf708", 
 	 "#03ff9e", "#67bdbd", "#81f4f6", "#5276e0", "#f704cc", 
 	 "#858282", "#d2cece", "#d8ba79", "#806546", "#003296", 

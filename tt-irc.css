@@ -242,13 +242,14 @@ table.loginForm2 .innerLoginCell {
 	border-width : 1px;
 	border-color : #88b0f0;
 	border-style : solid;
-	background : white;
+	background : black;
 	position : absolute;
 	top : 35px;
 	right : 155px;
 	left : 5px;
 	bottom : 35px;
 	overflow : auto;
+	color : white;
 }
 
 #userlist {
@@ -465,7 +466,7 @@ pre {
 }
 
 #log span.message {
-	color : black;
+	color : white;
 }
 
 #log span.sys-message {
@@ -503,6 +504,16 @@ ul#userlist-list {
 	border-color : #c0c0c0;
 	border-collapse : collapse;
 	padding : 2px 5px 2px 5px;
+}
+
+#log .odd {
+	background-color : black;
+	border-color : #101010;
+}
+
+#log .even {
+	background-color : #101010;
+	border-color : #101010;
 }
 
 .evenSelected, .evenSelected td {

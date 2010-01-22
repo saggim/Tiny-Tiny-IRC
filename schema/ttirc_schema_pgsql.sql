@@ -1,3 +1,8 @@
+drop table ttirc_user_prefs;
+drop table ttirc_settings_profiles;
+drop table ttirc_prefs;
+drop table ttirc_prefs_sections;
+drop table ttirc_prefs_types;
 drop table ttirc_messages;
 drop table ttirc_preset_channels;
 drop table ttirc_channels;
@@ -71,7 +76,41 @@ create table ttirc_messages(id serial not null primary key,
 	sender varchar(120) not null,
 	channel varchar(120) not null,
 	connection_id integer not null references ttirc_connections(id) ON DELETE CASCADE);
-	
+
+create table ttirc_prefs_types (id integer not null primary key, 
+	type_name varchar(100) not null);
+
+insert into ttirc_prefs_types (id, type_name) values (1, 'bool');
+insert into ttirc_prefs_types (id, type_name) values (2, 'string');
+insert into ttirc_prefs_types (id, type_name) values (3, 'integer');
+
+create table ttirc_prefs_sections (id integer not null primary key, 
+	section_name varchar(100) not null);
+
+insert into ttirc_prefs_sections (id, section_name) values (1, 'General');
+insert into ttirc_prefs_sections (id, section_name) values (2, 'Interface');
+insert into ttirc_prefs_sections (id, section_name) values (3, 'Advanced');
+
+create table ttirc_prefs (pref_name varchar(250) not null primary key,
+	type_id integer not null references ttirc_prefs_types(id),
+	section_id integer not null references ttirc_prefs_sections(id) default 1,
+	short_desc text not null,
+	help_text text not null default '',
+	access_level integer not null default 0,
+	def_value text not null);
+
+create table ttirc_settings_profiles(id serial not null primary key,
+	title varchar(250) not null,
+	owner_uid integer not null references ttirc_users(id) on delete cascade);
+
+create table ttirc_user_prefs (
+	owner_uid integer not null references ttirc_users(id) ON DELETE CASCADE,
+	pref_name varchar(250) not null references ttirc_prefs(pref_name) ON DELETE CASCADE,
+	profile integer references ttirc_settings_profiles(id) ON DELETE CASCADE,
+	value text not null);
+
+create index ttirc_user_prefs_owner_uid_index on ttirc_user_prefs(owner_uid);
+
 create table ttirc_sessions (id varchar(250) unique not null primary key,
 	data text,	
 	expire integer not null);

@@ -100,7 +100,12 @@
 </div>
 
 <div id="actions">
-	<button onclick="toggle_debug()">Debug</button> 
+	<button onclick="toggle_debug()">Debug</button>
+
+	<select>
+		<option value="">Connections...</option>
+	</select>
+
 	<!-- <button id="connect-btn" disabled='true' c_status="0" onclick="toggle_connect(this)">
 		<?php echo __("Connect") ?></button> -->
 </div>

@@ -1,6 +1,7 @@
 <?php
 	require_once "config.php";
 	require_once "message_types.php";
+	require_once "db-prefs.php";
 
 	if (DB_TYPE == "pgsql") {
 		define('SUBSTRING_FOR_DATE', 'SUBSTRING_FOR_DATE');
