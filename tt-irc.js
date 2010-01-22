@@ -7,6 +7,16 @@ var topics = [];
 var active_nicks = [];
 var conndata_last = [];
 
+var colormap = ["#cfcfcf", "#000000", "#0000cc", "#00cc00", 
+	 "#dd0000", "#aa0000", "#bb00bb", "#ffaa00", "#eedd22", 
+	 "#33de55", "#00cccc", "#33eeff", "#0000ff", "#ee22ee", 
+	 "#777777", "#999999", "#cfcfcf", "#000000", "#0000cc", 
+	 "#00cc00", "#dd0000", "#aa0000", "#bb00bb", "#ffaa00", 
+	 "#eedd22", "#33de55", "#00cccc", "#33eeff", "#0000ff", 
+	 "#ee22ee", "#777777", "#999999", "#000000", "#a4dfff", 
+	 "#dfdfdf", "#000000", "#cc1010", "#8c1010", "#0000ff", 
+	 "#f50000", "#999999"];
+
 function create_tab_if_needed(chan, connection_id, tab_type) {
 	try {
 		var tab_id = "tab-" + chan + ":" + connection_id;
@@ -320,9 +330,9 @@ function update_buffer() {
 					break;
 				}
 
-				if (nick == active_nicks[connection_id]) {
+/*				if (nick == active_nicks[connection_id]) {
 					nick_image = "<img src=\"images/user_me.png\" alt=\"\">";
-				} 
+				} */
 
 				var tmp_html = "<li class=\""+row_class+"\">" + 
 					nick_image + " " + nick + "</li>";
@@ -455,6 +465,12 @@ function format_message(row_class, param) {
 
 		var tmp;
 
+		var color = "";
+
+		if (param.sender_color) {
+			color = "style=\"color : " + colormap[param.sender_color] + "\"";
+		}
+
 		if (param.message_type == 4) {
 			var message = param.sender + __(" has changed the topic to: ") + 
 				param.message;
@@ -472,7 +488,7 @@ function format_message(row_class, param) {
 
 		} else if (param.sender != "---") {
 			tmp = "<li class=\""+row_class+"\"><span class='timestamp'>" + 
-				param.ts + "</span><span class='sender'>&lt;" +
+				param.ts + "</span><span class='sender' "+color+">&lt;" +
 				param.sender + "&gt;</span><span class='message'>" + 
 				param.message + "</span>";
 		} else {

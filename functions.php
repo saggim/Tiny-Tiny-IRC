@@ -493,6 +493,7 @@
 	function get_new_lines($link, $last_id) {
 
 		$result = db_query($link, "SELECT ttirc_messages.id,
+			nick_color,
 			message_type, sender, destination, connection_id,
 			message, ".SUBSTRING_FOR_DATE."(ts,12,8) AS ts
 			FROM ttirc_messages, ttirc_connections WHERE
@@ -507,6 +508,7 @@
 
 		while ($line = db_fetch_assoc($result)) {
 			$line["message"] = htmlspecialchars($line["message"]);
+			$line["sender_color"] = color_of($line["sender"]);
 			array_push($lines, $line);
 		}
 
@@ -641,6 +643,27 @@
 			return false;
 		}
 
+	}
+
+	// shamelessly stolen from xchat source code
+
+	/* black n white(0/1) are bad colors for nicks, and we'll use color 2 for us */
+	/* also light/dark gray (14/15) */
+	/* 5,7,8 are all shades of yellow which happen to look dman near the same */
+	function color_of($name) {
+
+		$rcolors = array( 19, 20, 22, 24, 25, 26, 27, 28, 29 );
+
+		$i = 0;
+		$sum = 0;
+
+		for ($i = 0; $i < strlen($name); $i++) {
+			$sum += ord($name{$i});
+		}
+
+		$sum %= count($rcolors);
+
+		return $rcolors[$sum];
 	}
 
 ?>
