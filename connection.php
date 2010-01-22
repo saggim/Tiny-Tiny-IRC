@@ -146,6 +146,10 @@ class Connection extends Yapircl {
 		$this->update_nicklist($this->from);
 	}
 
+	function event_quit() {
+		$this->update_nicklist($this->from);
+	}
+
 	function event_nick() {
 
 		$new_nick = ltrim($this->_xline[2], ':'); 

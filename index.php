@@ -112,18 +112,18 @@
 	<div>#wtf</div> -->
 </div>
 
-<div id="log-outer">
-	<div id="topic"><input disabled id="topic-input" value=""></div>
+<div id="content">
+	<div id="topic"><div class="wrapper">
+		<input disabled id="topic-input" value="">
+	</div>
+	</div>
 	<div id="log"><ul id="log-list"></ul></div>	
-</div>
-
-<div id="userlist">
-	<div id="userlist-inner"><ul id="userlist-list">
-	</ul></div>
-</div>
-
-<div id="input">
-	<input id="input-prompt" onchange="send(this)"></input>
+	<div id="input"><div class="wrapper">
+		<input id="input-prompt" onchange="send(this)"></input>
+	</div></div>
+	<div id="userlist">
+		<div id="userlist-inner"><ul id="userlist-list"></ul></div>
+	</div>
 </div>
 
 <?php db_close($link); ?>

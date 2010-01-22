@@ -23,7 +23,7 @@ function create_tab_if_needed(chan) {
 }
 
 function show_nicklist(show) {
-	try {
+/*	try {
 		debug("show_nicklist: " + show);
 		if (show) {
 			Element.show("userlist");
@@ -38,7 +38,7 @@ function show_nicklist(show) {
 		}
 	} catch (e) {
 		exception_error("show_nicklist", e);
-	}
+	} */
 }
 
 function init_second_stage(transport) {
