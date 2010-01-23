@@ -247,7 +247,7 @@
 				$_SESSION["ip_address"] = $_SERVER["REMOTE_ADDR"];
 				$_SESSION["pwd_hash"] = db_fetch_result($result, 0, "pwd_hash");
 	
-				//initialize_user_prefs($link, $_SESSION["uid"]);
+				initialize_user_prefs($link, $_SESSION["uid"]);
 	
 				return true;
 			}
@@ -261,7 +261,7 @@
 
 			$_SESSION["ip_address"] = $_SERVER["REMOTE_ADDR"];
 	
-			//initialize_user_prefs($link, $_SESSION["uid"]);
+			initialize_user_prefs($link, $_SESSION["uid"]);
 	
 			return true;
 		}
@@ -679,6 +679,52 @@
 				WHERE id = " . $_SESSION["uid"]);
 			$_SESSION["heartbeat_last"] = time();
 		}
+	}
+
+	function initialize_user_prefs($link, $uid, $profile = false) {
+
+		$uid = db_escape_string($uid);
+
+		if (!$profile) {
+			$profile = "NULL";
+			$profile_qpart = "AND profile IS NULL";
+		} else {
+			$profile_qpart = "AND profile = '$profile'";
+		}
+
+		db_query($link, "BEGIN");
+
+		$result = db_query($link, "SELECT pref_name,def_value FROM ttirc_prefs");
+		
+		$u_result = db_query($link, "SELECT pref_name 
+			FROM ttirc_user_prefs WHERE owner_uid = '$uid' $profile_qpart");
+
+		$active_prefs = array();
+
+		while ($line = db_fetch_assoc($u_result)) {
+			array_push($active_prefs, $line["pref_name"]);			
+		}
+
+		while ($line = db_fetch_assoc($result)) {
+			if (array_search($line["pref_name"], $active_prefs) === FALSE) {
+//				print "adding " . $line["pref_name"] . "<br>";
+
+				if (get_schema_version($link) < 63) {
+					db_query($link, "INSERT INTO ttirc_user_prefs
+						(owner_uid,pref_name,value) VALUES 
+						('$uid', '".$line["pref_name"]."','".$line["def_value"]."')");
+
+				} else {
+					db_query($link, "INSERT INTO ttirc_user_prefs
+						(owner_uid,pref_name,value, profile) VALUES 
+						('$uid', '".$line["pref_name"]."','".$line["def_value"]."', $profile)");
+				}
+
+			}
+		}
+
+		db_query($link, "COMMIT");
+
 	}
 
 ?>
