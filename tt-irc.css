@@ -549,8 +549,12 @@ ul#userlist-list {
 #actions {
 	position : relative;
 	left : 5px;
-	width : 140px;
+	width : 145px;
 	text-align : right;
+}
+
+#actions select {
+	max-width : 145px;
 }
 
 .even, .even td {

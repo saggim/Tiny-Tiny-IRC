@@ -99,11 +99,21 @@
 	<img src="<?php echo theme_image($link, 'images/logo.png') ?>" alt="Tiny Tiny IRC"/>	
 </div>
 
+<!--	<a href="#" onclick="toggle_debug()">Debug</a> -->
+
 <div id="actions">
-	<a href="#" onclick="toggle_debug()">Debug</a>
-	&nbsp;
-	<select>
+	<select onchange="handle_action(this)">
 		<option value="">Actions...</option>
+		<option value="cmd_nick">Change nick</option>
+		<optgroup label="Channel">
+			<option value="cmd_join">Join</option>
+			<option value="cmd_part">Part</option>
+			<option value="cmd_mode">Change mode</option>
+		</optgroup>
+		<optgroup label="Server">
+			<option value="cmd_connect" id="cmd_connect">Connect</option>
+			<option value="cmd_disconnect">Disconnect</option>
+		</optgroup>
 	</select>
 </div>
 

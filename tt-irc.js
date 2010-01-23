@@ -749,3 +749,15 @@ function select_row(elem) {
 		exception_error("select_row", e);
 	}
 }	
+
+function handle_action(elem) {
+	try {
+		debug("action: " + elem[elem.selectedIndex].value);
+
+		elem.selectedIndex = 0;
+	} catch (e) {
+		exception_error("handle_action", e);
+	}
+}
+
+
