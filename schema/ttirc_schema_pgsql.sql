@@ -45,7 +45,7 @@ create table ttirc_connections(id serial not null primary key,
 	last_sent_id integer not null default 0,
 	owner_uid integer not null references ttirc_users(id) ON DELETE CASCADE);
 
-insert into ttirc_connections (title,owner_uid,enabled) values ('GBU', 1, false);
+insert into ttirc_connections (title,owner_uid,enabled) values ('GBU', 1, true);
 
 create table ttirc_servers(id serial not null primary key,
 	connection_id integer not null references ttirc_connections(id) ON DELETE CASCADE,

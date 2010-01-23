@@ -84,6 +84,26 @@
 		connection_editor($link, $connection_id);
 		break;
 
+	case "delete-connection":
+		$ids = db_escape_string($_REQUEST["ids"]);
+
+		db_query($link, "DELETE FROM ttirc_connections WHERE
+			id IN ($ids) AND owner_uid = ".$_SESSION["uid"]);
+
+		print_connections($link);
+
+		break;
+	case "create-connection":
+		$title = db_escape_string(trim($_REQUEST["title"]));
+
+		if ($title) {
+			db_query($link, "INSERT INTO ttirc_connections (enabled, title, owner_uid)
+				VALUES ('false', '$title', '".$_SESSION["uid"]."')");
+		}
+
+		print_connections($link);
+		break;
+
 	case "toggle-connection":
 		$connection_id = (int) db_escape_string($_REQUEST["connection_id"]);
 		

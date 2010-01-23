@@ -86,7 +86,7 @@
 
 			$id = $line['id'];
 
-			print "<li id='C-$id' class='$row_class'>";
+			print "<li id='C-$id' class='$row_class' connection_id='$id'>";
 			print "<input type='checkbox' onchange='select_row(this)'
 				row_id='C-$id'>";
 			print "&nbsp;<a href=\"#\" title=\"Click to edit connection\"
@@ -113,7 +113,7 @@
 	<div id="infoBoxTitle"><?php echo __("Preferences") ?></div>
 	<div class="infoBoxContents">
 
-		<form id="prefs_form" name="prefs_farm" onsubmit="return false;">
+		<form id="prefs_form" onsubmit="return false;">
 
 		<div class="dlgSec">Personal data</div>
 
@@ -150,24 +150,15 @@
 
 		<div class="dlgSec">Connections</div>
 
-		<div class="dlgSecCont">
 
-			<label>Connection:</label>
-			<input name="cname" size="20">
-
-			<button>Create</button>
-
-		</div>
-
-		<br clear='left'/>
-
-		<ul class="container">
+		<ul class="container" id="connections-list">
 			<?php print_connections($link) ?>
 		</ul>
 
 		<div class="dlgButtons">
 			<div style='float : left'>
-				<button>Delete connection</button>
+				<button onclick="create_connection()">Create connection</button>
+				<button onclick="delete_connection()">Delete</button>
 			</div>
 
 			<button type="submit" onclick="save_prefs()">Save</button>

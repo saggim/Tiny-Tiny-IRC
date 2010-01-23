@@ -682,33 +682,6 @@ function update_title() {
 	}
 }
 
-function save_prefs() {
-	try {
-		var query = Form.serialize("prefs_form");
-
-		alert(query);
-
-	} catch (e) {
-		exception_error("save_prefs", e);
-	}
-}
-
-function show_prefs() {
-	try {
-		show_spinner();
-
-		new Ajax.Request("backend.php", {
-		parameters: "?op=prefs",
-		onComplete: function (transport) {
-			infobox_callback2(transport);
-			hide_spinner();
-		} });
-
-	} catch (e) {
-		exception_error("show_prefs", e);
-	}
-}
-
 function change_nick() {
 	try {
 		var tab = get_selected_tab();
@@ -721,36 +694,6 @@ function change_nick() {
 		exception_error("change_nick", e);
 	}
 }
-
-function edit_connection(id) {
-	try {
-		new Ajax.Request("backend.php", {
-		parameters: "?op=prefs-edit-con&id=" + id,
-		onComplete: function (transport) {
-			infobox_callback2(transport);
-		} });
-
-	} catch (e) {
-		exception_error("show_prefs", e);
-	}
-}
-
-function select_row(elem) {
-	try {
-		var row_id = elem.getAttribute("row_id");
-		var checked = elem.checked;
-
-		if ($(row_id)) {
-			if (elem.checked) {
-				$(row_id).className = $(row_id).className + "Selected";
-			} else {
-				$(row_id).className = $(row_id).className.replace("Selected", "");
-			}
-		}
-	} catch (e) {
-		exception_error("select_row", e);
-	}
-}	
 
 function handle_action(elem) {
 	try {
