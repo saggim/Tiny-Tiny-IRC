@@ -601,6 +601,9 @@ function format_message(row_class, param) {
 function handle_conn_data(conndata) {
 	try {
 		if (conndata != "") {
+
+			conndata_last = [];
+
 			for (var i = 0; i < conndata.length; i++) {
 
 				create_tab_if_needed(conndata[i].title, conndata[i].id, "S");
@@ -767,26 +770,22 @@ function cleanup_tabs(chandata) {
 			var chan = tabs[i].getAttribute("channel");
 			var connection_id = tabs[i].getAttribute("connection_id");
 
-			if (chandata[connection_id]) {
+			if (tabs[i].getAttribute("tab_type") == "S") {
+				if (conndata_last && !conndata_last[connection_id]) {
 
-				if (tabs[i].getAttribute("tab_type") == "S") {
-					if (conndata_last && !conndata_last[connection_id]) {
-						$("tabs-list").removeChild(tabs[i]);
-						$("tabs-list").removeChild($("tabs-" + connection_id));
-					}
+					debug("removing unnecessary S-tab: " + tabs[i].id);
+
+					$("tabs-list").removeChild(tabs[i]);
+					$("tabs-list").removeChild($("tabs-" + connection_id));
 				}
+			}
 
-				if (tabs[i].getAttribute("tab_type") == "C") {
+			if (tabs[i].getAttribute("tab_type") == "C") {
+				if (chandata[connection_id] && !chandata[connection_id][chan]) {
 
-					if (!chandata[connection_id][chan]) {
+					debug("removing unnecessary C-tab: " + tab.id);
 
-//					if ($(tabs[i]).className == "selected") {
-//						change_tab("tab----");
-//					}
-			
-						$("tabs-list").removeChild(tabs[i]);
-					}
-
+					$("tabs-list").removeChild(tabs[i]);
 				}
 			}
 		}
