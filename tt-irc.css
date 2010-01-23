@@ -208,6 +208,13 @@ table.loginForm2 .innerLoginCell {
 	z-index : 2;
 } */
 
+#tabs-list img.conn-img {
+	vertical-align : middle;
+	margin-right : 5px;
+	margin-top : 2px;
+	float : right;
+}
+
 #tabs-list {
 	list-style-type : none;
 	margin : 0px;

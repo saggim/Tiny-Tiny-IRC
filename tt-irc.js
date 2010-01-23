@@ -37,11 +37,17 @@ function create_tab_if_needed(chan, connection_id, tab_type) {
 		var tab_list_id = "tabs-" + connection_id;
 
 		if (!$(tab_caption_id)) {
+
+			var cimg = "<img class=\"conn-img\" "+
+				"src=\"images/srv_offline.png\" alt=\"\" " +
+				"id=\"cimg-" + connection_id + "\">";
+
 			var tab = "<li id=\"" + tab_caption_id + "\" " +
 				"channel=\"" + chan + "\" " +
 				"tab_type=\"" + tab_type + "\" " +
 				"connection_id=\"" + connection_id + "\" " +
-		  		"onclick=\"change_tab(this)\">" + chan + "</li>";
+		  		"onclick=\"change_tab(this)\">" + cimg +
+				chan + "</li>";
 
 			tab += "<ul class=\"sub-tabs\" id=\"" + tab_list_id + "\"></ul>";
 
@@ -601,9 +607,15 @@ function handle_conn_data(conndata) {
 
 				if (conndata[i].status == "2") {
 					active_nicks[conndata[i].id] = conndata[i].active_nick;
+
+					$("cimg-" + conndata[i].id).src = $("cimg-" + conndata[i].id).src.replace("offline", "online");
+
 				} else {
 					active_nicks[conndata[i].id] = [];
 					nicklists[conndata[i].id] = [];
+
+					$("cimg-" + conndata[i].id).src = $("cimg-" + conndata[i].id).src.replace("online", "offline");
+
 				}
 			}			
 		} else {
