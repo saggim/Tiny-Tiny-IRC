@@ -175,7 +175,9 @@ function handle_update(transport) {
 		for (var i = 0; i < lines.length; i++) {
 
 			if (last_id < lines[i].id) {
-	
+
+//				debug("processing line ID " + lines[i].id);
+
 				var chan = lines[i].channel;
 				var connection_id = lines[i].connection_id;
 		
@@ -250,8 +252,10 @@ function handle_update(transport) {
 
 function update() {
 	try {
+		var query = "?op=update&last_id=" + last_id;
+
 		new Ajax.Request("backend.php", {
-		parameters: "?op=update&last_id=" + last_id,
+		parameters: query,
 		onComplete: function (transport) {
 			if (!handle_update(transport)) return;
 			window.setTimeout("update()", delay);
@@ -311,24 +315,25 @@ function update_buffer() {
 
 		var test_height = $("log").scrollHeight - $("log").offsetHeight;
 		var scroll_buffer = false;
+		var line_id = 0;
 
 		if (test_height - $("log").scrollTop < 50) scroll_buffer = true;
 
 		if (buffers[connection_id]) {
 
 			var buffer = buffers[connection_id][channel];
-	
+
 			if (buffer) {
 
 				/* do we need to redraw everything? */
 
 				var log_channel = $("log-list").getAttribute("channel");
 				var log_connection = $("log-list").getAttribute("connection_id");
-				var log_line_id = parseInt($("log-list").getAttribute("last_id"));
+				var log_line_id = $("log-list").getAttribute("last_id");
 
 				if (log_channel != channel || log_connection != connection_id) {
 					var tmp = "";
-					var line_id = 0;
+					line_id = 0;
 					for (var i = 0; i < buffer.length; i++) {
 						tmp += buffer[i][1];
 						line_id = buffer[i][0];
@@ -338,7 +343,7 @@ function update_buffer() {
 
 				} else {
 
-					var line_id = parseInt(log_line_id);
+					line_id = parseInt(log_line_id);
 					var tmp = "";
 
 					for (var i = 0; i < buffer.length; i++) {
