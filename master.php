@@ -90,7 +90,7 @@
 			$result = db_query($link, "SELECT ttirc_connections.id 
 				FROM ttirc_connections, ttirc_users 
 				WHERE owner_uid = ttirc_users.id AND
-				heartbeat > NOW() - INTERVAL '5 minutes' AND
+				(heartbeat > NOW() - INTERVAL '5 minutes' OR permanent = true) AND
 				enabled = true");
 
 			$ids_to_launch = array();

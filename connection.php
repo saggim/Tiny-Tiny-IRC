@@ -119,7 +119,7 @@ class Connection extends Yapircl {
 				"SELECT enabled 
 				FROM ttirc_connections, ttirc_users
 				WHERE owner_uid = ttirc_users.id AND 
-				heartbeat > NOW() - INTERVAL '10 minutes' AND
+				(heartbeat > NOW() - INTERVAL '10 minutes' OR permanent = true) AND
 				ttirc_connections.id = " . $this->connection_id);
 	
 			if (db_num_rows($result) != 1) {

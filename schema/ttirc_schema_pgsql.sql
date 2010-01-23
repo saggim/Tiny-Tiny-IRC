@@ -38,13 +38,14 @@ insert into ttirc_users (login,pwd_hash,access_level, nick, realname, email, qui
 create table ttirc_connections(id serial not null primary key,
 	title varchar(120) not null,
 	active_nick varchar(120) not null default '',
-	enabled boolean not null default true,
+	enabled boolean not null default false,
+	permanent boolean not null default false,
 	active_server varchar(120) not null default '',
 	status integer not null default 0,
 	last_sent_id integer not null default 0,
 	owner_uid integer not null references ttirc_users(id) ON DELETE CASCADE);
 
-insert into ttirc_connections (title,owner_uid) values ('GBU', 1);
+insert into ttirc_connections (title,owner_uid,enabled) values ('GBU', 1, false);
 
 create table ttirc_servers(id serial not null primary key,
 	connection_id integer not null references ttirc_connections(id) ON DELETE CASCADE,
@@ -100,8 +101,6 @@ create table ttirc_prefs (pref_name varchar(250) not null primary key,
 	def_value text not null);
 
 insert into ttirc_prefs (pref_name,type_id,def_value,short_desc,section_id) values('_THEME_ID', 2, '0', '', 1);
-
-insert into ttirc_prefs (pref_name,type_id,def_value,short_desc,section_id) values('ALWAYS_CONNECTED', 1, 'false', 'Keep connections alive when logged off', 1);
 
 create table ttirc_settings_profiles(id serial not null primary key,
 	title varchar(250) not null,

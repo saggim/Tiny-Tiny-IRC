@@ -352,16 +352,17 @@ function update_buffer() {
 					$("log-list").innerHTML += tmp;
 
 				}
-
-				$("log-list").setAttribute("last_id", line_id);
-				$("log-list").setAttribute("channel", channel);
-				$("log-list").setAttribute("connection_id", connection_id);
-
 				if (scroll_buffer) $("log").scrollTop = $("log").scrollHeight;
 			} else {
-				$("log-list").innerHTML = "&nbsp;";
+				$("log-list").innerHTML = "";
 			}
+		} else {
+			$("log-list").innerHTML = "";
 		}
+
+		$("log-list").setAttribute("last_id", line_id);
+		$("log-list").setAttribute("channel", channel);
+		$("log-list").setAttribute("connection_id", connection_id);
 
 		//show_nicklist(get_selected_buffer() != "---");
 
