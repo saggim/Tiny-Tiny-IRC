@@ -13,11 +13,10 @@
 
 			$id = $line['id'];
 
-			print "<li id='S-$id' class='$row_class'>";
+			print "<li id='S-$id' class='$row_class' server_id='$id'>";
 			print "<input type='checkbox' onchange='select_row(this)'
 				row_id='S-$id'>&nbsp;";
-			print $line['server'] . ":" . $line['port'] . " (" . $line['encoding'] .
-				")";
+			print $line['server'] . ":" . $line['port'];
 			print "</li>";
 
 			++$lnum;
@@ -30,33 +29,55 @@
 			WHERE id = '$id' AND owner_uid = " . $_SESSION["uid"]);
 
 		$line = db_fetch_assoc($result);
+
+		if (sql_bool_to_bool($line['enabled'])) {
+			$enabled_checked = 'checked';
+		} else {
+			$enabled_checked = '';
+		}
+
+		if (sql_bool_to_bool($line['permanent'])) {
+			$permanent_checked = 'checked';
+		} else {
+			$permanent_checked = '';
+		}
+
 	?>
 	<div id="infoBoxTitle"><?php echo __("Edit Connection") ?></div>
 	<div class="infoBoxContents">
 		<div class="dlgSec">Connection</div>
 
 		<div class="dlgSecCont">
-			<label>Title:</label>
+			<label class='fixed'>Title:</label>
 			<input name="title" value="<?php echo $line['title'] ?>">
 			<br clear='left'/>
-		</div>
 
-		<div style='float : right'>
+			<label class='fixed'>Favorite channels:</label>
+			<input name="autojoin" value="<?php echo $line['autojoin'] ?>">
+			<br clear='left'/>
 
-		<label>Server:</label>
-		<input name="server" size="20">
-
-		<label>Port:</label>
-		<input name="port" size="4">
-
-		<label>Charset:</label>
-		<input name="encoding" size="10">
-
-		<button>Add</button>
+			<label class='fixed'>Charset:</label>
+			<input name="encoding" value="<?php echo $line['encoding'] ?>">
+			<br clear='left'/>
 
 		</div>
 
-		<br clear='right'/><p>
+		<div class="dlgSec">Options</div>
+
+		<div class="dlgSecCont">
+			<input name="enabled" <?php echo $enabled_checked ?> 
+				id="pr_enabled" type="checkbox" value="">
+			<label for="pr_enabled">Enabled</label>
+			<br clear='left'/>
+
+			<input name="permanent" <?php echo $permanent_checked ?>
+				id="pr_permanent" type="checkbox" value="">
+			<label for="pr_permanent">Keep connected</label>
+			<br clear='left'/>
+
+		</div>
+
+		<div class="dlgSec">Servers</div>
 
 		<ul class="container">
 			<?php print_servers($link, $id); ?>
@@ -118,19 +139,19 @@
 		<div class="dlgSec">Personal data</div>
 
 		<div class="dlgSecCont">
-			<label>Real name:</label>
+			<label class="fixed">Real name:</label>
 			<input name="realname" value="<?php echo $realname ?>">
 			<br clear='left'/>
 
-			<label>Default nick:</label>
+			<label class="fixed">Default nick:</label>
 			<input name="realname" value="<?php echo $nick ?>">
 			<br clear='left'/>
 
-			<label>E-mail:</label>
+			<label class="fixed">E-mail:</label>
 			<input name="email" value="<?php echo $email ?>">
 			<br clear='left'/>
 
-			<label>Quit message:</label>
+			<label class="fixed">Quit message:</label>
 			<input name="quit_message" value="<?php echo $quit_message ?>">
 
 		</div>
@@ -138,11 +159,11 @@
 		<div class="dlgSec">Authentication</div>
 
 		<div class="dlgSecCont">
-			<label>New password:</label>
+			<label class="fixed">New password:</label>
 			<input name="new_password" type="password" value="">
 			<br clear='left'/>
 
-			<label>Confirm:</label>
+			<label class="fixed">Confirm:</label>
 			<input name="confirm_password" type="password" value="">
 		</div>
 

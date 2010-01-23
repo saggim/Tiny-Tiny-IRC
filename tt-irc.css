@@ -655,7 +655,7 @@ ul.container li input {
 	vertical-align : middle;
 }
 
-div.dlgSecCont label {
+div.dlgSecCont label.fixed {
 	width : 100px;
 	float : left;
 	text-align : right;

@@ -4,7 +4,6 @@ drop table ttirc_prefs;
 drop table ttirc_prefs_sections;
 drop table ttirc_prefs_types;
 drop table ttirc_messages;
-drop table ttirc_preset_channels;
 drop table ttirc_channels;
 drop table ttirc_servers;
 drop table ttirc_connections;
@@ -41,19 +40,20 @@ create table ttirc_connections(id serial not null primary key,
 	enabled boolean not null default false,
 	permanent boolean not null default false,
 	active_server varchar(120) not null default '',
+	encoding varchar(120) not null default '',
 	status integer not null default 0,
+	autojoin text not null default '',
 	last_sent_id integer not null default 0,
 	owner_uid integer not null references ttirc_users(id) ON DELETE CASCADE);
 
-insert into ttirc_connections (title,owner_uid,enabled) values ('GBU', 1, true);
+insert into ttirc_connections (title,owner_uid,enabled,autojoin,encoding) values ('GBU', 1, true, '#test', 'koi8-r');
 
 create table ttirc_servers(id serial not null primary key,
 	connection_id integer not null references ttirc_connections(id) ON DELETE CASCADE,
 	server varchar(120) not null,
-	encoding varchar(120) not null,
 	port integer not null);
 
-insert into ttirc_servers (connection_id, server, encoding, port) values (1, 'irc.volgo-balt.ru', 'koi8-r', 6667);
+insert into ttirc_servers (connection_id, server, port) values (1, 'irc.volgo-balt.ru', 6667);
 
 create table ttirc_channels(id serial not null primary key,
 	connection_id integer not null references ttirc_connections(id) ON DELETE CASCADE,
@@ -62,12 +62,6 @@ create table ttirc_channels(id serial not null primary key,
 	topic_owner varchar(120) not null default '',
 	topic_set timestamp not null default NOW(),
 	nicklist text not null default '');
-
-create table ttirc_preset_channels(id serial not null primary key,
-	connection_id integer not null references ttirc_connections(id) ON DELETE CASCADE,
-	channel varchar(120) not null);
-
-insert into ttirc_preset_channels (connection_id, channel) values (1, '#test');
 
 create table ttirc_messages(id serial not null primary key,
 	ts timestamp not null default NOW(),

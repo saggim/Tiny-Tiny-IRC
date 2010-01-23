@@ -32,7 +32,7 @@
 		push_message($link, $connection_id, "---", 
 			"Connecting to $server_str...", true);
 
-		$connection = new Connection($link, $connection_id, $server["encoding"], 
+		$connection = new Connection($link, $connection_id, $line["encoding"], 
 			$line["last_sent_id"]);
 		$connection->setDebug(false);
 		$connection->setUser($line["email"], $line['nick'], 

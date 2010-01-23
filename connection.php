@@ -322,12 +322,14 @@ class Connection extends Yapircl {
 	}
 
 	function join_channels() {
-		$result = db_query($this->link, "SELECT channel FROM ttirc_preset_channels
-			WHERE connection_id = " . $this->connection_id);
+		$result = db_query($this->link, "SELECT autojoin FROM ttirc_connections
+			WHERE id = " . $this->connection_id);
 
-		while ($line = db_fetch_assoc($result)) {
-			if (!array_key_exists($line["channel"], $this->channels)) {
-				$this->join($line["channel"]);
+		$autojoin = explode(",", db_fetch_result($result, 0, "autojoin"));
+
+		foreach ($autojoin as $chan) {
+			if (!array_key_exists($chan, $this->channels)) {
+				$this->join($chan);
 			}
 		}
 	}
