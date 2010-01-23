@@ -726,7 +726,7 @@ function cleanup_tabs(chandata) {
 			if (tabs[i].getAttribute("tab_type") == "C") {
 				if (chandata[connection_id] && !chandata[connection_id][chan]) {
 
-					debug("removing unnecessary C-tab: " + tab.id);
+					debug("removing unnecessary C-tab: " + tabs[i].id);
 
 					$("tabs-list").removeChild(tabs[i]);
 				}
