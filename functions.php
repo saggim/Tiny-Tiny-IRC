@@ -727,4 +727,10 @@
 
 	}
 
+	function valid_connection($link, $id) {
+		$result = db_query($link, "SELECT id FROM ttirc_connections
+			WHERE id = '$id' AND owner_uid = "  . $_SESSION["uid"]);
+		return db_num_rows($result) == 1;
+	}
+
 ?>

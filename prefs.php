@@ -2,8 +2,11 @@
 	require_once "functions.php";
 
 	function print_servers($link, $id) {
-		$result = db_query($link, "SELECT * FROM ttirc_servers
-			WHERE connection_id = '$id'");
+		$result = db_query($link, "SELECT ttirc_servers.* 
+			FROM ttirc_servers,ttirc_connections
+			WHERE connection_id = '$id' AND 
+			connection_id = ttirc_connections.id AND
+			owner_uid = " . $_SESSION["uid"]);
 
 		$lnum = 1;
 
@@ -47,6 +50,10 @@
 	<div class="infoBoxContents">
 		<div class="dlgSec">Connection</div>
 
+		<form id="prefs_conn_form" onsubmit="return false;">
+
+		<input type="hidden" name="connection_id" value="<? echo $id ?>"/>
+
 		<div class="dlgSecCont">
 			<label class='fixed'>Title:</label>
 			<input name="title" value="<?php echo $line['title'] ?>">
@@ -66,26 +73,29 @@
 
 		<div class="dlgSecCont">
 			<input name="enabled" <?php echo $enabled_checked ?> 
-				id="pr_enabled" type="checkbox" value="">
+				id="pr_enabled" type="checkbox" value="1">
 			<label for="pr_enabled">Enabled</label>
 			<br clear='left'/>
 
 			<input name="permanent" <?php echo $permanent_checked ?>
-				id="pr_permanent" type="checkbox" value="">
+				id="pr_permanent" type="checkbox" value="1">
 			<label for="pr_permanent">Keep connected</label>
 			<br clear='left'/>
 
 		</div>
 
+		</form>
+
 		<div class="dlgSec">Servers</div>
 
-		<ul class="container">
+		<ul class="container" id="servers-list">
 			<?php print_servers($link, $id); ?>
 		</ul>
 
 		<div class="dlgButtons">
 			<div style='float : left'>
-				<button>Delete server</button>
+				<button onclick="create_server()">Add server</button>
+				<button onclick="delete_server()">Delete</button>
 			</div>
 			<button type="submit" onclick="save_conn()">Save</button>
 			<button type="submit" onclick="show_prefs()">Go back</button></div>

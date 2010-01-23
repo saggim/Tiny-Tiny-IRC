@@ -110,7 +110,7 @@ function delete_connection() {
 
 
 	} catch (e) {
-		exception_error("create_connection", e);
+		exception_error("delete_connection", e);
 	}
 }
 
@@ -136,4 +136,85 @@ function create_connection() {
 		exception_error("create_connection", e);
 	}
 }
+
+function save_conn() {
+	try {
+		var query = Form.serialize("prefs_conn_form");
+
+		alert(query);
+
+	} catch (e) {
+		exception_error("save_prefs", e);
+	}
+}
+
+function delete_server() {
+	try {
+		var rows = get_selected_rows($("servers-list"));
+
+		if (rows.length > 0) {
+			if (confirm(__("Delete selected servers?"))) {
+
+				var connection_id = document.forms['prefs_conn_form'].connection_id.value;
+
+				var ids = [];
+
+				for (var i = 0; i < rows.length; i++) {
+					ids.push(rows[i].getAttribute("server_id"));
+				}
+
+				var query = "?op=delete-server&ids=" + param_escape(ids.toString()) + 
+					"&connection_id=" + param_escape(connection_id);
+
+				debug(query);
+
+				show_spinner();
+
+				new Ajax.Request("backend.php", {
+				parameters: query, 
+				onComplete: function (transport) {
+					$("servers-list").innerHTML = transport.responseText;
+					hide_spinner();
+				} });
+
+			}
+		} else {
+			alert(__("Please select some servers to delete."));
+		}
+
+
+	} catch (e) {
+		exception_error("delete_server", e);
+	}
+}
+
+function create_server() {
+	try {
+		var data = prompt(__("Server:Port (e.g. irc.example.org:6667):"));
+
+		if (data) {
+
+			var connection_id = document.forms['prefs_conn_form'].connection_id.value;
+
+			var query = "?op=create-server&data=" + param_escape(data) + 			
+				"&connection_id=" + param_escape(connection_id);
+
+			debug(query);
+
+			show_spinner();
+
+			new Ajax.Request("backend.php", {
+			parameters: query, 
+			onComplete: function (transport) {
+				$("servers-list").innerHTML = transport.responseText;
+				hide_spinner();
+			} });
+
+
+		}
+	} catch (e) {
+		exception_error("create_connection", e);
+	}
+}
+
 

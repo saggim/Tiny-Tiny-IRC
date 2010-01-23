@@ -35,7 +35,7 @@
 		$chan = db_escape_string($_REQUEST["chan"]);
 		$connection_id = db_escape_string($_REQUEST["connection"]);
 
-		if ($message) {
+		if ($message && valid_connection($link, $connection_id)) {
 			if (strpos($message, "/") === 0) {
 				handle_command($link, $connection_id, $chan, $message);
 			} else {
@@ -82,6 +82,33 @@
 	case "prefs-edit-con":
 		$connection_id = (int) db_escape_string($_REQUEST["id"]);
 		connection_editor($link, $connection_id);
+		break;
+
+	case "create-server":
+		$connection_id = (int) db_escape_string($_REQUEST["connection_id"]);
+		list($server, $port) = explode(":", db_escape_string($_REQUEST["data"]));
+
+		if (valid_connection($link, $connection_id)) {
+			if ($server && $port) {
+				db_query($link, "INSERT INTO ttirc_servers (server, port, connection_id)
+					VALUES ('$server', '$port', '$connection_id')");
+			}
+
+			print_servers($link, $connection_id);
+		}
+
+		break;
+
+	case "delete-server":
+		$ids = db_escape_string($_REQUEST["ids"]);
+		$connection_id = (int) db_escape_string($_REQUEST["connection_id"]);
+
+		if (valid_connection($link, $connection_id)) {
+			db_query($link, "DELETE FROM ttirc_servers WHERE
+				id in ($ids) AND connection_id = '$connection_id'");
+
+			print_servers($link, $connection_id);
+		}
 		break;
 
 	case "delete-connection":
