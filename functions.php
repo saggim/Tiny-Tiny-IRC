@@ -146,15 +146,15 @@
 						time() + SESSION_COOKIE_LIFETIME);
 				}
 
-				$tmp_result = db_query($link, "SELECT id FROM ttirc_connections
+/*				$tmp_result = db_query($link, "SELECT id FROM ttirc_connections
 					WHERE status != ".CS_DISCONNECTED." AND owner_uid = " .
 					$_SESSION["uid"]);
-
+	
 				while ($conn = db_fetch_assoc($tmp_result)) {
 					push_message($link, $conn['id'], "---",
 						"Accepted connection from " . $_SERVER["REMOTE_ADDR"], 
 						true);
-				}
+				} */
 			}
 
 		} else {

@@ -34,15 +34,15 @@ function create_tab_if_needed(chan, connection_id, tab_type) {
 		if (!tab_type) tab_type = "C";
 
 		if (!$(tab_id)) {
-			var tab = "<div id=\"" + tab_id + "\" " +
+			var tab = "<li id=\"" + tab_id + "\" " +
 				"channel=\"" + chan + "\" " +
 				"tab_type=\"" + tab_type + "\" " +
 				"connection_id=\"" + connection_id + "\" " +
-		  		"onclick=\"change_tab(this)\">" + chan + "</div>";
+		  		"onclick=\"change_tab(this)\">" + chan + "</li";
 
 			debug("creating tab: " + tab_id);
 
-			$("tabs").innerHTML += tab;
+			$("tabs-list").innerHTML += tab;
 		}
 
 		return tab_id;
@@ -80,6 +80,7 @@ function init_second_stage(transport) {
 
 		Element.hide("overlay");
 
+		$("input-prompt").value = "";
 		$("input-prompt").focus();
 
 		debug("init_second_stage");
@@ -248,7 +249,7 @@ function update() {
 
 function get_selected_tab() {
 	try {
-		var tabs = $("tabs").getElementsByTagName("div");
+		var tabs = $("tabs-list").getElementsByTagName("li");
 
 		for (var i = 0; i < tabs.length; i++) {
 			if (tabs[i].className == "selected") {
@@ -265,7 +266,7 @@ function get_selected_tab() {
 
 function get_all_tabs() {
 	try {
-		var tabs = $("tabs").getElementsByTagName("div");
+		var tabs = $("tabs-list").getElementsByTagName("li");
 		var rv = [];
 
 		for (var i = 0; i < tabs.length; i++) {
@@ -474,7 +475,7 @@ function handle_error(obj) {
 
 function change_tab(elem) {
 	try {
-		var tabs = $("tabs").getElementsByTagName("div");
+		var tabs = $("tabs-list").getElementsByTagName("li");
 
 		for (var i = 0; i < tabs.length; i++) {
 			if (tabs[i].className == "selected") tabs[i].className = "";
@@ -609,7 +610,7 @@ function handle_chan_data(chandata) {
 //						change_tab("tab----");
 //					}
 			
-					$("tabs").removeChild(tabs[i]);
+					$("tabs-list").removeChild(tabs[i]);
 				}
 			}
 		}

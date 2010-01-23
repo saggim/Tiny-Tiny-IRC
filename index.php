@@ -100,19 +100,15 @@
 </div>
 
 <div id="actions">
-	<button onclick="toggle_debug()">Debug</button>
-
+	<a href="#" onclick="toggle_debug()">Debug</a>
+	&nbsp;
 	<select>
-		<option value="">Connections...</option>
+		<option value="">Actions...</option>
 	</select>
-
-	<!-- <button id="connect-btn" disabled='true' c_status="0" onclick="toggle_connect(this)">
-		<?php echo __("Connect") ?></button> -->
 </div>
 
 <div id="tabs">
-	<div class="first">&nbsp;</div>
-	<!-- <div class="selected" onclick="change_tab(this.id)" id="tab----">Console</div> -->
+	<div id="tabs-inner"><ul id="tabs-list"></ul></div>
 </div>
 
 <div id="content">
