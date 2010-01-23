@@ -51,7 +51,6 @@
 		break;
 	case "update":
 		$last_id = (int) db_escape_string($_REQUEST["last_id"]);
-		$active_buf = db_escape_string($_REQUEST["active"]);
 
 		$lines = get_new_lines($link, $last_id);
 		$conn = get_conn_info($link);
@@ -60,6 +59,25 @@
 		print json_encode(array($conn, $lines, $chandata));
 
 		break;
+
+	case "set-topic":
+		$last_id = (int) db_escape_string($_REQUEST["last_id"]);
+		$topic = db_escape_string($_REQUEST["topic"]);
+		$chan = db_escape_string($_REQUEST["chan"]);
+		$connection_id = db_escape_string($_REQUEST["connection"]);
+
+		if ($topic) {
+			handle_command($link, $connection_id, $chan, "/topic $topic");
+		}
+
+		$lines = get_new_lines($link, $last_id);
+		$conn = get_conn_info($link);
+		$chandata = get_chan_data($link, false);
+
+		print json_encode(array($conn, $lines, $chandata));
+
+		break;
+
 	case "init":
 		$result = db_query($link, "SELECT MAX(ttirc_messages.id) AS max_id
 			FROM ttirc_messages, ttirc_connections

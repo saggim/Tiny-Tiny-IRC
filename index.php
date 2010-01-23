@@ -126,7 +126,8 @@
 
 <div id="content">
 	<div id="topic"><div class="wrapper">
-		<input disabled id="topic-input" value=""></div>
+		<input disabled onkeypress="change_topic(this, event)" 
+			id="topic-input" value=""></div>
 	</div>
 	<div id="connect"><button onclick="toggle_connection(this)" 
 		id="connect-btn"></button></div>

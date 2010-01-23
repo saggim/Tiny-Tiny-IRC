@@ -410,17 +410,24 @@ function update_buffer() {
 			var topic = topics[connection_id][channel];
 	
 			if (topic) {
-				$("topic-input").value = topics[connection_id][channel][0];
+				if ($("topic-input").value != topics[connection_id][channel][0]) {
+					$("topic-input").value = topics[connection_id][channel][0];
+				}
+				$("topic-input").disabled = false;
 			} else {
 	
 				if (tab.getAttribute("tab_type") != "S") {
 					$("topic-input").value = "";
+					$("topic-input").disabled = true;
+
 				} else {
 					if (conndata_last[connection_id].status == "2") {
 						$("topic-input").value = __("Connected to: ") + 
 							conndata_last[connection_id]["active_server"];
+						$("topic-input").disabled = true;
 					} else {
 						$("topic-input").value = __("Disconnected.");
+						$("topic-input").disabled = true;
 					}
 				}
 			}
@@ -457,6 +464,45 @@ function update_buffer() {
 	} catch (e) {
 		exception_error("update_buffer", e);
 	}	
+}
+
+function change_topic(elem, evt) {
+	try {
+
+     var key;
+
+		if(window.event)
+			key = window.event.keyCode;     //IE
+		else
+			key = evt.which;     //firefox
+
+		if (key == 13) {
+
+			var tab = get_selected_tab();
+	
+			if (!tab) return;
+	
+			var channel = tab.getAttribute("channel");
+	
+			if (tab.getAttribute("tab_type") == "S") channel = "---";
+			var query = "?op=set-topic&topic=" + param_escape(elem.value) + 
+				"&chan=" + param_escape(channel) +			
+				"&connection=" + param_escape(tab.getAttribute("connection_id")) +
+				"&last_id=" + last_id;
+	
+			debug(query);
+	
+			new Ajax.Request("backend.php", {
+			parameters: query,
+			onComplete: function (transport) {
+				elem.value = '';
+				handle_update(transport);
+			} });
+		}
+
+	} catch (e) {
+		exception_error("send", e);
+	}
 }
 
 function send(elem, evt) {
