@@ -153,6 +153,18 @@ class Connection extends Yapircl {
 		db_query($this->link, $query, false);
 	}
 
+	function event_all() {
+		if (!$this->registered) {
+			if (!method_exists($this, 'event_' . $this->_event)) {
+				$this->push_message('---', '---', $this->_fline, 0);
+			}
+		}
+	}
+
+	function event_ping() {
+		// no-op
+	}
+
 	function event_join() {
 		$this->update_nicklist($this->from);
 	}

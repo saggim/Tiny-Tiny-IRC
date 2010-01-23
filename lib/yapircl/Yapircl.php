@@ -87,6 +87,8 @@ class Yapircl
 
     var $_servermodes;      // the supported servermodes (array)
 
+    var $_event;            // active event
+
     // public variables 
     
     var $major  = 0;        // major version (int)
@@ -609,10 +611,13 @@ class Yapircl
         }
 
         $event = strtolower($event);
-        
+
+        $this->_event = $event;
+
         // first check for an internal _event_* callback
         $this->_tryCallback('_event_' . $event);
         // then check for a userscript event_* callback
+        $this->_tryCallback('event_all', $event);
         $this->_tryCallback('event_' . $event);
     }
 

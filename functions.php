@@ -672,6 +672,11 @@
 		return $rcolors[$sum];
 	}
 
+	function purge_old_lines($link) {
+		db_query($link, "DELETE FROM ttirc_messages WHERE
+			ts < NOW() - INTERVAL '3 hours'");
+	}
+
 	function update_heartbeat($link) {
 
 		if (time() - $_SESSION["heartbeat_last"] > 120) {
