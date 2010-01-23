@@ -644,25 +644,7 @@ function handle_chan_data(chandata) {
 			}
 		}
 
-		var tabs = get_all_tabs();
-
-		for (var i = 0; i < tabs.length; i++) {
-			var chan = tabs[i].getAttribute("channel");
-			var connection_id = tabs[i].getAttribute("connection_id");
-
-			if (chandata[connection_id]) {
-				if (!chandata[connection_id][chan] && 
-						tabs[i].getAttribute("tab_type") != "S") {
-
-//					if ($(tabs[i]).className == "selected") {
-//						change_tab("tab----");
-//					}
-			
-					$("tabs-list").removeChild(tabs[i]);
-				}
-			}
-		}
-
+		cleanup_tabs(chandata);
 		update_title(chandata);
 
 	} catch (e) {
@@ -777,4 +759,39 @@ function handle_action(elem) {
 	}
 }
 
+function cleanup_tabs(chandata) {
+	try {
+		var tabs = get_all_tabs();
 
+		for (var i = 0; i < tabs.length; i++) {
+			var chan = tabs[i].getAttribute("channel");
+			var connection_id = tabs[i].getAttribute("connection_id");
+
+			if (chandata[connection_id]) {
+
+				if (tabs[i].getAttribute("tab_type") == "S") {
+					if (conndata_last && !conndata_last[connection_id]) {
+						$("tabs-list").removeChild(tabs[i]);
+						$("tabs-list").removeChild($("tabs-" + connection_id));
+					}
+				}
+
+				if (tabs[i].getAttribute("tab_type") == "C") {
+
+					if (!chandata[connection_id][chan]) {
+
+//					if ($(tabs[i]).className == "selected") {
+//						change_tab("tab----");
+//					}
+			
+						$("tabs-list").removeChild(tabs[i]);
+					}
+
+				}
+			}
+		}
+	} catch (e) {
+		exception_error("cleanup_tabs", e);
+	}
+
+}
