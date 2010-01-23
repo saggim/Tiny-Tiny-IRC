@@ -94,12 +94,12 @@
 			| <a href="logout.php"><?php echo __('Logout') ?></a>
 	<?php } ?>
 
+	| <a href="#" onclick="toggle_debug()">Debug</a>
+
 	</div>
 
 	<img src="<?php echo theme_image($link, 'images/logo.png') ?>" alt="Tiny Tiny IRC"/>	
 </div>
-
-<!--	<a href="#" onclick="toggle_debug()">Debug</a> -->
 
 <div id="actions">
 	<select onchange="handle_action(this)">
