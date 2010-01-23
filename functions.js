@@ -263,3 +263,18 @@ function close_infobox(cleanup) {
 	return false;
 }
 
+function show_spinner() {
+	try {
+		Element.show($("spinner"));
+	} catch (e) {
+		exception_error("show_spinner", e);
+	}
+}
+
+function hide_spinner() {
+	try {
+		Element.hide($("spinner"));
+	} catch (e) {
+		exception_error("hide_spinner", e);
+	}
+}

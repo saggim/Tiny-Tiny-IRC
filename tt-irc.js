@@ -113,6 +113,8 @@ function init_second_stage(transport) {
 
 		debug("init_second_stage");
 
+		hide_spinner();
+
 		update();
 
 	} catch (e) {
@@ -126,6 +128,8 @@ function init() {
 			Element.show("debug_output");
 			debug('debug mode activated');
 		}
+
+		show_spinner();
 
 		new Ajax.Request("backend.php", {
 		parameters: "?op=init",
@@ -243,11 +247,8 @@ function update() {
 		new Ajax.Request("backend.php", {
 		parameters: "?op=update&last_id=" + last_id,
 		onComplete: function (transport) {
-	
 			if (!handle_update(transport)) return;
-
 			window.setTimeout("update()", delay);
-
 		} });
 
 	} catch (e) {
@@ -696,10 +697,13 @@ function save_prefs() {
 
 function show_prefs() {
 	try {
+		show_spinner();
+
 		new Ajax.Request("backend.php", {
 		parameters: "?op=prefs",
 		onComplete: function (transport) {
 			infobox_callback2(transport);
+			hide_spinner();
 		} });
 
 	} catch (e) {

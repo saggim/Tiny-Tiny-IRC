@@ -83,7 +83,9 @@
 <div id="header">
 	<div class="topLinks" id="topLinks">
 
-	<span id="topLinksOnline">
+	<img id="spinner" style="display : none" 
+		alt="spinner" title="Loading..."
+		src="<?php echo theme_image($link, 'images/indicator_tiny.gif') ?>"/>
 
 	<?php if (!SINGLE_USER_MODE) { ?>
 			<?php echo __('Hello,') ?> <b><?php echo $_SESSION["name"] ?></b> |
