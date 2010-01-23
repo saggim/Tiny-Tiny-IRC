@@ -531,7 +531,8 @@
 		}
 
 		$result = db_query($link, "SELECT nicklist,channel,connection_id,
-			topic,topic_owner,".SUBSTRING_FOR_DATE."(topic_set,1,16) AS topic_set
+			chan_type,topic,
+			topic_owner,".SUBSTRING_FOR_DATE."(topic_set,1,16) AS topic_set
 			FROM ttirc_channels, ttirc_connections 
 			WHERE connection_id = ttirc_connections.id AND 
 			status = ".CS_CONNECTED." AND
@@ -545,6 +546,7 @@
 
 			$re = array();
 
+			$re["chan_type"] = $line["chan_type"];
 			$re["users"] = json_decode($line["nicklist"]);
 			$re["topic"] = array(
 				$line["topic"], $line["topic_owner"], $line["topic_set"]);

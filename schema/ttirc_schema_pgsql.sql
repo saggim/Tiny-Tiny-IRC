@@ -43,6 +43,7 @@ create table ttirc_connections(id serial not null primary key,
 	encoding varchar(120) not null default '',
 	status integer not null default 0,
 	autojoin text not null default '',
+	connect_cmd text not null default '',
 	last_sent_id integer not null default 0,
 	owner_uid integer not null references ttirc_users(id) ON DELETE CASCADE);
 
@@ -61,6 +62,7 @@ create table ttirc_channels(id serial not null primary key,
 	topic text not null default '',
 	topic_owner varchar(120) not null default '',
 	topic_set timestamp not null default NOW(),
+	chan_type integer not null default 0,
 	nicklist text not null default '');
 
 create table ttirc_messages(id serial not null primary key,

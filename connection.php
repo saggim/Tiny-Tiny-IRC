@@ -30,6 +30,10 @@ class Connection extends Yapircl {
 			case "join":
 				$this->join($arguments);
 				break;
+			case "msg":
+				list ($nick, $message) = explode(" ", $arguments, 2);
+				$this->privmsg($nick, $message);
+				break;
 			case "part":
 				$this->part($arguments);
 				break;
@@ -215,7 +219,10 @@ class Connection extends Yapircl {
 //		echo "[" . $this->nick . "(" . $this->user . 
 //			"@" . $this->host . ")] " . $this->full . "\n"; 
 
-		$this->push_message($this->nick, $this->from, $this->full);
+		$this->check_channel($this->nick, CT_PRIVATE);
+
+		$this->push_message($this->nick, $this->from, $this->full, 
+			MSGT_PRIVATE_PRIVMSG);
 	}
 
 	function event_public_ctcp_action() {
@@ -248,7 +255,7 @@ class Connection extends Yapircl {
 		$this->handle_ctcp_ping();
 	}
 
-	function check_channel($channel) {
+	function check_channel($channel, $chan_type = CT_CHANNEL) {
 		$connection_id = $this->connection_id;
 
 		db_query($this->link, "BEGIN");
@@ -258,7 +265,8 @@ class Connection extends Yapircl {
 
 		if (db_num_rows($result) == 0) {
 			db_query($this->link, "INSERT INTO ttirc_channels 
-				(channel, connection_id) VALUES ('$channel', '$connection_id')");
+				(channel, connection_id, chan_type) 
+					VALUES ('$channel', '$connection_id', '$chan_type')");
 		}
 
 		db_query($this->link, "COMMIT");

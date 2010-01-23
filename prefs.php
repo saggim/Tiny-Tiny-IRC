@@ -2,7 +2,8 @@
 	require_once "functions.php";
 
 	function print_servers($link, $id) {
-		$result = db_query($link, "SELECT ttirc_servers.* 
+		$result = db_query($link, "SELECT ttirc_servers.*,
+				status,active_server
 			FROM ttirc_servers,ttirc_connections
 			WHERE connection_id = '$id' AND 
 			connection_id = ttirc_connections.id AND
@@ -16,10 +17,17 @@
 
 			$id = $line['id'];
 
+			if ($line['status'] != CS_DISCONNECTED && 
+					$line['server'] . ':' . $line['port'] == $line['active_server']) {
+				$connected = __("(connected)");
+			} else {
+				$connected = '';
+			}			
+
 			print "<li id='S-$id' class='$row_class' server_id='$id'>";
 			print "<input type='checkbox' onchange='select_row(this)'
 				row_id='S-$id'>&nbsp;";
-			print $line['server'] . ":" . $line['port'];
+			print $line['server'] . ":" . $line['port'] . " $connected";
 			print "</li>";
 
 			++$lnum;
@@ -56,15 +64,19 @@
 
 		<div class="dlgSecCont">
 			<label class='fixed'>Title:</label>
-			<input name="title" value="<?php echo $line['title'] ?>">
+			<input name="title" size="30" value="<?php echo $line['title'] ?>">
 			<br clear='left'/>
 
 			<label class='fixed'>Favorite channels:</label>
-			<input name="autojoin" value="<?php echo $line['autojoin'] ?>">
+			<input name="autojoin" size="30" value="<?php echo $line['autojoin'] ?>">
 			<br clear='left'/>
 
-			<label class='fixed'>Charset:</label>
-			<input name="encoding" value="<?php echo $line['encoding'] ?>">
+			<label class='fixed'>Connect command:</label>
+			<input name="connect_cmd" size="30" value="<?php echo $line['connect_cmd'] ?>">
+			<br clear='left'/>
+
+			<label class='fixed'>Character set:</label>
+			<input name="encoding" size="30" value="<?php echo $line['encoding'] ?>">
 			<br clear='left'/>
 
 		</div>
@@ -156,19 +168,19 @@
 
 		<div class="dlgSecCont">
 			<label class="fixed">Real name:</label>
-			<input name="realname" value="<?php echo $realname ?>">
+			<input name="realname" size="30" value="<?php echo $realname ?>">
 			<br clear='left'/>
 
 			<label class="fixed">Default nick:</label>
-			<input name="realname" value="<?php echo $nick ?>">
+			<input name="realname" size="30" value="<?php echo $nick ?>">
 			<br clear='left'/>
 
 			<label class="fixed">E-mail:</label>
-			<input name="email" value="<?php echo $email ?>">
+			<input name="email" size="30" value="<?php echo $email ?>">
 			<br clear='left'/>
 
 			<label class="fixed">Quit message:</label>
-			<input name="quit_message" value="<?php echo $quit_message ?>">
+			<input name="quit_message" size="30" value="<?php echo $quit_message ?>">
 
 		</div>
 
@@ -176,11 +188,11 @@
 
 		<div class="dlgSecCont">
 			<label class="fixed">New password:</label>
-			<input name="new_password" type="password" value="">
+			<input name="new_password" type="password" size="30" value="">
 			<br clear='left'/>
 
 			<label class="fixed">Confirm:</label>
-			<input name="confirm_password" type="password" value="">
+			<input name="confirm_password" type="password" size="30" value="">
 		</div>
 
 		</form>

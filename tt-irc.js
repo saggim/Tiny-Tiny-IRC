@@ -62,7 +62,7 @@ function create_tab_if_needed(chan, connection_id, tab_type) {
 		  		"onclick=\"change_tab(this)\">" +
 				"&nbsp;&nbsp;" + chan + "</li>";
 
-			debug("creating tab: " + tab_id);
+			debug("creating tab: " + tab_id + " " + tab_type);
 
 			$(tab_list_id).innerHTML += tab;
 		}
@@ -406,7 +406,7 @@ function update_buffer() {
 			}
 		}
 
-		if (topics[connection_id]) {
+		if (topics[connection_id] && tab.getAttribute("tab_type") != "P") {
 			var topic = topics[connection_id][channel];
 	
 			if (topic) {
@@ -433,6 +433,11 @@ function update_buffer() {
 			}
 		} else if (tab.getAttribute("tab_type") == "S") {
 			$("topic-input").value = __("Disconnected.");
+			$("topic-input").disabled = true;
+		} else {
+			$("topic-input").value = __("Conversation with") + " " +
+				tab.getAttribute("channel");
+			$("topic-input").disabled = true;
 		}
 
 		if (conndata_last && conndata_last[connection_id]) {
@@ -524,10 +529,11 @@ function send(elem, evt) {
 			var channel = tab.getAttribute("channel");
 	
 			if (tab.getAttribute("tab_type") == "S") channel = "---";
+
 			var query = "?op=send&message=" + param_escape(elem.value) + 
 				"&chan=" + param_escape(channel) +			
 				"&connection=" + param_escape(tab.getAttribute("connection_id")) +
-				"&last_id=" + last_id;
+				"&last_id=" + last_id + "&tab_type=" + tab.getAttribute("tab_type");
 	
 			debug(query);
 	
@@ -685,7 +691,19 @@ function handle_chan_data(chandata) {
 				if (!topics[connection_id]) topics[connection_id] = [];
 
 				for (var chan in chandata[connection_id]) {
-					create_tab_if_needed(chan, connection_id);
+
+					var tab_type = "P";
+
+					switch (parseInt(chandata[connection_id][chan].chan_type)) {
+					case 0: 
+						tab_type = "C";
+						break;
+					case 1:
+						tab_type = "P";
+						break;
+					}
+
+					create_tab_if_needed(chan, connection_id, tab_type);
 
 					nicklists[connection_id][chan] = chandata[connection_id][chan]["users"];
 					topics[connection_id][chan] = chandata[connection_id][chan]["topic"];
@@ -764,17 +782,22 @@ function cleanup_tabs(chandata) {
 
 					debug("removing unnecessary S-tab: " + tabs[i].id);
 
+					var tab_list = $("tabs-" + connection_id);
+
 					$("tabs-list").removeChild(tabs[i]);
-					$("tabs-list").removeChild($("tabs-" + connection_id));
+					$("tabs-list").removeChild(tab_list);
 				}
 			}
 
-			if (tabs[i].getAttribute("tab_type") == "C") {
+			if (tabs[i].getAttribute("tab_type") != "S") {
 				if (chandata[connection_id] && !chandata[connection_id][chan]) {
 
-					debug("removing unnecessary C-tab: " + tabs[i].id);
+					debug("removing unnecessary C/P-tab: " + tabs[i].id);
 
-					$("tabs-list").removeChild(tabs[i]);
+					var tab_list = $("tabs-" + connection_id);
+					
+					if (tab_list) tab_list.removeChild(tabs[i]);
+
 				}
 			}
 		}
