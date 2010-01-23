@@ -82,7 +82,7 @@ function delete_connection() {
 		var rows = get_selected_rows($("connections-list"));
 
 		if (rows.length > 0) {
-			if (confirm(__("Delete selected connections?"))) {
+			if (confirm(__("Delete selected connections? Active connections will not be deleted."))) {
 
 				var ids = [];
 

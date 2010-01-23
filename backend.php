@@ -115,7 +115,7 @@
 		$ids = db_escape_string($_REQUEST["ids"]);
 
 		db_query($link, "DELETE FROM ttirc_connections WHERE
-			id IN ($ids) AND owner_uid = ".$_SESSION["uid"]);
+			id IN ($ids) AND status = 0 AND owner_uid = ".$_SESSION["uid"]);
 
 		print_connections($link);
 

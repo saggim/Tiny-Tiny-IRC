@@ -117,12 +117,18 @@
 
 			$id = $line['id'];
 
+			if ($line["status"] != "0") {
+				$connected = "(active)";
+			} else {
+				$connected = "";
+			}
+
 			print "<li id='C-$id' class='$row_class' connection_id='$id'>";
 			print "<input type='checkbox' onchange='select_row(this)'
 				row_id='C-$id'>";
 			print "&nbsp;<a href=\"#\" title=\"Click to edit connection\"
 				onclick=\"edit_connection($id)\">".
-				$line['title']."</a>";
+				$line['title']." $connected</a>";
 			print "</li>";
 
 			++$lnum;
