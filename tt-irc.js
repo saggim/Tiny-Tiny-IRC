@@ -413,7 +413,8 @@ function update_buffer() {
 				if ($("topic-input").value != topics[connection_id][channel][0]) {
 					$("topic-input").value = topics[connection_id][channel][0];
 				}
-				$("topic-input").disabled = false;
+
+				$("topic-input").disabled = conndata_last[connection_id].status != "2";
 			} else {
 	
 				if (tab.getAttribute("tab_type") != "S") {

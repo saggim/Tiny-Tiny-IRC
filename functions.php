@@ -535,7 +535,6 @@
 			topic_owner,".SUBSTRING_FOR_DATE."(topic_set,1,16) AS topic_set
 			FROM ttirc_channels, ttirc_connections 
 			WHERE connection_id = ttirc_connections.id AND 
-			status = ".CS_CONNECTED." AND
 			$active_chan_qpart
 			owner_uid = ".$_SESSION["uid"]);
 
