@@ -113,9 +113,10 @@
 
 <div id="content">
 	<div id="topic"><div class="wrapper">
-		<input disabled id="topic-input" value="">
+		<input disabled id="topic-input" value=""></div>
 	</div>
-	</div>
+	<div id="connect"><button onclick="toggle_connection(this)" 
+		id="connect-btn"></button></div>
 	<div id="log"><ul id="log-list"></ul></div>	
 	<div id="nick" onclick="change_nick()"></div>
 	<div id="input"><div class="wrapper">

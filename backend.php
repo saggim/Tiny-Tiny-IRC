@@ -1,8 +1,9 @@
 <?php
 	error_reporting(E_ERROR | E_WARNING | E_PARSE);
 
-	require_once "functions.php"; 
 	require_once "sessions.php";
+	require_once "db-prefs.php";
+	require_once "functions.php"; 
 	require_once "sanity_check.php";
 	require_once "version.php"; 
 	require_once "config.php";
@@ -84,12 +85,14 @@
 		break;
 
 	case "toggle-connection":
-		$connection_id = db_escape_string($_REQUEST["connection"]);
+		$connection_id = (int) db_escape_string($_REQUEST["connection_id"]);
 		
 		$status = bool_to_sql_bool(db_escape_string($_REQUEST["set_enabled"]));
 
-		db_query($link, "UPDATE ttirc_connections SET enabled = $status
-			WHERE id = '$connection_id'");
+		db_query($link, "UPDATE ttirc_connections SET enabled = '$status'
+			WHERE id = '$connection_id' AND owner_uid = " . $_SESSION["uid"]);
+
+		print json_encode(array("status" => $status));
 
 		break;
 	}

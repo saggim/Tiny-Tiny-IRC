@@ -33,17 +33,45 @@ function create_tab_if_needed(chan, connection_id, tab_type) {
 
 		if (!tab_type) tab_type = "C";
 
-		if (!$(tab_id)) {
+		var tab_caption_id = "tab-" + connection_id;
+		var tab_list_id = "tabs-" + connection_id;
+
+		if (!$(tab_caption_id)) {
+			var tab = "<li id=\"" + tab_caption_id + "\" " +
+				"channel=\"" + chan + "\" " +
+				"tab_type=\"" + tab_type + "\" " +
+				"connection_id=\"" + connection_id + "\" " +
+		  		"onclick=\"change_tab(this)\">" + chan + "</li>";
+
+			tab += "<ul class=\"sub-tabs\" id=\"" + tab_list_id + "\"></ul>";
+
+			debug("creating tab+list: " + tab_id + " " + tab_type);
+
+			$("tabs-list").innerHTML += tab;
+		} else if (!$(tab_id) && tab_type != "S") {
 			var tab = "<li id=\"" + tab_id + "\" " +
 				"channel=\"" + chan + "\" " +
 				"tab_type=\"" + tab_type + "\" " +
 				"connection_id=\"" + connection_id + "\" " +
-		  		"onclick=\"change_tab(this)\">" + chan + "</li";
+		  		"onclick=\"change_tab(this)\">" +
+				"&nbsp;&nbsp;" + chan + "</li>";
+
+			debug("creating tab: " + tab_id);
+
+			$(tab_list_id).innerHTML += tab;
+		}
+
+/*		if (!$(tab_id)) {
+			var tab = "<li id=\"" + tab_id + "\" " +
+				"channel=\"" + chan + "\" " +
+				"tab_type=\"" + tab_type + "\" " +
+				"connection_id=\"" + connection_id + "\" " +
+		  		"onclick=\"change_tab(this)\">" + chan + "</li>";
 
 			debug("creating tab: " + tab_id);
 
 			$("tabs-list").innerHTML += tab;
-		}
+		} */
 
 		return tab_id;
 
@@ -131,26 +159,6 @@ function handle_update(transport) {
 
 		handle_conn_data(conn_data);
 		handle_chan_data(chandata);
-
-/*		switch (params[0].status) {
-			case "0":
-				$('connect-btn').innerHTML = __("Connect");
-				$('connect-btn').disabled = false;
-				$('connect-btn').setAttribute("set_enabled", 1);
-				break;
-			case "1":
-				$('connect-btn').innerHTML = __("Connecting...");
-				$('connect-btn').disabled = true;
-				$('connect-btn').setAttribute("set_enabled", 0);
-				break;
-			case "2":
-				$('connect-btn').innerHTML = __("Disconnect");
-				$('connect-btn').disabled = false;
-				$('connect-btn').setAttribute("set_enabled", 0);
-				break;
-		} 
-
-		my_nick = params[0].active_nick; */
 	
 		var prev_last_id = last_id;
 	
@@ -418,6 +426,26 @@ function update_buffer() {
 
 		$("nick").innerHTML = active_nicks[connection_id];
 
+		switch (conndata_last[connection_id].status) {
+			case "0":
+				$('connect-btn').innerHTML = __("Connect");
+				$('connect-btn').disabled = false;
+				$('connect-btn').setAttribute("set_enabled", 1);
+				break;
+			case "1":
+				$('connect-btn').innerHTML = __("Connecting...");
+				$('connect-btn').disabled = true;
+				$('connect-btn').setAttribute("set_enabled", 0);
+				break;
+			case "2":
+				$('connect-btn').innerHTML = __("Disconnect");
+				$('connect-btn').disabled = false;
+				$('connect-btn').setAttribute("set_enabled", 0);
+				break;
+		} 
+
+		$('connect-btn').setAttribute("connection_id", connection_id);
+
 	} catch (e) {
 		exception_error("update_buffer", e);
 	}	
@@ -475,6 +503,9 @@ function handle_error(obj) {
 
 function change_tab(elem) {
 	try {
+
+		if (!elem) return;
+
 		var tabs = $("tabs-list").getElementsByTagName("li");
 
 		for (var i = 0; i < tabs.length; i++) {
@@ -492,13 +523,16 @@ function change_tab(elem) {
 	}
 }
 
-function toggle_connect(elem) {
+function toggle_connection(elem) {
 	try {
 
 		elem.disabled = true;
 
 		var query = "?op=toggle-connection&set_enabled=" + 
-			elem.getAttribute("set_enabled");
+			param_escape(elem.getAttribute("set_enabled")) + 
+			"&connection_id=" + param_escape(elem.getAttribute("connection_id"));
+
+		debug(query);
 
 		new Ajax.Request("backend.php", {
 		parameters: query, 
