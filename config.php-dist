@@ -38,5 +38,12 @@
 	// Enable experimental support for interface translations
 	// based on PHP-Gettext. This is of no much use right now.
 
+	define('UPDATE_DELAY_MAX', 30);
+	// Maximum amount of seconds to delay in faux-PUSH updates. 
+	// Should be less than maximum script lifetime configured in your HTTPD
+	// 0 disables the functionality.
+
 	define('CONFIG_VERSION', 1);
+
+	// vim:ft=php
 ?>

@@ -80,15 +80,24 @@
 
 		print json_encode(array($conn, $lines, $chandata));
 		break;
+
 	case "update":
 		$last_id = (int) db_escape_string($_REQUEST["last_id"]);
+
+		if ($last_id) {
+			$sleep_start = time();
+			while (time() - $sleep_start < UPDATE_DELAY_MAX && 
+					!num_new_lines($link, $last_id)) {
+
+				sleep(1);
+			}
+		}
 
 		$lines = get_new_lines($link, $last_id);
 		$conn = get_conn_info($link);
 		$chandata = get_chan_data($link, false);
 
 		print json_encode(array($conn, $lines, $chandata));
-
 		break;
 
 	case "set-topic":

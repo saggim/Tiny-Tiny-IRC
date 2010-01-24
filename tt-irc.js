@@ -261,10 +261,13 @@ function update() {
 	try {
 		var query = "?op=update&last_id=" + last_id;
 
+		debug("request update...");
+
 		new Ajax.Request("backend.php", {
 		parameters: query,
 		onComplete: function (transport) {
 			if (!handle_update(transport)) return;
+			debug("update done.");
 			window.setTimeout("update()", delay);
 		} });
 

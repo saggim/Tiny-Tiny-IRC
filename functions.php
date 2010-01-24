@@ -545,6 +545,20 @@
 			'$message_type')");
 	}
 
+	function num_new_lines($link, $last_id) {
+
+		$result = db_query($link, "SELECT COUNT(*) AS cl
+			FROM ttirc_messages, ttirc_connections WHERE
+			connection_id = ttirc_connections.id AND
+			status != ".CS_DISCONNECTED." AND
+			message_type != ".MSGT_COMMAND." AND
+			ts > NOW() - INTERVAL '5 minutes' AND
+			ttirc_messages.id > '$last_id' AND 
+			owner_uid = ".$_SESSION["uid"]);
+
+		return db_fetch_result($result, 0, "cl");
+	}
+
 	function get_new_lines($link, $last_id) {
 
 		$result = db_query($link, "SELECT ttirc_messages.id,
