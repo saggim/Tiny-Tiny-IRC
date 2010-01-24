@@ -284,13 +284,13 @@ function sort_connection_tabs(node) {
 //	debug("sort_connection_tabs " + node);
 
 	try {
-		var list = node.getElementsByTagName("LI");
+		var list = node.getElementsByTagName("li");
 
 		for (i = 0; i < list.length; i++) {
 	
 			for (j = i+1; j < list.length; j++) {			
 
-				if (list[i].value < list[j].value) {	
+				if (list[i].getAttribute("channel") > list[j].getAttribute("channel")) {	
 					tempnode_i = list[i].cloneNode(true);
 					tempnode_j = list[j].cloneNode(true);
 					node.replaceChild(tempnode_i, list[j]);
