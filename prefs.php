@@ -86,12 +86,12 @@
 		<div class="dlgSecCont">
 			<input name="auto_connect" <?php echo $auto_connect_checked ?> 
 				id="pr_auto_connect" type="checkbox" value="1">
-			<label for="pr_auto_connect">Connect automatically</label>
+			<label for="pr_auto_connect">Automatically connect</label>
 			<br clear='left'/>
 
 			<input name="permanent" <?php echo $permanent_checked ?>
 				id="pr_permanent" type="checkbox" value="1">
-			<label for="pr_permanent">Keep connected when logged off</label>
+			<label for="pr_permanent">Keep connected permanently</label>
 			<br clear='left'/>
 
 		</div>
