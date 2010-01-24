@@ -480,8 +480,26 @@
 				"$arguments", true, MSGT_ACTION);
 		}
 
-		push_message($link, $connection_id, $channel,
-			"$command:$arguments", false, MSGT_COMMAND);
+		if ($command == "part") {
+			$result = db_query($link, "SELECT chan_type FROM ttirc_channels WHERE
+				channel = '$channel' AND connection_id = '$connection_id'");
+
+			if (db_num_rows($result) != 0) {
+				$chan_type = db_fetch_result($result, 0, "chan_type");
+
+				if ($chan_type == CT_PRIVATE) {
+					db_query($link, "DELETE FROM ttirc_channels WHERE
+						channel = '$channel' AND connection_id = '$connection_id'");
+				} else {
+					push_message($link, $connection_id, $channel,
+						"$command:$arguments", false, MSGT_COMMAND);
+				}
+			}
+
+		} else {
+			push_message($link, $connection_id, $channel,
+				"$command:$arguments", false, MSGT_COMMAND);
+		}
 
 	}
 

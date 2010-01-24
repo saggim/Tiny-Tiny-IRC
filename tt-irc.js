@@ -519,7 +519,7 @@ function change_topic(elem, evt) {
 		}
 
 	} catch (e) {
-		exception_error("send", e);
+		exception_error("change_topic", e);
 	}
 }
 
@@ -549,12 +549,15 @@ function send(elem, evt) {
 				"&last_id=" + last_id + "&tab_type=" + tab.getAttribute("tab_type");
 	
 			debug(query);
-	
+
+			show_spinner();
+
 			new Ajax.Request("backend.php", {
 			parameters: query,
 			onComplete: function (transport) {
 				elem.value = '';
 				handle_update(transport);
+				hide_spinner();
 			} });
 		}
 
@@ -838,10 +841,13 @@ function close_tab(elem) {
 
 			debug(query);
 
+			show_spinner();
+
 			new Ajax.Request("backend.php", {
 			parameters: query,
 			onComplete: function (transport) {
 				handle_update(transport);
+				hide_spinner();
 			} });
 		}
 		
