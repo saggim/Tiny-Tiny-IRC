@@ -238,11 +238,11 @@ function handle_update(transport) {
 			last_id = lines[i].id;
 		}
 	
-		if (prev_last_id == last_id) {
+/*		if (prev_last_id == last_id) {
 			if (delay < 4000) delay += 100;
 		} else {
 			delay = 1000;
-		}
+		} */
 
 		if (!get_selected_tab()) {
 			change_tab(get_all_tabs()[0]);
