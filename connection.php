@@ -397,8 +397,9 @@ class Connection extends Yapircl {
 				$channel = db_escape_string($chan);
 
 				db_query($this->link, "UPDATE ttirc_channels SET nicklist = '$nicklist'
-					WHERE channel = '$channel' AND connection_id = " . 
-					$this->connection_id);
+					WHERE channel = '$channel' AND
+					chan_type = '".CT_CHANNEL."' AND
+					connection_id = " . $this->connection_id);
 			}
 		}
 	}

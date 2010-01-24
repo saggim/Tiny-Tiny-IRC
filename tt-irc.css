@@ -556,6 +556,10 @@ ul#userlist-list {
 	white-space : nowrap;
 }
 
+ul#userlist-list li {
+	cursor : pointer;
+}
+
 #actions {
 	position : relative;
 	left : 5px;

@@ -44,6 +44,21 @@
 
 		print json_encode(array($conn, $lines, $chandata));
 		break;
+	case "query-user":
+		$nick = db_escape_string(trim($_REQUEST["nick"]));
+		$last_id = (int) db_escape_string($_REQUEST["last_id"]);
+		$connection_id = db_escape_string($_REQUEST["connection"]);
+
+		if ($nick && valid_connection($link, $connection_id)) {
+			handle_command($link, $connection_id, $chan, "/query $nick");
+		}
+
+		$lines = get_new_lines($link, $last_id);
+		$conn = get_conn_info($link);
+		$chandata = get_chan_data($link, false);
+
+		print json_encode(array($conn, $lines, $chandata));
+		break;
 
 	case "send":
 		$message = db_escape_string(trim($_REQUEST["message"]));

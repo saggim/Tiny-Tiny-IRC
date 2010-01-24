@@ -408,7 +408,10 @@ function update_buffer() {
 						nick = "<strong>" + nick + "</strong>";
 					} */
 	
-					var tmp_html = "<li class=\""+row_class+"\">" + 
+					var tmp_html = "<li class=\""+row_class+"\" " +
+						"title=\"Start conversation\"" + 
+					  	"nick=\"" + nick + "\" " +
+						"onclick=\"query_user(this)\">" +
 						nick_image + " " + nick + "</li>";
 	
 					$("userlist-list").innerHTML += tmp_html;
@@ -503,6 +506,7 @@ function change_topic(elem, evt) {
 			var channel = tab.getAttribute("channel");
 	
 			if (tab.getAttribute("tab_type") == "S") channel = "---";
+
 			var query = "?op=set-topic&topic=" + param_escape(elem.value) + 
 				"&chan=" + param_escape(channel) +			
 				"&connection=" + param_escape(tab.getAttribute("connection_id")) +
@@ -853,6 +857,39 @@ function close_tab(elem) {
 		
 	} catch (e) {
 		exception_error("change_tab", e);
+	}
+}
+
+function query_user(elem) {
+	try {
+
+		if (!elem) return;
+
+		var tab = get_selected_tab();
+		var nick = elem.getAttribute("nick");
+		var pr = __("Start conversation with %s?").replace("%s", nick);
+
+		if (tab && confirm(pr)) {
+
+			var query = "?op=query-user&nick=" + param_escape(nick) +
+				"&connection=" + param_escape(tab.getAttribute("connection_id")) +
+				"&last_id=" + last_id;
+
+			debug(query);
+
+			show_spinner();
+
+			new Ajax.Request("backend.php", {
+			parameters: query,
+			onComplete: function (transport) {
+				handle_update(transport);
+				hide_spinner();
+			} });
+
+		}
+
+	} catch (e) {
+		exception_error("query_user", e);
 	}
 }
 

@@ -468,39 +468,63 @@
 
 		preg_match("/^\/([^ ]+) ?(.*)$/", $message, $keywords);
 
-		$command = strtolower($keywords[1]);
-		$arguments = $keywords[2];
+		$command = trim(strtolower($keywords[1]));
+		$arguments = trim($keywords[2]);
 
 		if ($command == "j") $command = "join";
-		if ($command == "part" && !$arguments) $arguments = $channel;
-
+		
 		if ($command == "me") {
 			$command = "action";
 			push_message($link, $connection_id, $channel,
 				"$arguments", true, MSGT_ACTION);
 		}
 
-		if ($command == "part") {
-			$result = db_query($link, "SELECT chan_type FROM ttirc_channels WHERE
+		switch ($command) {
+		case "query":
+
+			db_query($link, "BEGIN");
+
+			$result = db_query($link, "SELECT id FROM ttirc_channels WHERE
 				channel = '$channel' AND connection_id = '$connection_id'");
+
+			if (db_num_rows($result) == 0) {
+				db_query($link, "INSERT INTO ttirc_channels 
+					(channel, connection_id, chan_type) VALUES
+					('$arguments', '$connection_id', '".CT_PRIVATE."')");
+			}
+
+			db_query($link, "COMMIT");
+
+			break;
+		case "part":
+			
+			if (!$arguments) $arguments = $channel;
+
+			db_query($link, "BEGIN");
+
+			$result = db_query($link, "SELECT chan_type FROM ttirc_channels WHERE
+				channel = '$arguments' AND connection_id = '$connection_id'");
 
 			if (db_num_rows($result) != 0) {
 				$chan_type = db_fetch_result($result, 0, "chan_type");
 
 				if ($chan_type == CT_PRIVATE) {
 					db_query($link, "DELETE FROM ttirc_channels WHERE
-						channel = '$channel' AND connection_id = '$connection_id'");
+						channel = '$arguments' AND connection_id = '$connection_id'");
 				} else {
 					push_message($link, $connection_id, $channel,
 						"$command:$arguments", false, MSGT_COMMAND);
 				}
 			}
 
-		} else {
+			db_query($link, "COMMIT");
+
+			break;
+		default:
 			push_message($link, $connection_id, $channel,
 				"$command:$arguments", false, MSGT_COMMAND);
+			break;
 		}
-
 	}
 
 
