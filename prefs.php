@@ -41,10 +41,10 @@
 
 		$line = db_fetch_assoc($result);
 
-		if (sql_bool_to_bool($line['enabled'])) {
-			$enabled_checked = 'checked';
+		if (sql_bool_to_bool($line['auto_connect'])) {
+			$auto_connect_checked = 'checked';
 		} else {
-			$enabled_checked = '';
+			$auto_connect_checked = '';
 		}
 
 		if (sql_bool_to_bool($line['permanent'])) {
@@ -84,14 +84,14 @@
 		<div class="dlgSec">Options</div>
 
 		<div class="dlgSecCont">
-			<input name="enabled" <?php echo $enabled_checked ?> 
-				id="pr_enabled" type="checkbox" value="1">
-			<label for="pr_enabled">Enabled</label>
+			<input name="auto_connect" <?php echo $auto_connect_checked ?> 
+				id="pr_auto_connect" type="checkbox" value="1">
+			<label for="pr_auto_connect">Connect automatically</label>
 			<br clear='left'/>
 
 			<input name="permanent" <?php echo $permanent_checked ?>
 				id="pr_permanent" type="checkbox" value="1">
-			<label for="pr_permanent">Keep connected</label>
+			<label for="pr_permanent">Keep connected when logged off</label>
 			<br clear='left'/>
 
 		</div>

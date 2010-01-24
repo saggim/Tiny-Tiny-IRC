@@ -43,11 +43,12 @@ create table ttirc_connections(id serial not null primary key,
 	encoding varchar(120) not null default '',
 	status integer not null default 0,
 	autojoin text not null default '',
+	auto_connect boolean not null default true,
 	connect_cmd text not null default '',
 	last_sent_id integer not null default 0,
 	owner_uid integer not null references ttirc_users(id) ON DELETE CASCADE);
 
-insert into ttirc_connections (title,owner_uid,enabled,autojoin,encoding) values ('GBU', 1, true, '#test', 'koi8-r');
+insert into ttirc_connections (title,owner_uid,autojoin,encoding) values ('GBU', 1, '#test', 'koi8-r');
 
 create table ttirc_servers(id serial not null primary key,
 	connection_id integer not null references ttirc_connections(id) ON DELETE CASCADE,

@@ -146,6 +146,12 @@
 						time() + SESSION_COOKIE_LIFETIME);
 				}
 
+
+				/* Enable automatic connections */
+
+				db_query($link, "UPDATE ttirc_connections SET enabled = true 
+					WHERE auto_connect = true AND owner_uid = " . $_SESSION["uid"]);
+
 /*				$tmp_result = db_query($link, "SELECT id FROM ttirc_connections
 					WHERE status != ".CS_DISCONNECTED." AND owner_uid = " .
 					$_SESSION["uid"]);

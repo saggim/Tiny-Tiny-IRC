@@ -55,11 +55,18 @@ function create_tab_if_needed(chan, connection_id, tab_type) {
 
 			$("tabs-list").innerHTML += tab;
 		} else if (!$(tab_id) && tab_type != "S") {
+
+			var img = "<img class=\"conn-img\" "+
+				"src=\"images/close_tab.png\" alt=\"[X]\" " +
+				"title=\"Close this tab\"" +
+				"tab_id=\"" + tab_id + "\"" +
+				"onclick=\"close_tab(this)\">";
+
 			var tab = "<li id=\"" + tab_id + "\" " +
 				"channel=\"" + chan + "\" " +
 				"tab_type=\"" + tab_type + "\" " +
 				"connection_id=\"" + connection_id + "\" " +
-		  		"onclick=\"change_tab(this)\">" +
+		  		"onclick=\"change_tab(this)\">" + img +
 				"&nbsp;&nbsp;" + chan + "</li>";
 
 			debug("creating tab: " + tab_id + " " + tab_type);
@@ -572,7 +579,7 @@ function change_tab(elem) {
 
 		if (!elem) return;
 
-		var tabs = $("tabs-list").getElementsByTagName("li");
+		var tabs = get_all_tabs();
 
 		for (var i = 0; i < tabs.length; i++) {
 			if (tabs[i].className == "selected") tabs[i].className = "";
@@ -796,7 +803,8 @@ function cleanup_tabs(chandata) {
 			}
 
 			if (tabs[i].getAttribute("tab_type") != "S") {
-				if (chandata[connection_id] && !chandata[connection_id][chan]) {
+				if (!chandata[connection_id] || 
+						(chandata[connection_id] && !chandata[connection_id][chan])) {
 
 					debug("removing unnecessary C/P-tab: " + tabs[i].id);
 
@@ -812,3 +820,33 @@ function cleanup_tabs(chandata) {
 	}
 
 }
+
+function close_tab(elem) {
+	try {
+
+		if (!elem) return;
+
+		var tab_id = elem.getAttribute("tab_id");
+		var tab = $(tab_id);
+
+		if (tab && confirm("Close this tab?")) {
+
+			var query = "?op=part-channel" +
+				"&chan=" + param_escape(tab.getAttribute("channel")) +
+				"&connection=" + param_escape(tab.getAttribute("connection_id")) +
+				"&last_id=" + last_id;
+
+			debug(query);
+
+			new Ajax.Request("backend.php", {
+			parameters: query,
+			onComplete: function (transport) {
+				handle_update(transport);
+			} });
+		}
+		
+	} catch (e) {
+		exception_error("change_tab", e);
+	}
+}
+
