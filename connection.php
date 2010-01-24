@@ -352,6 +352,17 @@ class Connection extends Yapircl {
 				$this->join($chan);
 			}
 		}
+
+		$result = db_query($this->link, "SELECT channel FROM ttirc_channels
+			WHERE chan_type = ".CT_CHANNEL." AND 
+			connection_id = " . $this->connection_id);
+
+		while ($line = db_fetch_assoc($result)) {
+			if (!array_key_exists($line['channel'], $this->channels)) {
+				$this->join($line['channel']);
+			}
+		}
+
 	}
 
 	function get_unicode_nicklist($channel) {

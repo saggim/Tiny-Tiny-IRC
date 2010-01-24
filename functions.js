@@ -278,3 +278,30 @@ function hide_spinner() {
 		exception_error("hide_spinner", e);
 	}
 }
+
+function sort_connection_tabs(node) {
+
+//	debug("sort_connection_tabs " + node);
+
+	try {
+		var list = node.getElementsByTagName("LI");
+
+		for (i = 0; i < list.length; i++) {
+	
+			for (j = i+1; j < list.length; j++) {			
+
+				if (list[i].value < list[j].value) {	
+					tempnode_i = list[i].cloneNode(true);
+					tempnode_j = list[j].cloneNode(true);
+					node.replaceChild(tempnode_i, list[j]);
+					node.replaceChild(tempnode_j, list[i]);
+				}
+			}
+		}
+
+	} catch (e) {
+		exception_error("sort_connection_tabs", e);
+	}
+
+}
+

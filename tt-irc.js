@@ -72,19 +72,9 @@ function create_tab_if_needed(chan, connection_id, tab_type) {
 			debug("creating tab: " + tab_id + " " + tab_type);
 
 			$(tab_list_id).innerHTML += tab;
+
+			sort_connection_tabs($(tab_list_id));
 		}
-
-/*		if (!$(tab_id)) {
-			var tab = "<li id=\"" + tab_id + "\" " +
-				"channel=\"" + chan + "\" " +
-				"tab_type=\"" + tab_type + "\" " +
-				"connection_id=\"" + connection_id + "\" " +
-		  		"onclick=\"change_tab(this)\">" + chan + "</li>";
-
-			debug("creating tab: " + tab_id);
-
-			$("tabs-list").innerHTML += tab;
-		} */
 
 		return tab_id;
 
