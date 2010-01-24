@@ -207,7 +207,19 @@ class Connection extends Yapircl {
 	}
 
 	function event_kick() {
-		$this->update_nicklist($this->from);
+
+		if ($this->_usednick == $this->_xline[3]) {
+			$channel = $this->to_utf($this->_xline[2]);
+
+			$result = db_query($this->link, "DELETE FROM ttirc_channels
+				WHERE channel = '$channel' AND connection_id = " .
+				$this->connection_id);
+
+			$this->push_message('---', '---', 
+				"You have been kicked from " . $this->_xline[2], MSGT_PRIVMSG);
+		}	
+
+		$this->update_nicklist($this->_xline[2]);
 	}
 
 	function event_public_privmsg() {
