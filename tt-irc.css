@@ -596,17 +596,6 @@ ul#userlist-list li {
 	padding : 2px 5px 2px 5px;
 }
 
-/*
-#log .odd {
-	background-color : black;
-	border-color : #101010;
-}
-
-#log .even {
-	background-color : #101010;
-	border-color : #101010;
-} */
-
 .evenSelected, .evenSelected td {
 	background-color : #fff7d5;
 	border-style : solid;

@@ -1,5 +1,19 @@
 #log, #log-list {
 	background : black;
+	color : white;
 }
 
+#log .odd {
+	background-color : black;
+	border-color : #101010;
+}
+
+#log .even {
+	background-color : #101010;
+	border-color : #101010;
+}
+
+#log span.message {
+	color : #f0f0f0;
+}
 
