@@ -129,7 +129,7 @@
 		<input disabled onkeypress="change_topic(this, event)" 
 			id="topic-input" value=""></div>
 	</div>
-	<div id="connect"><button onclick="toggle_connection(this)" 
+	<div id="connect"><button onclick="toggle_connection(this)" disabled
 		id="connect-btn">Connect</button></div>
 	<div id="log"><ul id="log-list"></ul></div>	
 	<div id="nick" onclick="change_nick()"></div>
