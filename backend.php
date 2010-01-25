@@ -1,6 +1,15 @@
 <?php
 	error_reporting(E_ERROR | E_WARNING | E_PARSE);
 
+	/* remove ill effects of magic quotes */
+
+	if (get_magic_quotes_gpc()) {
+		$_REQUEST = array_map('stripslashes', $_REQUEST);
+		$_POST = array_map('stripslashes', $_POST);
+		$_REQUEST = array_map('stripslashes', $_REQUEST);
+		$_COOKIE = array_map('stripslashes', $_COOKIE);
+	}
+
 	require_once "sessions.php";
 	require_once "db-prefs.php";
 	require_once "functions.php"; 
@@ -32,6 +41,7 @@
 	switch ($op) {
 	case "create-user":
 		$login = strtolower(db_escape_string($_REQUEST["login"]));
+		$rv = array();
 
 		if ($_SESSION["access_level"] >= 10) {
 
@@ -39,16 +49,43 @@
 				login = '$login'");
 
 			if (db_num_rows($result) == 0) {
-				$pwd_hash = db_escape_string(encrypt_password(make_password(), $login));
+				$tmp_password = make_password();
+				$pwd_hash = db_escape_string(encrypt_password($tmp_password, $login));
+
+				$rv[0] = T_sprintf("Created user %s with password <b>%s</b>.",
+					$login, $tmp_password);
 
 				db_query($link, "INSERT INTO ttirc_users 
 					(login, pwd_hash, email, nick, realname) 
 					VALUES
 					('$login', '$pwd_hash', '$login@localhost', '$login', '$login')");
+			} else {
+				$rv[0] = T_sprintf("User %s already exists", $login);
 			}
 
-			print_users($link);
+			$rv[1] = format_users($link);
+
+			print json_encode($rv);
 		}
+		break;
+	case "reset-password":
+		$id = db_escape_string($_REQUEST["id"]);
+
+		if ($_SESSION["access_level"] >= 10) {
+			$tmp_password = make_password();
+
+			$login = get_user_login($link, $id);
+
+			$pwd_hash = db_escape_string(encrypt_password($tmp_password, $login));
+
+			db_query($link, "UPDATE ttirc_users SET pwd_hash = '$pwd_hash'
+				WHERE id = '$id'");
+
+			print json_encode(array("message" => 
+				T_sprintf("Reset password of user %s to <b>%s</b>.", $login, 
+					$tmp_password)));
+		}
+
 		break;
 	case "delete-user":
 		$ids = db_escape_string($_REQUEST["ids"]);
@@ -56,9 +93,9 @@
 		if ($_SESSION["access_level"] >= 10) {
 
 			db_query($link, "DELETE FROM ttirc_users WHERE
-				id in ($ids)");
+				id in ($ids) AND id != " . $_SESSION["uid"]);
 
-			print_users($link);
+			print format_users($link);
 		}
 		break;
 	case "users":

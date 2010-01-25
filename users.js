@@ -26,7 +26,14 @@ function create_user() {
 			parameters: "?op=create-user&login=" + 
 				param_escape(login),
 			onComplete: function (transport) {
-				$("users-list").innerHTML = transport.responseText;
+				var obj = _eval(transport.responseText);
+
+				var message = obj[0];
+				var data = obj[1];
+
+				mini_error(message);
+
+				$("users-list").innerHTML = data;
 				hide_spinner();
 			} });
 
