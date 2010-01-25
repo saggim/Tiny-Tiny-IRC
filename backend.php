@@ -231,6 +231,7 @@
 				connect_cmd = '$connect_cmd',
 				auto_connect = '$auto_connect',
 				nick = '$nick',
+				encoding = '$encoding',
 				permanent = '$permanent'
 				WHERE id = '$connection_id'");
 
