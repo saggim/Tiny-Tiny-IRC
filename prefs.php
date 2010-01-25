@@ -94,7 +94,7 @@
 
 			<input name="permanent" <?php echo $permanent_checked ?>
 				id="pr_permanent" type="checkbox" value="1">
-			<label for="pr_permanent">Keep connected permanently</label>
+			<label for="pr_permanent">Stay connected permanently</label>
 			<br clear='left'/>
 
 		</div>
