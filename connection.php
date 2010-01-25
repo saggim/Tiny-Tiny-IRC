@@ -220,6 +220,25 @@ class Connection extends Yapircl {
 		$this->update_nicklist(false);
 	}
 
+	function event_mode() {
+
+		$subject = "";
+
+		for ($i=3; $i < $this->_xline_sizeof; $i++) {
+			$subject .=  ' ' . $this->_xline[$i];
+		}
+
+		$topic = substr(ltrim($subject), 1);
+
+		$message = sprintf("Mode change [%s] on %s by %s", 
+			$subject, $this->_xline[2], $this->nick);
+
+		$this->push_message("---", $this->_xline[2], 
+				$message, MSGT_PRIVMSG);
+
+		$this->update_nicklist($this->_xline[2]);
+	}
+
 	function event_part() {
 
 		if ($this->nick == $this->_usednick) {
@@ -444,6 +463,9 @@ class Connection extends Yapircl {
 	}
 
 	function update_nicklist($channel) {
+
+		$channel = strtolower($channel);
+
 		if ($channel) {
 
 			$nicklist = db_escape_string(json_encode(
