@@ -175,8 +175,15 @@
 			email = '$email',
 			nick = '$nick' WHERE id = " . $_SESSION["uid"]);
 
-		if ($new_password || $confirm_password) {
-			print json_encode(array("error" => "Sorry, can't save password yet. :("));		
+		if ($new_password != $confirm_password) {
+			print json_encode(array("error" => "Passwords do not match."));		
+		}
+
+		if ($confirm_password == $new_password && $new_password) {
+			$pwd_hash =  encrypt_password($new_password, $_SESSION["name"]);
+
+			db_query($link, "UPDATE ttirc_users SET pwd_hash = '$pwd_hash'
+				WHERE id = ". $_SESSION["uid"]);
 		}
 
 		break;
