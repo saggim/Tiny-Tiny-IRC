@@ -27,6 +27,12 @@ class Connection extends Yapircl {
 	function handle_command($command, $arguments, $channel) {
 
 		switch (strtolower($command)) {
+			case "ping":
+				$this->ping($arguments);
+				break;
+			case "whois":
+				$this->whois($arguments);
+				break;
 			case "join":
 				$this->join($arguments);
 				break;
@@ -170,11 +176,32 @@ class Connection extends Yapircl {
 	}
 
 	function event_join() {
-		$this->update_nicklist($this->from);
+
+		$channel = substr($this->_xline[2], 1);
+
+		$message = sprintf("%s has joined %s", $this->nick, $channel);
+
+		$this->push_message('---', $channel, $message);
+
+		$this->update_nicklist($channel);
 	}
 
 	function event_quit() {
-		$this->update_nicklist($this->from);
+
+		$quit_msg = "";
+
+		for ($i=3; $i < $this->_xline_sizeof; $i++) {
+			$quit_msg .=  ' ' . $this->_xline[$i];
+		}
+
+		$topic = substr(ltrim($topic), 1);
+
+		$message = sprintf("%s has quit IRC (%s)",
+			$this->nick, $quit_msg);
+
+		$this->push_message('---', '---', $message, MSGT_BROADCAST);
+
+		$this->update_nicklist(false);
 	}
 
 	function event_nick() {
@@ -248,7 +275,13 @@ class Connection extends Yapircl {
 
 	function handle_ctcp_ping() {
 		$this->ctcp($this->nick, $this->full);
-		echo $this->mask . " requested CTCP PING from " . $this->from . "\n";
+		//echo $this->mask . " requested CTCP PING from " . $this->from . "\n";
+
+		$message = sprintf("Received CTCP PING from %s (%s)", 
+			$this->from, $this->full);
+		
+		$this->push_message('---', '---', $message, MSGT_PRIVMSG);
+
 	}
 
 	function event_public_ctcp_version() {
@@ -324,8 +357,8 @@ class Connection extends Yapircl {
 
 		$nicklist = $this->channels[$this->_xline[3]];
 
-		$this->push_message('---', $this->_xline[3], 
-			__('You have joined the channel.'));
+//		$this->push_message('---', $this->_xline[3], 
+//			__('You have joined the channel.'));
 
 		$this->update_nicklist($this->_xline[3]);
 	}
@@ -400,6 +433,14 @@ class Connection extends Yapircl {
 		} else {
 			return __("Tiny Tiny IRC");
 		}
+	}
+
+   function whois($user) {
+		$this->sendBuf("WHOIS :$user");
+	}
+
+   function ping($target) {
+		$this->privmsg($target, "\001PING ".time()."\001");
 	}
 
 	function update_nicklist($channel) {

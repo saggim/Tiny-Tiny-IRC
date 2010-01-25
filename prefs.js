@@ -2,7 +2,14 @@ function save_prefs() {
 	try {
 		var query = Form.serialize("prefs_form");
 
-		alert(query);
+		debug(query);
+
+		new Ajax.Request("backend.php", {
+		parameters: query,
+		onComplete: function (transport) {
+			close_infobox();
+			hide_spinner();
+		} });
 
 	} catch (e) {
 		exception_error("save_prefs", e);

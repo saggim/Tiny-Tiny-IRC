@@ -164,6 +164,8 @@
 
 		<form id="prefs_form" onsubmit="return false;">
 
+		<input type="hidden" name="op" value="prefs-save"/>
+
 		<div class="dlgSec">Personal data</div>
 
 		<div class="dlgSecCont">
