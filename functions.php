@@ -835,4 +835,15 @@
 
 		return $result;
 	}
+
+	function get_user_login($link, $id) {
+		$result = db_query($link, "SELECT login FROM ttirc_users WHERE id = '$id'");
+
+		if (db_num_rows($result) == 1) {
+			return db_fetch_result($result, 0, "login");
+		} else {
+			return false;
+		}
+
+	}
 ?>

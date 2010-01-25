@@ -81,3 +81,37 @@ function delete_user() {
 	}
 }
 
+function reset_user() {
+	try {
+		var rows = get_selected_rows($("users-list"));
+
+		if (rows.length == 1) {
+			if (confirm(__("Delete selected users?"))) {
+
+				var id = rows[0].getAttribute("user_id");
+
+				var query = "?op=reset-password&id=" + param_escape(id);
+
+				debug(query);
+
+				show_spinner();
+
+				new Ajax.Request("backend.php", {
+				parameters: query, 
+				onComplete: function (transport) {
+					var obj = _eval(transport.responseText);
+					mini_error(obj.message);
+					hide_spinner();
+				} });
+
+			}
+		} else {
+			alert(__("Please select one user to reset password."));
+		}
+
+
+	} catch (e) {
+		exception_error("delete_user", e);
+	}
+}
+
