@@ -8,7 +8,7 @@ body {
 }
 
 a {
-	color : #99d67a;
+	color : #88b0f0;
 	text-decoration : none;
 }
 
@@ -322,6 +322,14 @@ ul.sub-tabs {
 	left : 5px;
 	bottom : 35px;
 	overflow : auto;
+}
+
+#log a {
+	color : #4684ff;
+}
+
+#log a:hover {
+	color : black;
 }
 
 #userlist {

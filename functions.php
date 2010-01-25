@@ -3,6 +3,9 @@
 	require_once "message_types.php";
 	require_once "db-prefs.php";
 
+	$url_regex = "((((new|(ht|f)tp)s?://)?([a-zA-Z+0-9_-]+:[a-zA-Z+0-9_-]+\\@)?((www|ftp|[a-zA-Z+0-9]+(-\\+[a-zA-Z+0-9])*)\\.)?)([a-zA-Z+0-9]+(\\-+[a-zA-Z+0-9]+)*\\.)+[a-zA-Z+]{2,7}(:\\d+)?(/~[a-zA-Z+0-9_%\\-]+)?(/[a-zA-Z+0-9_%.-]+(?=/))*(/[a-zA-Z+0-9_%-]+(\\.[a-zA-Z+0-9]+)?(\\#[a-zA-Z+0-9_.]+)?)*(\\?([a-zA-Z+0-9_.%-]+)=[a-zA-Z+0-9_.%/-]*)?(&([a-zA-Z+0-9_.%-]+)=[a-zA-Z+0-9_.%/-]*)*/?)";
+
+
 	if (DB_TYPE == "pgsql") {
 		define('SUBSTRING_FOR_DATE', 'SUBSTRING_FOR_DATE');
 	} else {
@@ -575,7 +578,7 @@
 		$lines = array();
 
 		while ($line = db_fetch_assoc($result)) {
-			$line["message"] = htmlspecialchars($line["message"]);
+			$line["message"] = rewrite_urls(htmlspecialchars($line["message"]));
 			$line["sender_color"] = color_of($line["sender"]);
 			array_push($lines, $line);
 		}
@@ -816,4 +819,21 @@
 		return $password;
 	}
 
+	function rewrite_urls($line) {
+		global $url_regex;
+
+		$urls = null;
+
+		preg_match_all($url_regex, $line, $urls, PREG_PATTERN_ORDER);
+		
+		$result = $line;
+
+		foreach ($urls[0] as $url) {
+			$result = str_replace($url, "<a target=\"_blank\" href=\"". 
+				htmlspecialchars($url) . "\">" . $url . "</a>", $result);
+		}
+
+		return $result;
+
+	}
 ?>

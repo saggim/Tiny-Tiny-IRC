@@ -105,7 +105,7 @@
 </div>
 
 <div id="actions">
-	<select onchange="handle_action(this)">
+	<select onchange="handle_action(this)" style='display : none'>
 		<option value="">Actions...</option>
 		<option value="cmd_nick">Change nick</option>
 		<optgroup label="Channel">
