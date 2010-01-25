@@ -21,7 +21,7 @@ class Connection extends Yapircl {
 		$this->connection_id = $connection_id;
 		$this->last_sent_id = $last_sent_id;
 		$this->encoding = $encoding;
-		$this->_resolution = 15000;
+		$this->_resolution = 25000;
 	}
 
 	function handle_command($command, $arguments, $channel) {
