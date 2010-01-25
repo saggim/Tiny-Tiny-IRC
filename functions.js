@@ -302,6 +302,20 @@ function sort_connection_tabs(node) {
 	} catch (e) {
 		exception_error("sort_connection_tabs", e);
 	}
+}
 
+function show_mini_error(msg) {
+	try {
+
+		var elem = $("mini-notice");
+
+		if (elem) {
+			elem.innerHTML = msg;
+			Element.show(elem);
+		}
+
+	} catch (e) {
+		exception_error("show_mini_error");
+	}
 }
 

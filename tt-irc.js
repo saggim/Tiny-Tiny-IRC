@@ -118,7 +118,7 @@ function init_second_stage(transport) {
 
 		hide_spinner();
 
-		update();
+		update(true);
 
 	} catch (e) {
 		exception_error("init_done", e);
@@ -145,11 +145,11 @@ function init() {
 	}
 }
 
-function _eval(data) {
+function _eval(data, silent) {
 	try {
 		return eval("(" + data + ")");
 	} catch (e) {
-		exception_error("_eval", e, data);
+		if (!silent) exception_error("_eval", e, data);
 	}
 }
 
@@ -247,11 +247,13 @@ function handle_update(transport) {
 	return true;
 }
 
-function update() {
+function update(init) {
 	try {
 		var query = "?op=update&last_id=" + last_id;
+	  		
+		if (init) query += "&init=" + init;
 
-		debug("request update...");
+		debug("request update..." + query);
 
 		new Ajax.Request("backend.php", {
 		parameters: query,

@@ -164,6 +164,8 @@
 
 		<form id="prefs_form" onsubmit="return false;">
 
+		<div id="mini-notice" style='display : none'>&nbsp;</div>
+
 		<input type="hidden" name="op" value="prefs-save"/>
 
 		<div class="dlgSec">Personal data</div>

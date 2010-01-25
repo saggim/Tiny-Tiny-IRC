@@ -83,8 +83,9 @@
 
 	case "update":
 		$last_id = (int) db_escape_string($_REQUEST["last_id"]);
+		$init = db_escape_string($_REQUEST["init"]);
 
-		if ($last_id) {
+		if (!$init) {
 			$sleep_start = time();
 			while (time() - $sleep_start < UPDATE_DELAY_MAX && 
 					!num_new_lines($link, $last_id)) {
@@ -136,6 +137,9 @@
 		break;
 	case "prefs":
 		main_prefs($link);
+		break;
+	case "prefs-save":
+		//print json_encode(array("error" => "Function not implemented."));
 		break;
 	case "prefs-edit-con":
 		$connection_id = (int) db_escape_string($_REQUEST["id"]);

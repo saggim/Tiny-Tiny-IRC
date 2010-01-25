@@ -665,3 +665,14 @@ div.dlgSecCont label.fixed {
 	text-align : right;
 	padding-right : 10px;
 }
+
+div#mini-notice {
+	font-size : 11px;
+	color : black;
+	background-color : white;
+	border : 1px solid #659a4c;
+	margin-bottom : 5px;
+	padding : 2px;
+}
+
+

@@ -7,7 +7,15 @@ function save_prefs() {
 		new Ajax.Request("backend.php", {
 		parameters: query,
 		onComplete: function (transport) {
-			close_infobox();
+
+			var obj = _eval(transport.responseText, true);
+
+			if (obj && obj.error) {
+				show_mini_error(obj.error);
+			} else {
+				close_infobox();
+			}
+
 			hide_spinner();
 		} });
 
