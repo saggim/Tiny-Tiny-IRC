@@ -83,7 +83,9 @@
 			<br clear='left'/>
 
 			<label class='fixed'>Character set:</label>
-			<input name="encoding" size="30" value="<?php echo $line['encoding'] ?>">
+
+			<?php print_select('encoding', $line['encoding'], get_iconv_encodings()) ?>
+
 			<br clear='left'/>
 
 		</div>

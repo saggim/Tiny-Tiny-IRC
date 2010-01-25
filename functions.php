@@ -824,14 +824,8 @@
 
 		$urls = null;
 
-		preg_match_all($url_regex, $line, $urls, PREG_PATTERN_ORDER);
-		
-		$result = $line;
-
-		foreach ($urls[0] as $url) {
-			$result = str_replace($url, "<a target=\"_blank\" href=\"". 
-				htmlspecialchars($url) . "\">" . $url . "</a>", $result);
-		}
+		$result = preg_replace("/(([a-z]+):\/\/[^ ]+)/i", 
+			"<a target=\"_blank\" href=\"\\1\">\\1</a>", $line);
 
 		return $result;
 	}
@@ -845,5 +839,9 @@
 			return false;
 		}
 
+	}
+
+	function get_iconv_encodings() {
+		return explode("\n", file_get_contents("lib/iconv.txt"));
 	}
 ?>
