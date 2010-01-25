@@ -11,12 +11,21 @@
 
 	$connection_id = db_escape_string($argv[1]);
 
-	$result = db_query($link, "SELECT * FROM ttirc_connections, ttirc_users
+	$result = db_query($link, "SELECT *,
+		ttirc_connections.nick AS local_nick, ttirc_users.nick AS nick
+		FROM ttirc_connections, ttirc_users
 		WHERE ttirc_connections.id = $connection_id AND owner_uid = ttirc_users.id");
 
 	if (db_num_rows($result) == 1) {
 
 		$line = db_fetch_assoc($result);
+
+		if (!sql_bool_to_bool($line['enabled'])) {
+			debug("[$connection_id] connection disabled, aborting");
+			return;
+		}
+
+		if ($line['local_nick']) $line['nick'] = $line['local_nick'];
 
 		$server = get_random_server($link, $connection_id);
 

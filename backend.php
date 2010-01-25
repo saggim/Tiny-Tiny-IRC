@@ -217,6 +217,7 @@
 		$autojoin = db_escape_string($_REQUEST["autojoin"]);
 		$connect_cmd = db_escape_string($_REQUEST["connect_cmd"]);
 		$encoding = db_escape_string($_REQUEST["encoding"]);
+		$nick = db_escape_string($_REQUEST["nick"]);
 		$auto_connect = bool_to_sql_bool(db_escape_string($_REQUEST["auto_connect"]));
 		$permanent = bool_to_sql_bool(db_escape_string($_REQUEST["permanent"]));
 		$connection_id = db_escape_string($_REQUEST["connection_id"]);
@@ -229,6 +230,7 @@
 				autojoin = '$autojoin',
 				connect_cmd = '$connect_cmd',
 				auto_connect = '$auto_connect',
+				nick = '$nick',
 				permanent = '$permanent'
 				WHERE id = '$connection_id'");
 

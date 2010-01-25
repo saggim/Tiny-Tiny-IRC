@@ -45,6 +45,7 @@ create table ttirc_connections(id serial not null primary key,
 	autojoin text not null default '',
 	auto_connect boolean not null default false,
 	connect_cmd text not null default '',
+	nick varchar(120) not null default '',
 	last_sent_id integer not null default 0,
 	owner_uid integer not null references ttirc_users(id) ON DELETE CASCADE);
 

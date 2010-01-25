@@ -24,6 +24,8 @@ function save_prefs(callback) {
 	} catch (e) {
 		exception_error("save_prefs", e);
 	}
+	
+	return false;
 }
 
 function show_prefs() {
