@@ -37,7 +37,8 @@
 	<script type="text/javascript" src="lib/prototype.js"></script>
 	<script type="text/javascript" src="lib/scriptaculous/scriptaculous.js?load=effects,dragdrop,controls"></script>
 		<script type="text/javascript" charset="utf-8" src="tt-irc.js?<?php echo $dt_add ?>"></script>
-	<script type="text/javascript" charset="utf-8" src="prefs.js?<?php echo $dt_add ?>"></script>
+		<script type="text/javascript" charset="utf-8" src="prefs.js?<?php echo $dt_add ?>"></script>
+	<script type="text/javascript" charset="utf-8" src="users.js?<?php echo $dt_add ?>"></script>
 	<script type="text/javascript" charset="utf-8" src="functions.js?<?php echo $dt_add ?>"></script>
 	
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
@@ -93,6 +94,10 @@
 	<?php } ?>
 	<a href="#" onclick="show_prefs()"><?php echo __('Preferences') ?></a>
 
+	<?php if ($_SESSION["access_level"] >= 10) { ?>
+	| <a href="#" onclick="show_users()"><?php echo __('Users') ?></a>
+	<?php } ?>
+
 	<?php if (!SINGLE_USER_MODE) { ?>
 			| <a href="logout.php"><?php echo __('Logout') ?></a>
 	<?php } ?>
@@ -129,7 +134,7 @@
 		<input disabled onkeypress="change_topic(this, event)" 
 			id="topic-input" value=""></div>
 	</div>
-	<div id="connect"><button onclick="toggle_connection(this)" disabled
+	<div id="connect"><button onclick="toggle_connection(this)" 
 		id="connect-btn">Connect</button></div>
 	<div id="log"><ul id="log-list"></ul></div>	
 	<div id="nick" onclick="change_nick()"></div>

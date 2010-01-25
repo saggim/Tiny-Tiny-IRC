@@ -8,6 +8,7 @@
 	require_once "version.php"; 
 	require_once "config.php";
 	require_once "prefs.php";
+	require_once "users.php";
 
 	$link = db_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);	
 
@@ -29,6 +30,42 @@
 	update_heartbeat($link);
 
 	switch ($op) {
+	case "create-user":
+		$login = strtolower(db_escape_string($_REQUEST["login"]));
+
+		if ($_SESSION["access_level"] >= 10) {
+
+			$result = db_query($link, "SELECT id FROM ttirc_users WHERE
+				login = '$login'");
+
+			if (db_num_rows($result) == 0) {
+				$pwd_hash = db_escape_string(encrypt_password(make_password(), $login));
+
+				db_query($link, "INSERT INTO ttirc_users 
+					(login, pwd_hash, email, nick, realname) 
+					VALUES
+					('$login', '$pwd_hash', '$login@localhost', '$login', '$login')");
+			}
+
+			print_users($link);
+		}
+		break;
+	case "delete-user":
+		$ids = db_escape_string($_REQUEST["ids"]);
+
+		if ($_SESSION["access_level"] >= 10) {
+
+			db_query($link, "DELETE FROM ttirc_users WHERE
+				id in ($ids)");
+
+			print_users($link);
+		}
+		break;
+	case "users":
+		if ($_SESSION["access_level"] >= 10) {
+			show_users($link);
+		}
+		break;
 	case "part-channel":
 		$last_id = (int) db_escape_string($_REQUEST["last_id"]);
 		$chan = db_escape_string($_REQUEST["chan"]);
@@ -146,6 +183,8 @@
 		$auto_connect = bool_to_sql_bool(db_escape_string($_REQUEST["auto_connect"]));
 		$permanent = bool_to_sql_bool(db_escape_string($_REQUEST["permanent"]));
 		$connection_id = db_escape_string($_REQUEST["connection_id"]);
+
+		if (!$title) $title = __("[Untitled]");
 
 		if (valid_connection($link, $connection_id)) {
 

@@ -62,7 +62,7 @@
 
 		<form id="prefs_conn_form" onsubmit="return false;">
 
-		<input type="hidden" name="connection_id" value="<? echo $id ?>"/>
+		<input type="hidden" name="connection_id" value="<?php echo $id ?>"/>
 		<input type="hidden" name="op" value="prefs-conn-save"/>
 
 		<div class="dlgSecCont">
@@ -223,4 +223,4 @@
 		</form>
 	</div>
 
-<? } ?>
+<?php } ?>
