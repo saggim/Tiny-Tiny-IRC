@@ -221,6 +221,7 @@ class Connection extends Yapircl {
 	}
 
 	function event_mode() {
+		$this->_putUser($this->_xline[0]);
 
 		$subject = "";
 
@@ -228,7 +229,7 @@ class Connection extends Yapircl {
 			$subject .=  ' ' . $this->_xline[$i];
 		}
 
-		$topic = substr(ltrim($subject), 1);
+		$subject = ltrim($subject);
 
 		$message = sprintf("Mode change [%s] on %s by %s", 
 			$subject, $this->_xline[2], $this->nick);
