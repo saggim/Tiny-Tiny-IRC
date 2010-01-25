@@ -339,11 +339,25 @@
 	}
 
 	function get_user_theme($link) {
-		return ''; // TODO
+		$theme_name = get_pref($link, "USER_THEME");
+		if (is_dir("themes/$theme_name")) {
+			return $theme_name;
+		} else {
+			return '';
+		}
 	}
 
 	function get_user_theme_path($link) {
-		return false; // TODO
+		$theme_name = get_pref($link, "USER_THEME");
+
+		if ($theme_name && is_dir("themes/$theme_name")) {
+			$theme_path = "themes/$theme_name/";
+		} else {
+			$theme_name = '';
+		}
+
+		return $theme_path;
+
 	}
 
 	function get_all_themes() {
@@ -843,5 +857,30 @@
 
 	function get_iconv_encodings() {
 		return explode("\n", file_get_contents("lib/iconv.txt"));
+	}
+
+	function print_theme_select($link) {
+		$user_theme = get_pref($link, "USER_THEME");
+		$themes = get_all_themes();
+
+		print "<select name=\"theme\">";
+		print "<option value=''>".__('Default')."</option>";
+		print "<option disabled>--------</option>";				
+
+		foreach ($themes as $t) {
+			$base = $t['base'];
+			$name = $t['name'];
+
+			if ($base == $user_theme) {
+				$selected = "selected=\"1\"";
+			} else {
+				$selected = "";
+			}
+
+			print "<option $selected value='$base'>$name</option>";
+
+		}
+
+		print "</select>";
 	}
 ?>

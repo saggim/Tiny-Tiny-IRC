@@ -160,6 +160,8 @@
 
 	function main_prefs($link) {
 
+	$_SESSION["prefs_cache"] = false;
+
 	$result = db_query($link, "SELECT * FROM ttirc_users WHERE
 		id = " . $_SESSION["uid"]);
 
@@ -196,6 +198,12 @@
 
 			<label class="fixed">Quit message:</label>
 			<input name="quit_message" size="30" value="<?php echo $quit_message ?>">
+			<br clear='left'/>
+
+			<label class="fixed">Theme:</label>
+			<?php print_theme_select($link); ?>
+
+			<br clear='left'/>
 
 		</div>
 

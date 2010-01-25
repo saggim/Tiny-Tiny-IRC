@@ -248,6 +248,16 @@
 		$confirm_password = db_escape_string($_REQUEST["confirm_password"]);
 		$nick = db_escape_string($_REQUEST["nick"]);
 		$email = db_escape_string($_REQUEST["email"]);
+		$theme = db_escape_string($_REQUEST["theme"]);
+
+		$theme_changed = false;
+
+		$_SESSION["prefs_cache"] = false;
+
+		if (get_user_theme($link) != $theme) {
+			set_pref($link, "USER_THEME", $theme);
+			$theme_changed = true;
+		}
 
 		db_query($link, "UPDATE ttirc_users SET realname = '$realname',
 			quit_message = '$quit_message', 
@@ -263,6 +273,10 @@
 
 			db_query($link, "UPDATE ttirc_users SET pwd_hash = '$pwd_hash'
 				WHERE id = ". $_SESSION["uid"]);
+		}
+
+		if ($theme_changed) {
+			print json_encode(array("message" => "THEME_CHANGED"));
 		}
 
 		break;

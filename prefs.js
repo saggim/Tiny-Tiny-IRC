@@ -10,8 +10,12 @@ function save_prefs(callback) {
 
 			var obj = _eval(transport.responseText, true);
 
-			if (obj && obj.error) {
-				mini_error(obj.error);
+			if (obj) {
+				if (obj.error) {
+					mini_error(obj.error);
+				} else if (obj.message == "THEME_CHANGED") {
+					window.location.reload();
+				}
 			} else if (callback) {
 				callback(obj);
 			} else {

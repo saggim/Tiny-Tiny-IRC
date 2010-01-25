@@ -62,6 +62,11 @@
 				status = 2, active_server = '$server_str' WHERE id = '$connection_id'");
 
 			$connection->run();
+		} else {
+			_debug("[$connection_id] connection error.");
+
+			push_message($link, $connection_id, "---", 
+				"Could not connect to server.", true);
 		}
 	}
 

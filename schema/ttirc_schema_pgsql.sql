@@ -98,7 +98,7 @@ create table ttirc_prefs (pref_name varchar(250) not null primary key,
 	access_level integer not null default 0,
 	def_value text not null);
 
-insert into ttirc_prefs (pref_name,type_id,def_value,short_desc,section_id) values('_THEME_ID', 2, '0', '', 1);
+insert into ttirc_prefs (pref_name,type_id,def_value,short_desc,section_id) values('USER_THEME', 2, '0', '', 1);
 
 create table ttirc_settings_profiles(id serial not null primary key,
 	title varchar(250) not null,

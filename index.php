@@ -40,7 +40,13 @@
 		<script type="text/javascript" charset="utf-8" src="prefs.js?<?php echo $dt_add ?>"></script>
 	<script type="text/javascript" charset="utf-8" src="users.js?<?php echo $dt_add ?>"></script>
 	<script type="text/javascript" charset="utf-8" src="functions.js?<?php echo $dt_add ?>"></script>
-	
+
+	<?php	$user_theme = get_user_theme_path($link);
+		if ($user_theme) { ?>
+			<link rel="stylesheet" type="text/css" href="<?php echo $user_theme ?>/theme.css?<?php echo $dt_add ?>">
+	<?php } ?>
+
+
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 
 	<script type="text/javascript">
