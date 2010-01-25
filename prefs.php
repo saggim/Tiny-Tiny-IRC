@@ -70,6 +70,10 @@
 			<input name="title" size="30" value="<?php echo $line['title'] ?>">
 			<br clear='left'/>
 
+			<label class="fixed">Nickname:</label>
+			<input name="nick" size="30" value="<?php echo $line['nick'] ?>">
+			<br clear='left'/>
+
 			<label class='fixed'>Favorite channels:</label>
 			<input name="autojoin" size="30" value="<?php echo $line['autojoin'] ?>">
 			<br clear='left'/>
@@ -98,6 +102,8 @@
 			<br clear='left'/>
 
 		</div>
+
+		<button type="submit" style="display : none" onclick="save_conn()">
 
 		</form>
 
@@ -202,10 +208,11 @@
 			<input name="confirm_password" type="password" size="30" value="">
 		</div>
 
+		<button type="submit" style="display : none" onclick="save_prefs()">
+
 		</form>
 
 		<div class="dlgSec">Connections</div>
-
 
 		<ul class="container" id="connections-list">
 			<?php print_connections($link) ?>
@@ -218,9 +225,8 @@
 			</div>
 
 			<button type="submit" onclick="save_prefs()">Save</button>
-			<button type="submit" onclick="close_infobox()">Close</button></div>
-
-		</form>
+			<button onclick="close_infobox()">Close</button>
+		</div>		
 	</div>
 
 <?php } ?>
