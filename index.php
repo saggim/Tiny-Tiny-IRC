@@ -130,7 +130,7 @@
 			id="topic-input" value=""></div>
 	</div>
 	<div id="connect"><button onclick="toggle_connection(this)" 
-		id="connect-btn"></button></div>
+		id="connect-btn">Connect</button></div>
 	<div id="log"><ul id="log-list"></ul></div>	
 	<div id="nick" onclick="change_nick()"></div>
 	<div id="input"><div class="wrapper">
