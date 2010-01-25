@@ -27,16 +27,16 @@
 
 	header('Content-Type: text/html; charset=utf-8');
 
-	if (!$_SESSION["uid"]) {
+	$op = $_REQUEST["op"];
+
+	if (!$_SESSION["uid"] && $op != "fetch-profiles") {
 		print json_encode(array("error" => 6));
 		return;
+	} else if ($_SESSION["uid"]) {
+		update_heartbeat($link);
 	}
 
 	if (!sanity_check($link)) { return; }
-
-	$op = $_REQUEST["op"];
-
-	update_heartbeat($link);
 
 	switch ($op) {
 	case "create-user":
@@ -334,6 +334,31 @@
 		}
 
 		print_connections($link);
+		break;
+
+		case "fetch-profiles":
+			$login = db_escape_string($_REQUEST["login"]);
+			$password = db_escape_string($_REQUEST["password"]);
+
+			if (authenticate_user($link, $login, $password)) {
+				$result = db_query($link, "SELECT * FROM ttirc_settings_profiles
+					WHERE owner_uid = " . $_SESSION["uid"] . " ORDER BY title");
+
+				print "<select style='width: 100%' name='profile'>";
+
+				print "<option value='0'>" . __("Default profile") . "</option>";
+
+				while ($line = db_fetch_assoc($result)) {
+					$id = $line["id"];
+					$title = $line["title"];
+
+					print "<option value='$id'>$title</option>";
+				}
+
+				print "</select>";
+
+				$_SESSION = array();
+			}
 		break;
 
 	case "toggle-connection":

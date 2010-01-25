@@ -13,49 +13,46 @@
 
 <script type="text/javascript">
 function init() {
-
-	if (arguments.callee.done) return;
-	arguments.callee.done = true;		
-
-	var login = document.forms["loginForm"].login;
-
-	var limit_set = getCookie("ttrss_bwlimit");
-
-	if (limit_set == "true") {
-		document.forms["loginForm"].bw_limit.checked = true;
-	}
-
-	login.focus();
-
+	document.forms["loginForm"].login.focus();
 }
 
-function languageChange(elem) {
+function fetch_profiles() {
+	try {
+		return false; // no-op
+
+		var params = Form.serialize('loginForm');
+		var query = "?op=fetch-profiles&" + params;
+
+		if (query) {
+			new Ajax.Request("backend.php",	{
+				parameters: query,
+					onComplete: function(transport) {
+						if (transport.responseText.match("select")) {
+							$('profile_box').innerHTML = transport.responseText;
+						}
+				} });
+		}
+
+	} catch (e) {
+		exception_error("fetch-profiles", e);
+	}
+}
+
+function language_change(elem) {
 	try {
 		document.forms['loginForm']['click'].disabled = true;
 	
 		var lang = elem[elem.selectedIndex].value;
-		setCookie("ttrss_lang", lang, <?php print SESSION_COOKIE_LIFETIME ?>);
+		setCookie("ttirc_lang", lang, <?php print SESSION_COOKIE_LIFETIME ?>);
 		window.location.reload();
 	} catch (e) {
-		exception_error("languageChange", e);
+		exception_error("language_change", e);
 	}
 }
 
 function gotoRegForm() {
 	window.location.href = "register.php";
 	return false;
-}
-
-function bwLimitChange(elem) {
-	try {
-		var limit_set = elem.checked;
-
-		setCookie("ttrss_bwlimit", limit_set, 
-			<?php print SESSION_COOKIE_LIFETIME ?>);
-
-	} catch (e) {
-		exception_error("bwLimitChange", e);
-	}
 }
 
 function validateLoginForm(f) {
@@ -82,10 +79,9 @@ function validateLoginForm(f) {
 </script>
 
 <script type="text/javascript">
-if (document.addEventListener) {
-	document.addEventListener("DOMContentLoaded", init, null);
-}
-window.onload = init;
+Event.observe(window, 'load', function() {
+	init();
+});
 </script>
 
 <form action="" method="POST" id="loginForm" name="loginForm" onsubmit="return validateLoginForm(this)">
@@ -105,43 +101,42 @@ window.onload = init;
 		<table>
 			<tr><td align="right"><?php echo __("Login:") ?></td>
 			<td align="right"><input name="login" 
+				onchange="fetch_profiles()" onfocus="fetch_profiles()"
 				value="<?php echo $_SERVER["REMOTE_USER"] ?>"></td></tr>
 			<tr><td align="right"><?php echo __("Password:") ?></td>
 			<td align="right"><input type="password" name="password"
+				onchange="fetch_profiles()" onfocus="fetch_profiles()"
 				value="<?php echo $_SERVER["REMOTE_USER"] ?>"></td></tr>
-			<?php if (ENABLE_TRANSLATIONS) { ?>
+			<!-- <?php if (ENABLE_TRANSLATIONS) { ?>
 			<tr><td align="right"><?php echo __("Language:") ?></td>
 			<td align="right">
 			<?php
 				print_select_hash("language", $_COOKIE["ttrss_lang"], get_translations(),
-					"style='width : 100%' onchange='languageChange(this)'");
+					"style='width : 100%' onchange='language_change(this)'");
 
 			?>
 			</td></tr>
-			<?php } ?>
+			<?php } ?> -->
+
+			<!-- <tr><td align="right"><?php echo __("Profile:") ?></td>
+			<td align="right" id="profile_box">
+			<select style='width : 100%' disabled='1'>
+				<option><?php echo __("Default profile") ?></option></select>
+			</td></tr> -->
 
 			<tr><td colspan="2" align="right" class="innerLoginCell">
 
 			<button name='click'><?php echo __('Log in') ?></button>
-			<?php if (defined('ENABLE_REGISTRATION') && ENABLE_REGISTRATION) { ?>
+
+			<!-- <?php if (defined('ENABLE_REGISTRATION') && ENABLE_REGISTRATION) { ?>
 				<button onclick="return gotoRegForm()">
 					<?php echo __("Create new account") ?></button>
-			<?php } ?>
+			<?php } ?> -->
 
 				<input type="hidden" name="action" value="login">
 				<input type="hidden" name="rt" 
 					value="<?php if ($return_to != 'none') { echo $return_to; } ?>">
 			</td></tr>
-
-			<!-- <tr><td colspan="2" align="right" class="innerLoginCell">
-
-			<div class="small">
-			<input name="bw_limit" id="bw_limit" type="checkbox"
-				onchange="bwLimitChange(this)">
-			<label for="bw_limit">
-			<?php echo __("Limit bandwidth usage") ?></label></div>
-
-			</td></tr> -->
 
 		</table>
 	</td>
