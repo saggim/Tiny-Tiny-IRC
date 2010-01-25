@@ -304,14 +304,19 @@ function sort_connection_tabs(node) {
 	}
 }
 
-function show_mini_error(msg) {
+function mini_error(msg) {
 	try {
 
 		var elem = $("mini-notice");
 
 		if (elem) {
-			elem.innerHTML = msg;
-			Element.show(elem);
+			if (msg) {
+				elem.innerHTML = msg;
+				Element.show(elem);
+				new Effect.Highlight(elem);
+			} else {
+				Element.hide(elem);
+			}
 		}
 
 	} catch (e) {

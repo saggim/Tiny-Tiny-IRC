@@ -156,7 +156,12 @@ function _eval(data, silent) {
 function handle_update(transport) {
 	try {
 
-		var rv = _eval(transport.responseText);
+		var rv = _eval(transport.responseText, true);
+
+		if (!rv) {
+			debug("received null object from server, will try again.");
+			return true;
+		}
 
 		if (!handle_error(rv)) return false;
 

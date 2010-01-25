@@ -56,11 +56,14 @@
 	?>
 	<div id="infoBoxTitle"><?php echo __("Edit Connection") ?></div>
 	<div class="infoBoxContents">
+		<div id="mini-notice" style='display : none'>&nbsp;</div>
+
 		<div class="dlgSec">Connection</div>
 
 		<form id="prefs_conn_form" onsubmit="return false;">
 
 		<input type="hidden" name="connection_id" value="<? echo $id ?>"/>
+		<input type="hidden" name="op" value="prefs-conn-save"/>
 
 		<div class="dlgSecCont">
 			<label class='fixed'>Title:</label>
@@ -175,8 +178,8 @@
 			<input name="realname" size="30" value="<?php echo $realname ?>">
 			<br clear='left'/>
 
-			<label class="fixed">Default nick:</label>
-			<input name="realname" size="30" value="<?php echo $nick ?>">
+			<label class="fixed">Nickname:</label>
+			<input name="nick" size="30" value="<?php echo $nick ?>">
 			<br clear='left'/>
 
 			<label class="fixed">E-mail:</label>

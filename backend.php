@@ -138,8 +138,29 @@
 	case "prefs":
 		main_prefs($link);
 		break;
+	case "prefs-conn-save":
+		print json_encode(array("error" => "Function not implemented."));
+		break;
+
 	case "prefs-save":
 		//print json_encode(array("error" => "Function not implemented."));
+
+		$realname = db_escape_string($_REQUEST["realname"]);
+		$quit_message = db_escape_string($_REQUEST["quit_message"]);
+		$new_password = db_escape_string($_REQUEST["new_password"]);
+		$confirm_password = db_escape_string($_REQUEST["confirm_password"]);
+		$nick = db_escape_string($_REQUEST["nick"]);
+		$email = db_escape_string($_REQUEST["email"]);
+
+		db_query($link, "UPDATE ttirc_users SET realname = '$realname',
+			quit_message = '$quit_message', 
+			email = '$email',
+			nick = '$nick' WHERE id = " . $_SESSION["uid"]);
+
+		if ($new_password || $confirm_password) {
+			print json_encode(array("error" => "Sorry, can't save password yet. :("));		
+		}
+
 		break;
 	case "prefs-edit-con":
 		$connection_id = (int) db_escape_string($_REQUEST["id"]);
@@ -154,9 +175,13 @@
 			if ($server && $port) {
 				db_query($link, "INSERT INTO ttirc_servers (server, port, connection_id)
 					VALUES ('$server', '$port', '$connection_id')");
-			}
 
-			print_servers($link, $connection_id);
+				print_servers($link, $connection_id);
+
+			} else {
+				print json_encode(array("error" => 
+					"Couldn't add server ($server:$port): Invalid syntax."));
+			}
 		}
 
 		break;

@@ -539,6 +539,8 @@
 			$my_nick = "---";
 		}
 
+		$message = db_escape_string($message);
+
 		db_query($link, "INSERT INTO ttirc_messages 
 			(incoming, connection_id, channel, sender, message, message_type) VALUES
 			($incoming, $connection_id, '$channel', '$my_nick', '$message', 
@@ -550,7 +552,6 @@
 		$result = db_query($link, "SELECT COUNT(*) AS cl
 			FROM ttirc_messages, ttirc_connections WHERE
 			connection_id = ttirc_connections.id AND
-			status != ".CS_DISCONNECTED." AND
 			message_type != ".MSGT_COMMAND." AND
 			ts > NOW() - INTERVAL '5 minutes' AND
 			ttirc_messages.id > '$last_id' AND 
@@ -566,7 +567,6 @@
 			message, ".SUBSTRING_FOR_DATE."(ts,12,8) AS ts
 			FROM ttirc_messages, ttirc_connections WHERE
 			connection_id = ttirc_connections.id AND
-			status != ".CS_DISCONNECTED." AND
 			message_type != ".MSGT_COMMAND." AND
 			ts > NOW() - INTERVAL '5 minutes' AND
 			ttirc_messages.id > '$last_id' AND 

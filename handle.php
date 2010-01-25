@@ -22,6 +22,13 @@
 
 		if (!$server) {
 			_debug("[$connection_id] couldn't find any servers :(");
+	
+			push_message($link, $connection_id, "---", 
+				"Couldn't find a server to connect to.", true);
+
+			db_query($link, "UPDATE ttirc_connections SET enabled = false, 
+				auto_connect = false WHERE id = '$connection_id'");
+
 			return;
 		}
 

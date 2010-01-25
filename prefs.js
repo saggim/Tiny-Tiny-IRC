@@ -1,4 +1,4 @@
-function save_prefs() {
+function save_prefs(callback) {
 	try {
 		var query = Form.serialize("prefs_form");
 
@@ -11,7 +11,9 @@ function save_prefs() {
 			var obj = _eval(transport.responseText, true);
 
 			if (obj && obj.error) {
-				show_mini_error(obj.error);
+				mini_error(obj.error);
+			} else if (callback) {
+				callback(obj);
 			} else {
 				close_infobox();
 			}
@@ -42,11 +44,14 @@ function show_prefs() {
 
 function edit_connection(id) {
 	try {
-		new Ajax.Request("backend.php", {
-		parameters: "?op=prefs-edit-con&id=" + id,
-		onComplete: function (transport) {
-			infobox_callback2(transport);
-		} });
+
+		save_prefs(function (obj) {
+			new Ajax.Request("backend.php", {
+			parameters: "?op=prefs-edit-con&id=" + id,
+			onComplete: function (transport) {
+				infobox_callback2(transport);
+			} });
+		});
 
 	} catch (e) {
 		exception_error("show_prefs", e);
@@ -152,14 +157,32 @@ function create_connection() {
 	}
 }
 
-function save_conn() {
+function save_conn(callback) {
 	try {
 		var query = Form.serialize("prefs_conn_form");
 
-		alert(query);
+		debug(query);
+
+		new Ajax.Request("backend.php", {
+		parameters: query,
+		onComplete: function (transport) {
+
+			var obj = _eval(transport.responseText, true);
+
+			if (obj && obj.error) {
+				mini_error(obj.error);
+			} else if (callback) {
+				callback(obj);
+			} else {
+				close_infobox();
+			}
+
+			hide_spinner();
+		} });
+
 
 	} catch (e) {
-		exception_error("save_prefs", e);
+		exception_error("save_conn", e);
 	}
 }
 
@@ -221,7 +244,15 @@ function create_server() {
 			new Ajax.Request("backend.php", {
 			parameters: query, 
 			onComplete: function (transport) {
-				$("servers-list").innerHTML = transport.responseText;
+
+				var obj = _eval(transport.responseText, true);
+
+				if (obj && obj.error) {
+					mini_error(obj.error);
+				} else {
+					$("servers-list").innerHTML = transport.responseText;
+					mini_error();
+				}
 				hide_spinner();
 			} });
 
