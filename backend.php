@@ -139,7 +139,25 @@
 		main_prefs($link);
 		break;
 	case "prefs-conn-save":
-		print json_encode(array("error" => "Function not implemented."));
+		$title = db_escape_string($_REQUEST["title"]);
+		$autojoin = db_escape_string($_REQUEST["autojoin"]);
+		$connect_cmd = db_escape_string($_REQUEST["connect_cmd"]);
+		$encoding = db_escape_string($_REQUEST["encoding"]);
+		$auto_connect = bool_to_sql_bool(db_escape_string($_REQUEST["auto_connect"]));
+		$permanent = bool_to_sql_bool(db_escape_string($_REQUEST["permanent"]));
+		$connection_id = db_escape_string($_REQUEST["connection_id"]);
+
+		if (valid_connection($link, $connection_id)) {
+
+			db_query($link, "UPDATE ttirc_connections SET title = '$title',
+				autojoin = '$autojoin',
+				connect_cmd = '$connect_cmd',
+				auto_connect = '$auto_connect',
+				permanent = '$permanent'
+				WHERE id = '$connection_id'");
+
+			//print json_encode(array("error" => "Function not implemented."));
+		}
 		break;
 
 	case "prefs-save":

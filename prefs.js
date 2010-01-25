@@ -174,7 +174,8 @@ function save_conn(callback) {
 			} else if (callback) {
 				callback(obj);
 			} else {
-				close_infobox();
+				//close_infobox();
+				show_prefs();
 			}
 
 			hide_spinner();
