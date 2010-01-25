@@ -716,12 +716,9 @@
 
 	// shamelessly stolen from xchat source code
 
-	/* black n white(0/1) are bad colors for nicks, and we'll use color 2 for us */
-	/* also light/dark gray (14/15) */
-	/* 5,7,8 are all shades of yellow which happen to look dman near the same */
 	function color_of($name) {
 
-		$rcolors = array( 19, 20, 22, 24, 25, 26, 27, 28, 29 );
+		$rcolors = array( 14, 19, 20, 21, 22, 25, 26, 28, 29 );
 
 		$i = 0;
 		$sum = 0;
