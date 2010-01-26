@@ -186,40 +186,12 @@ function handle_update(transport) {
 				var chan = lines[i].channel;
 				var connection_id = lines[i].connection_id;
 		
-				if (!li_classes[chan]) {
-					li_classes[chan] = "odd";
-				} else {
-					if (li_classes[chan] == "odd") {
-						li_classes[chan] = "even";
-					} else {
-						li_classes[chan] = "odd";
-					}
-				}
-	
 				//lines[i].message += " [" + lines[i].id + "/" + last_id + "]";
-	
-				var tmp_html = format_message(li_classes[chan],
-					lines[i]);
-	
-/*				if (!buffers[connection_id]) buffers[connection_id] = [];
-				if (!buffers[connection_id][chan]) buffers[connection_id][chan] = [];
-
-				if (lines[i].message_type == MSGT_EVENT) {
-					handle_event(li_classes[chan], connection_id, lines[i]);
-				} else if (lines[i].message_type != MSGT_BROADCAST) {
-					buffers[connection_id][chan].push(tmp_html);
-				} else {
-					for (var b in buffers[connection_id]) {
-						if (typeof buffers[connection_id][b] == 'object') {
-							buffers[connection_id][b].push(tmp_html);						
-						}
-					}
-				} */
 
 				if (lines[i].message_type == MSGT_EVENT) {
 					handle_event(li_classes[chan], connection_id, lines[i]);
 				} else {
-					push_message(connection_id, chan, tmp_html, lines[i].message_type);
+					push_message(connection_id, chan, lines[i], lines[i].message_type);
 				}
 
 				while (buffers[connection_id][chan].length > 100) {
@@ -928,9 +900,7 @@ function handle_event(li_class, connection_id, line) {
 			line.message = line.message.replace("%s", topic);
 			line.sender = "---";
 
-			tmp_html = format_message(li_class, line);
-
-			push_message(connection_id, line.channel, tmp_html, MSGT_PRIVMSG);
+			push_message(connection_id, line.channel, line, MSGT_PRIVMSG);
 
 			break;
 		case "MODE":
@@ -957,9 +927,7 @@ function handle_event(li_class, connection_id, line) {
 				msg_type = MSGT_BROADCAST;
 			}
 
-			tmp_html = format_message(li_class, line);
-
-			push_message(connection_id, line.channel, tmp_html, msg_type);
+			push_message(connection_id, line.channel, line, msg_type);
 
 			break;
 		case "KICK":
@@ -972,9 +940,7 @@ function handle_event(li_class, connection_id, line) {
 			line.message = line.message.replace("%m", message);
 			line.sender = "---";
 
-			tmp_html = format_message(li_class, line);
-
-			push_message(connection_id, line.channel, tmp_html, MSGT_PRIVMSG);
+			push_message(connection_id, line.channel, line, MSGT_PRIVMSG);
 
 			break;
 
@@ -986,9 +952,7 @@ function handle_event(li_class, connection_id, line) {
 			line.message = line.message.replace("%c", line.channel);
 			line.message = line.message.replace("%m", message);
 
-			tmp_html = format_message(li_class, line);
-
-			push_message(connection_id, line.channel, tmp_html, MSGT_PRIVMSG);
+			push_message(connection_id, line.channel, line, MSGT_PRIVMSG);
 
 			break;
 		case "JOIN":
@@ -999,9 +963,7 @@ function handle_event(li_class, connection_id, line) {
 			line.message = line.message.replace("%c", line.channel);
 			line.message = line.message.replace("%h", host);
 
-			tmp_html = format_message(li_class, line);
-
-			push_message(connection_id, line.channel, tmp_html, MSGT_PRIVMSG);
+			push_message(connection_id, line.channel, line, MSGT_PRIVMSG);
 
 			break;
 		case "QUIT":
@@ -1011,21 +973,17 @@ function handle_event(li_class, connection_id, line) {
 			line.message = __("%u has quit IRC (%s)").replace("%u", nick);
 			line.message = line.message.replace("%s", quit_msg);
 
-			tmp_html = format_message(li_class, line);
-
-			push_message(connection_id, '---', tmp_html, MSGT_BROADCAST);
+			push_message(connection_id, '---', line, MSGT_BROADCAST);
 			break;
 		case "DISCONNECT":
 			line.message = __("Connection terminated.");
 
-			tmp_html = format_message(li_class, line);
-			push_message(connection_id, '---', tmp_html);
+			push_message(connection_id, '---', line);
 			break;
 		case "REQUEST_CONNECTION":
 			line.message = __("Requesting connection...");
 
-			tmp_html = format_message(li_class, line);
-			push_message(connection_id, '---', tmp_html);
+			push_message(connection_id, '---', line);
 			break;
 		case "CONNECTING":
 			var server = params[1];
@@ -1034,8 +992,7 @@ function handle_event(li_class, connection_id, line) {
 			line.message = __("Connecting to %s:%d...").replace("%s", server);
 			line.message = line.message.replace("%d", port);
 
-			tmp_html = format_message(li_class, line);
-			push_message(connection_id, '---', tmp_html);
+			push_message(connection_id, '---', line);
 			break;
 		case "PING_REPLY":
 			var args = params[1];
@@ -1045,8 +1002,7 @@ function handle_event(li_class, connection_id, line) {
 			line.message = line.message.replace("%d", args);
 			line.sender = '---';
 
-			tmp_html = format_message(li_class, line);
-			push_message(connection_id, '---', tmp_html, MSGT_BROADCAST);
+			push_message(connection_id, '---', line, MSGT_BROADCAST);
 			break;
 
 		case "PING":
@@ -1056,14 +1012,12 @@ function handle_event(li_class, connection_id, line) {
 			line.message = line.message.replace("%u", line.sender);
 			line.sender = '---';
 
-			tmp_html = format_message(li_class, line);
-			push_message(connection_id, '---', tmp_html, MSGT_BROADCAST);
+			push_message(connection_id, '---', line, MSGT_BROADCAST);
 			break;
 		case "CONNECT":
 			line.message = __("Connection established.");
 
-			tmp_html = format_message(li_class, line);
-			push_message(connection_id, '---', tmp_html);
+			push_message(connection_id, '---', line);
 			break;
 		case "NICK":
 			var old_nick = params[1];
@@ -1077,9 +1031,7 @@ function handle_event(li_class, connection_id, line) {
 			line.message = __("%u is now known as %n").replace("%u", old_nick);
 			line.message = line.message.replace("%n", new_nick);
 
-			tmp_html = format_message(li_class, line);
-
-			push_message(connection_id, '---', tmp_html, MSGT_BROADCAST);
+			push_message(connection_id, '---', line, MSGT_BROADCAST);
 
 /*			for (var b in buffers[connection_id]) {
 				if (typeof buffers[connection_id][b] == 'object') {
@@ -1107,6 +1059,18 @@ function handle_event(li_class, connection_id, line) {
 	}
 }
 
+function toggle_li_class(channel) {
+	if (!li_classes[channel]) {
+		li_classes[channel] = "odd";
+	} else {
+		if (li_classes[channel] == "odd") {
+			li_classes[channel] = "even";
+		} else {
+			li_classes[channel] = "odd";
+		}
+	} 
+}
+
 function push_message(connection_id, channel, message, message_type) {
 	try {
 		if (!message_type) message_type = MSGT_PRIVMSG;
@@ -1115,7 +1079,11 @@ function push_message(connection_id, channel, message, message_type) {
 		if (!buffers[connection_id][channel]) buffers[connection_id][channel] = [];
 
 		if (message_type != MSGT_BROADCAST) {
-			buffers[connection_id][channel].push(message);
+			toggle_li_class(channel);
+
+			var tmp_html = format_message(li_classes[channel], message);
+
+			buffers[connection_id][channel].push(tmp_html);
 		} else {
 			var tabs = get_all_tabs(connection_id);
 
@@ -1124,7 +1092,11 @@ function push_message(connection_id, channel, message, message_type) {
 
 				if (!buffers[connection_id][chan]) buffers[connection_id][chan] = [];
 
-				buffers[connection_id][chan].push(message);
+				toggle_li_class(chan);
+
+				var tmp_html = format_message(li_classes[chan], message);
+
+				buffers[connection_id][chan].push(tmp_html);
 			}
 		}
 
