@@ -857,7 +857,8 @@
 		$urls = null;
 
 		$result = preg_replace("/(([a-z]+):\/\/[^ ]+)/i", 
-			"<a target=\"_blank\" href=\"\\1\">\\1</a>", $line);
+			"<a target=\"_blank\" onmouseover=\"m_i(this)\" onmouseout=\"m_o(this)\"
+			href=\"\\1\">\\1</a>", $line);
 
 		return $result;
 	}

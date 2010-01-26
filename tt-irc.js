@@ -1117,11 +1117,41 @@ function set_window_active(active) {
 	}
 }
 
-function u_i(elem) {
+function m_i(elem) {
 	try {	
-		debug(elem.href);
+
+		if (!elem.href.toLowerCase().match("(jpg|gif|png|bmp)$"))
+			return;
+
+		var timeout = window.setTimeout(function() {
+
+			var xy = Element.cumulativeOffset(elem);
+			xy[1] += Element.getHeight(elem);
+
+			$("image-tooltip").style.left = xy[0] + "px";
+			$("image-tooltip").style.top = xy[1] + "px";
+			$("image-tooltip").innerHTML = "<img src=\"" + elem.href + "\"/>";
+
+			Effect.Appear($("image-tooltip"));
+			}, 1000);
+
+		elem.setAttribute("timeout", timeout);
 
 	} catch (e) {
-		exception_error("u_i", e);
+		exception_error("m_i", e);
 	}
+}
+
+function m_o(elem) {
+	try {	
+
+		window.clearTimeout(elem.getAttribute("timeout"));
+
+		Element.hide("image-tooltip");
+
+	} catch (e) {
+		exception_error("m_o", e);
+	}
+
+
 }
