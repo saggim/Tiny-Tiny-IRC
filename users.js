@@ -115,3 +115,11 @@ function reset_user() {
 	}
 }
 
+function edit_user(id) {
+	try {
+		mini_error("Function not implemented");
+
+	} catch (e) {
+		exception_error("edit_user", e);
+	}
+}

@@ -936,15 +936,30 @@ function handle_event(li_class, connection_id, line) {
 		case "MODE":
 			var mode = params[1];
 			var subject = params[2];
+			
+			var msg_type;
 
-			line.message = __("%u has changed mode [%m] on %s").replace("%u", line.sender);
-			line.message = line.message.replace("%m", mode);
-			line.message = line.message.replace("%s", subject);
-			line.sender = "---";
+			if (mode) {
+				line.message = __("%u has changed mode [%m] on %s").replace("%u", 
+						line.sender);
+				line.message = line.message.replace("%m", mode);
+				line.message = line.message.replace("%s", subject);
+				line.sender = "---";
+
+				msg_type = MSGT_PRIVMSG;
+			} else {
+				line.sender = "---";
+
+				line.message = __("%u has changed mode [%m]").replace("%u", 
+						line.channel);
+				line.message = line.message.replace("%m", subject);
+
+				msg_type = MSGT_BROADCAST;
+			}
 
 			tmp_html = format_message(li_class, line);
 
-			push_message(connection_id, line.channel, tmp_html, MSGT_PRIVMSG);
+			push_message(connection_id, line.channel, tmp_html, msg_type);
 
 			break;
 		case "KICK":

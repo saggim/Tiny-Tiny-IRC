@@ -17,7 +17,7 @@
 			$tmp .= "<li id='U-$id' class='$row_class' user_id='$id'>";
 			$tmp .= "<input type='checkbox' onchange='select_row(this)'
 				row_id='U-$id'>";
-			$tmp .= "&nbsp;<a href=\"#\" title=\"Click to edit user\"
+			$tmp .= "&nbsp;<a href=\"#\" title=\"".__('Click to edit user')."\"
 				onclick=\"edit_user($id)\">".
 				$line['login']."</a>";
 			$tmp .= "</li>";

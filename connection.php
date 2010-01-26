@@ -95,6 +95,12 @@ class Connection extends Yapircl {
 				list ($on, $mode, $nicks) = explode(" ", $arguments, 2);
 				$this->setmode($on, $mode, $nicks);
 				break;
+			case "oper":
+				$this->sendBuf("OPER $arguments");
+				break;
+			case "umode":
+				$this->usermode($this->_usednick, $arguments);
+				break;
 		}
 	}
 
