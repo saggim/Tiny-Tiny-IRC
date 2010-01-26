@@ -982,9 +982,11 @@ function handle_event(li_class, connection_id, line) {
 			break;
 		case "JOIN":
 			var nick = params[1];
+			var host = params[2];
 
-			line.message = __("%u has joined %c").replace("%u", nick);
+			line.message = __("%u (%h) has joined %c").replace("%u", nick);
 			line.message = line.message.replace("%c", line.channel);
+			line.message = line.message.replace("%h", host);
 
 			tmp_html = format_message(li_class, line);
 

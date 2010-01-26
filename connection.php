@@ -235,7 +235,8 @@ class Connection extends Yapircl {
 
 		$channel = substr($this->_xline[2], 1);
 
-		$message = sprintf("JOIN:%s", $this->nick);
+		$message = sprintf("JOIN:%s:%s", $this->nick, 
+			$this->user . '@' . $this->host);
 
 		$this->push_message('---', $channel, $message, MSGT_EVENT);
 
