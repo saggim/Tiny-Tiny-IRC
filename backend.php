@@ -297,8 +297,11 @@
 				print_servers($link, $connection_id);
 
 			} else {
-				print json_encode(array("error" => 
-					"Couldn't add server ($server:$port): Invalid syntax."));
+
+				$error = T_sprintf("Couldn't add server (%s:%d): Invalid syntax.",
+					$server, $port);
+
+				print json_encode(array("error" => $error));
 			}
 		}
 

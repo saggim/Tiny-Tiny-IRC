@@ -15,7 +15,8 @@
 	function get_translations() {
 		$tr = array(
 					"auto"  => "Detect automatically",					
-					"en_US" => "English");
+					"en_US" => "English", 
+					"xx_XX" => "Bork bork bork!");
 
 		return $tr;
 	}

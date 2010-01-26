@@ -1,0 +1,452 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-01-26 11:57+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: backend.php:55
+#, php-format
+msgid "Created user %s with password <b>%s</b>."
+msgstr "Çṟëǟŧẽđ ủşẻř ℅ﻯ שǐṯḣ ṗåśﻱẅóṟð <Ъ>℅ﻱ<⁄ъ>∙"
+
+#: backend.php:63
+#, php-format
+msgid "User %s already exists"
+msgstr "Ủﻯëř ℅ϟ ǎļѓėǡḋý ë×įﬆﺉ"
+
+#: backend.php:85
+#, php-format
+msgid "Reset password of user %s to <b>%s</b>."
+msgstr "Ṙéﺉĕ† ṕãŝﺉωőṟḑ ﻩϝ ∪ﻱèѓ ℅ϟ ť∅ <ъ>℅ś<⁄ѣ>∙"
+
+#: backend.php:225
+msgid "[Untitled]"
+msgstr "[Úṉךϊṫḻĕδ]"
+
+#: backend.php:301
+#, php-format
+msgid "Couldn't add server (%s:%d): Invalid syntax."
+msgstr "Ćōטļḏñ’† âḑḏ ϟéŗΰĕѓ ₍℅š∶℅∂₎∶ Ỉṉѵáľíḑ ṡўήţåχ·"
+
+#: backend.php:352 login_form.php:124
+msgid "Default profile"
+msgstr "Ḋéϝǎůĺṯ ṕřѳﬁľê"
+
+#: connection.php:454 tt-irc.js:757 tt-irc.js:761
+msgid "Tiny Tiny IRC"
+msgstr "Ṫíñỷ Ṫĭŉỳ ÏƦ℃"
+
+#: errors.php:3
+msgid "Unknown error"
+msgstr "Ųṅḵŋõẃṉ éřŗőṟ"
+
+#: errors.php:5
+msgid ""
+"This program requires XmlHttpRequest to function properly. Your browser "
+"doesn't seem to support it."
+msgstr ""
+
+#: errors.php:8
+msgid ""
+"This program requires cookies to function properly. Your browser doesn't "
+"seem to support them."
+msgstr ""
+
+#: errors.php:11
+msgid "Backend sanity check failed"
+msgstr "Ḃãςĸěמḑ ﺉǟņíţý ҁẖěҁḵ ḟǟỉłęδ"
+
+#: errors.php:13
+msgid "Frontend sanity check failed."
+msgstr "℉ṟőñťèήḑ śåŉỉṯỳ ςḩẻ¢ĸ ḟâìḻėḑ·"
+
+#: errors.php:15
+msgid ""
+"Incorrect database schema version. &lt;a href='update.php'&gt;Please "
+"update&lt;/a&gt;."
+msgstr ""
+
+#: errors.php:17
+msgid "Request not authorized."
+msgstr "Řę¶űêﬆ ṅöך ảű†ḣōṟĩẑêď·"
+
+#: errors.php:19
+msgid "No operation to perform."
+msgstr "Ņσ òρėṟäṯīỏŉ †ò ρẻṙḟǒṟṁ·"
+
+#: errors.php:23
+msgid "Denied. Your access level is insufficient to access this page."
+msgstr "Ďẽṉĭê∂· Ýõųř äç¢ẻﻱṡ łĕѵĕľ íﻯ įήﻱ∪ﬀîçỉě∩ך ךô âçćêṡš ťḩíϟ ṗảǥě∙"
+
+#: errors.php:25
+msgid "Configuration check failed"
+msgstr "Ċσתﬁǧůṟăŧĩỏń ćḣēҁĸ ḟāįḻéď"
+
+#: errors.php:27
+msgid ""
+"Your version of MySQL is not currently supported. Please see \n"
+"\t\tofficial site for more information."
+msgstr ""
+
+#: errors.php:32
+msgid "SQL escaping test failed, check your database and PHP configuration"
+msgstr "∮ϘĻ ēśҁåṗíṅḡ †ẽﬆ ϝªīļèđ¸ ĉħėćǩ ўŏùŗ ∂áţǡḇâšę âŊḋ ṖĤṖ ¢σ∩ﬁḡűŗǟẗïǒŊ"
+
+#: errors.php:33
+msgid "Backend connection daemon is not running."
+msgstr "ßåćĸẻηđ ҁﻩŉṅè¢ŧǐỏň δǣṁơמ ïﻯ מﻩţ ṙűńńíŉĝ∙"
+
+#: functions.php:135
+msgid "Incorrect username or password"
+msgstr "Ǐň¢∅ṟѓê¢ṯ ưṡėѓ∩ąḿè ōŗ ρáϟϟŵøṙḋ"
+
+#: functions.php:299
+msgid "Session failed to validate (incorrect IP)"
+msgstr "∫ẽϟšíơñ ϝáǐłë∂ ṫő ΰâłïḑảṯĕ ₍íתćѳѓřẻҁך ÎṖ₎"
+
+#: functions.php:868
+msgid "Default"
+msgstr "Ðēϝǎųŀ†"
+
+#: index.php:62
+msgid "Loading, please wait..."
+msgstr "Ľòǎðĩηģ‚ ṗļĕąśē ẇâĩẗ∙··"
+
+#: index.php:69
+msgid ""
+"Your browser doesn't support Javascript, which is required\n"
+"\t\tfor this application to function properly. Please check your\n"
+"\t\tbrowser settings."
+msgstr ""
+
+#: index.php:84
+msgid "Fatal Exception"
+msgstr "Ḟªךªḻ ξẋçẻρŧỉōň"
+
+#: index.php:86
+msgid "Close this window"
+msgstr "Ĉľõﻯé ךħīﺉ ωįṅḏŏώ"
+
+#: index.php:99
+msgid "Hello,"
+msgstr "Ḩêĺŀö¸"
+
+#: index.php:101 prefs.php:177
+msgid "Preferences"
+msgstr "Ṗřèḟĕṙėתҁẻś"
+
+#: index.php:104
+msgid "Users"
+msgstr "Üﻯẽřﻯ"
+
+#: index.php:108
+msgid "Logout"
+msgstr "Ḻőǧõũẗ"
+
+#: login_form.php:102
+msgid "Login:"
+msgstr "₤õﻕïη∶"
+
+#: login_form.php:106
+msgid "Password:"
+msgstr "Ṗăﻱšẇøṙḏ∶"
+
+#: login_form.php:111
+msgid "Language:"
+msgstr "ĿǎŊĝǔảḡē∶"
+
+#: login_form.php:121
+msgid "Profile:"
+msgstr "Ṗṙѳﬁĺẽ∶"
+
+#: login_form.php:129
+msgid "Log in"
+msgstr "Ļﻩġ ỉמ"
+
+#: login_form.php:133
+msgid "Create new account"
+msgstr "℃řêăţè ņěẁ â¢ς∅ủñ†"
+
+#: prefs.php:22
+msgid "(connected)"
+msgstr "₍ҁǒṉתēç†ęḑ₎"
+
+#: prefs.php:57
+msgid "Edit Connection"
+msgstr "Ēḏíẗ Ćﻩ∩∩ěċẗîỏň"
+
+#: prefs.php:61
+msgid "Connection"
+msgstr "Ċõŋňēĉẗỉỏṉ"
+
+#: prefs.php:69
+msgid "Title:"
+msgstr "Ṯǐŧļè∶"
+
+#: prefs.php:73 prefs.php:193
+msgid "Nickname:"
+msgstr "№ċḱŋáḿē∶"
+
+#: prefs.php:77
+msgid "Favorite channels:"
+msgstr "℉ǟνøŗįţé ¢ẖàתṅėľﺉ∶"
+
+#: prefs.php:81
+msgid "Connect command:"
+msgstr "ĆōńŊêćť ćôṁḿảńḋ∶"
+
+#: prefs.php:85
+msgid "Character set:"
+msgstr "Çĥǟřªċṯėѓ şēť∶"
+
+#: prefs.php:98
+msgid "Automatically connect"
+msgstr "Äųṫǒṁà†įčǟŀḻẏ čŏŊṉēĉṯ"
+
+#: prefs.php:104
+msgid "Stay connected permanently"
+msgstr "Ś†äỳ ςòṅńĕҁťēḋ ṗéṙṁáŊėŋťłẙ"
+
+#: prefs.php:114
+msgid "Servers"
+msgstr "∮ẻṙעéṟś"
+
+#: prefs.php:122
+msgid "Add server"
+msgstr "۸ḑð ṡëṟעěṙ"
+
+#: prefs.php:123 prefs.php:238 users.php:50
+msgid "Delete"
+msgstr "Ðëłë†ė"
+
+#: prefs.php:125 prefs.php:241
+msgid "Save"
+msgstr "Ŝªṽê"
+
+#: prefs.php:126
+msgid "Go back"
+msgstr "Ǵø ѣǎčĸ"
+
+#: prefs.php:146
+msgid "(active)"
+msgstr "₍ǎҁ†īṽẻ₎"
+
+#: prefs.php:186
+msgid "Personal data"
+msgstr "Ṗèṙϟôŋảł ďäŧà"
+
+#: prefs.php:189
+msgid "Real name:"
+msgstr "Ʀêǎŀ ŋáṁë∶"
+
+#: prefs.php:197
+msgid "E-mail:"
+msgstr "È­ṁảĩĺ∶"
+
+#: prefs.php:201
+msgid "Quit message:"
+msgstr "Ǭџįţ ṁēﺉşªḡĕ∶"
+
+#: prefs.php:205
+msgid "Theme:"
+msgstr "Ṫĥĕḿě∶"
+
+#: prefs.php:212
+msgid "Authentication"
+msgstr "Àùŧĥėņťϊҁāťí∅ŋ"
+
+#: prefs.php:215
+msgid "New password:"
+msgstr "Ňęẇ ρāşŝẘóř∂∶"
+
+#: prefs.php:219
+msgid "Confirm:"
+msgstr "Ċöńﬁṙḿ∶"
+
+#: prefs.php:227
+msgid "Connections"
+msgstr "Čöŉŋëçךỉŏṉś"
+
+#: prefs.php:236
+msgid "Create connection"
+msgstr "Ҁṙẽâ†é čòמήę¢ךïőṅ"
+
+#: prefs.php:242 users.php:53
+msgid "Close"
+msgstr "Ćľőşë"
+
+#: update.php:19
+msgid "Your access level is insufficient to run this script."
+msgstr "Ỷỏủṟ ąćçẽﺉϟ ḻęΰēĺ ìś ĩŊﻯūﬀǐçìě∩ך ţö ṟūή ťḧíš ṡćṙĩṗẗ∙"
+
+#: update.php:44
+msgid "Database Updater"
+msgstr "ÐǟṯáЬăṡĕ Ưṕđǎךėŗ"
+
+#: update.php:84
+msgid "Could not update database"
+msgstr "Ĉ∅ŭŀð ŉõ† טṗďăṫĕ ḑâţàḃǡﻱē"
+
+#: update.php:87
+msgid "Could not find necessary schema file, need version:"
+msgstr "Ϛỏųŀḏ ńóṯ ﬁñḑ ňêċèśšªṟў ﻱċḧêṁă ﬁḻě˛ ηěéδ ύěŗşϊǒמ∶"
+
+#: update.php:88
+msgid ", found: "
+msgstr "، ḟôûŊḏ∶ "
+
+#: update.php:91
+msgid "Tiny Tiny RSS database is up to date."
+msgstr "Ťíŉẙ Ťǐמγ Ŕ∬ ðăṯãѣàşẻ ỉϟ ũṗ ẗơ δǟẗé·"
+
+#: update.php:93 update.php:161
+msgid "Return to Tiny Tiny RSS"
+msgstr "Ṙẽŧůṙמ ẗﻩ Ṫïṉỹ ṪīŊŷ Ṙ∬"
+
+#: update.php:101
+msgid "Please backup your database before proceeding."
+msgstr "Ṗḻēǡﻱẻ Ьàċḱûρ ỷﻩµѓ ḋǡẗǟﻁāšê ъéḟỏřẽ ṕṟǒςèę∂ĩŊǥ∙"
+
+#: update.php:103
+#, php-format
+msgid ""
+"Your Tiny Tiny RSS database needs update to the latest version (<b>%d</b> to "
+"<b>%d</b>)."
+msgstr ""
+
+#: update.php:117
+msgid "Perform updates"
+msgstr "Ṗèṙϝѳѓṁ ǔρďàṯêﻯ"
+
+#: update.php:122
+msgid "Performing updates..."
+msgstr "Ṗèřḟѳṟḿíמǧ ∪ṕðǎţěŝ∙∙·"
+
+#: update.php:128
+#, php-format
+msgid "Updating to version %d..."
+msgstr "Ũṗđåẗįŋǥ ţø ύĕřﺉįòñ ℅ḏ∙··"
+
+#: update.php:141
+msgid "Checking version... "
+msgstr "Ċḧě¢ĸϊŋĝ ṽėřśǐöמ··∙ "
+
+#: update.php:147
+msgid "OK!"
+msgstr "ÔḴ¡"
+
+#: update.php:149
+msgid "ERROR!"
+msgstr "ĒЯŖŐṘ¡"
+
+#: update.php:157
+#, php-format
+msgid ""
+"Finished. Performed <b>%d</b> update(s) up to schema\n"
+"\t\t\tversion <b>%d</b>."
+msgstr ""
+
+#: users.php:35
+msgid "Edit Users"
+msgstr "Έďỉṯ Úŝẻřﺉ"
+
+#: users.php:46
+msgid "Add user"
+msgstr "Å∂ð ǔṡèř"
+
+#: users.php:48
+msgid "Reset password"
+msgstr "Řēšẻţ ρąšŝẃóṟḋ"
+
+#: prefs.js:111
+msgid "Delete selected connections? Active connections will not be deleted."
+msgstr "Ðėĺę†ẽ ﻯĕļẻċţèδ ҁóŊŉěςךïﻩηﺉ؟ Άςẗǐעę ҁōηṅẻҁ†ǐǒηϟ ẃįłł ṉ∅† Ѣė ďēĺèŧêḏ∙"
+
+#: prefs.js:134
+msgid "Please select some connections to delete."
+msgstr "Ṗḻĕǎśè ﻱėĺẻĉţ šøṁĕ ςõתṅĕčẗϊѳŉϟ ẗ∅ ðèłě†ẽ·"
+
+#: prefs.js:145
+msgid "Title for a new connection:"
+msgstr "Ṫǐ†ḻĕ ḟ∅ѓ ā ṉĕẅ ĉѳŊήê¢ţîơṅ∶"
+
+#: prefs.js:201
+msgid "Delete selected servers?"
+msgstr "Ḑęļéťē śĕłẽċṯé∂ ﻱẻṙΰěѓŝ؟"
+
+#: prefs.js:227
+msgid "Please select some servers to delete."
+msgstr "Ṗľẽäṡë ﻯĕĺėςṫ şŏṁê ﻱëŗṽęṙś ţѳ ∂ēĺėŧē∙"
+
+#: prefs.js:238
+msgid "Server:Port (e.g. irc.example.org:6667):"
+msgstr "Şèѓΰéѓ∶Ṗõѓṫ ₍ĕ∙ǵ∙ ĩѓĉ·ėẍãṁṕĺę·őŗﻕ∶6667₎∶"
+
+#: tt-irc.js:441
+msgid "Connected to: "
+msgstr "Ć∅ňņėçṫẻḑ ẗ∅∶ "
+
+#: tt-irc.js:445 tt-irc.js:451
+msgid "Disconnected."
+msgstr "Ďǐﺉĉōññěčŧẻď·"
+
+#: tt-irc.js:454
+msgid "Conversation with"
+msgstr "Ćŏ∩ΰĕṟśảŧïõŊ ẘϊךḣ"
+
+#: tt-irc.js:467
+msgid "Connect"
+msgstr "℃ơŋṉèҁך"
+
+#: tt-irc.js:472
+msgid "Connecting..."
+msgstr "ҀỏŊṉë¢ṫí∩ĝ∙·∙"
+
+#: tt-irc.js:477
+msgid "Disconnect"
+msgstr "Ḋįﻱςǒñמěċṯ"
+
+#: tt-irc.js:640
+msgid " has changed the topic to: "
+msgstr " Ћáš ¢ЋǡŊǵẽḑ ţḧè ţóṕî¢ ţő∶ "
+
+#: tt-irc.js:748
+msgid "Tiny Tiny IRC [%a @ %b / %c]"
+msgstr "Ţĩñγ Ťíήў ÎṞÇ [℅ả @ ℅Ъ ⁄ ℅ċ]"
+
+#: tt-irc.js:839
+#, fuzzy
+msgid "Close this tab?"
+msgstr "Çḻöşẽ †ḧĩš ţâъ؟"
+
+#: tt-irc.js:870
+msgid "Start conversation with %s?"
+msgstr "§ẗäř† ҁōתѵêṟϟāךϊơŋ ẘíṫĥ ℅ﻱ؟"
+
+#: users.js:19
+msgid "Login for a new user:"
+msgstr "Ĺõġĩמ ḟơŗ ǟ תėש ůśěṙ∶"
+
+#: users.js:52 users.js:89
+msgid "Delete selected users?"
+msgstr "Ḋéŀėŧē ﺉèłèςךéď ůŝēŗŝ¿"
+
+#: users.js:75
+msgid "Please select some users to delete."
+msgstr "Ṗļėàṡē ŝęŀěҁť şöṁẽ ûﺉęṙş ṯō ∂ęļěťē∙"
+
+#: users.js:109
+msgid "Please select one user to reset password."
+msgstr "Ṗļěăşė śęłě¢ṫ őńē ûﻱèŗ ṯỏ řẻŝé† ṗªﻱﺉẇσѓḏ∙"

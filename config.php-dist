@@ -35,8 +35,7 @@
 	// daemon process or cronjobs under.
 
 	define('ENABLE_TRANSLATIONS', false);
-	// Enable experimental support for interface translations
-	// based on PHP-Gettext. This is of no much use right now.
+	// Enable interface translations
 
 	define('UPDATE_DELAY_MAX', 0);
 	// Maximum amount of seconds to delay in faux-PUSH updates. 

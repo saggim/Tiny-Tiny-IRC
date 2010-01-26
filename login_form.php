@@ -43,7 +43,7 @@ function language_change(elem) {
 		document.forms['loginForm']['click'].disabled = true;
 	
 		var lang = elem[elem.selectedIndex].value;
-		setCookie("ttirc_lang", lang, <?php print SESSION_COOKIE_LIFETIME ?>);
+		set_cookie("ttirc_lang", lang, <?php print SESSION_COOKIE_LIFETIME ?>);
 		window.location.reload();
 	} catch (e) {
 		exception_error("language_change", e);
@@ -107,16 +107,16 @@ Event.observe(window, 'load', function() {
 			<td align="right"><input type="password" name="password"
 				onchange="fetch_profiles()" onfocus="fetch_profiles()"
 				value="<?php echo $_SERVER["REMOTE_USER"] ?>"></td></tr>
-			<!-- <?php if (ENABLE_TRANSLATIONS) { ?>
+			<?php if (ENABLE_TRANSLATIONS) { ?>
 			<tr><td align="right"><?php echo __("Language:") ?></td>
 			<td align="right">
 			<?php
-				print_select_hash("language", $_COOKIE["ttrss_lang"], get_translations(),
+				print_select_hash("language", $_COOKIE["ttirc_lang"], get_translations(),
 					"style='width : 100%' onchange='language_change(this)'");
 
 			?>
 			</td></tr>
-			<?php } ?> -->
+			<?php } ?>
 
 			<!-- <tr><td align="right"><?php echo __("Profile:") ?></td>
 			<td align="right" id="profile_box">

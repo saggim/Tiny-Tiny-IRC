@@ -409,7 +409,7 @@ function update_buffer() {
 					} */
 	
 					var tmp_html = "<li class=\""+row_class+"\" " +
-						"title=\"Start conversation\"" + 
+						"title=\"" + __('Start conversation') + "\"" + 
 					  	"nick=\"" + nick + "\" " +
 						"onclick=\"query_user(this)\">" +
 						nick_image + " " + nick + "</li>";
@@ -836,7 +836,7 @@ function close_tab(elem) {
 		var tab_id = elem.getAttribute("tab_id");
 		var tab = $(tab_id);
 
-		if (tab && confirm("Close this tab?")) {
+		if (tab && confirm(__("Close this tab?"))) {
 
 			var query = "?op=part-channel" +
 				"&chan=" + param_escape(tab.getAttribute("channel")) +

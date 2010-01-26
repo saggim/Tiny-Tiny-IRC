@@ -140,7 +140,7 @@ function confirmOP() {
 	
 				print "<p>".__("Checking version... ");
 	
-				$result = db_query($link, "SELECT schema_version FROM ttrss_version");
+				$result = db_query($link, "SELECT schema_version FROM ttirc_version");
 				$version = db_fetch_result($result, 0, "schema_version");
 	
 				if ($version == $v) {

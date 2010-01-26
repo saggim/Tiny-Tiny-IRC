@@ -42,11 +42,15 @@
 
 		<div class="dlgButtons">
 			<div style='float : left'>
-				<button onclick="create_user()">Add user</button>
-				<button onclick="reset_user()">Reset password</button>
-				<button onclick="delete_user()">Delete</button>
+				<button onclick="create_user()">
+					<?php echo __('Add user') ?></button>
+				<button onclick="reset_user()">
+					<?php echo __('Reset password') ?></button>
+				<button onclick="delete_user()">
+					<?php echo __('Delete') ?></button>
 			</div>
-			<button type="submit" onclick="close_infobox()">Close</button></div>
+			<button type="submit" onclick="close_infobox()">
+				<?php echo __('Close') ?></button></div>
 		</div>
 	</div>
 	<?php
