@@ -7,6 +7,21 @@ var topics = [];
 var active_nicks = [];
 var conndata_last = [];
 
+var MSGT_PRIVMSG = 0;
+var MSGT_COMMAND = 1;
+var MSGT_BROADCAST = 2;
+var MSGT_ACTION = 3;
+var MSGT_TOPIC = 4;
+var MSGT_PRIVATE_PRIVMSG = 5;
+var MSGT_EVENT = 6;
+
+var CS_DISCONNECTED = 0;
+var CS_CONNECTING = 1;
+var CS_CONNECTED = 2;
+
+var CT_CHANNEL = 0;
+var CT_PRIVATE = 1;
+
 var colormap = ["#cfcfcf", "#000000", "#0000cc", "#00cc00", 
 	 "#dd0000", "#aa0000", "#bb00bb", "#ffaa00", "#eedd22", 
 	 "#33de55", "#00cccc", "#33eeff", "#0000ff", "#ee22ee", 
@@ -201,7 +216,9 @@ function handle_update(transport) {
 				if (!buffers[connection_id]) buffers[connection_id] = [];
 				if (!buffers[connection_id][chan]) buffers[connection_id][chan] = [];
 
-				if (lines[i].message_type != 2) {
+				if (lines[i].message_type == MSGT_EVENT) {
+					handle_event(connection_id, lines[i]);
+				} else if (lines[i].message_type != MSGT_BROADCAST) {
 					buffers[connection_id][chan].push(tmp_html);
 				} else {
 					for (var b in buffers[connection_id]) {
@@ -437,7 +454,7 @@ function update_buffer() {
 					$("topic-input").disabled = true;
 
 				} else {
-					if (conndata_last[connection_id].status == "2") {
+					if (conndata_last[connection_id].status == CS_CONNECTED) {
 						$("topic-input").value = __("Connected to: ") + 
 							conndata_last[connection_id]["active_server"];
 						$("topic-input").disabled = true;
@@ -636,14 +653,14 @@ function format_message(row_class, param) {
 			color = "style=\"color : " + colormap[param.sender_color] + "\"";
 		}
 
-		if (param.message_type == 4) {
+		if (param.message_type == MSGT_TOPIC) {
 			var message = param.sender + __(" has changed the topic to: ") + 
 				param.message;
 
 			tmp = "<li class=\""+row_class+"\"><span class='timestamp'>" + 
 				param.ts + "</span>" +
 				"<span class='sys-message'>" + message + "</span>";
-		} else if (param.message_type == 3) {
+		} else if (param.message_type == MSGT_ACTION) {
 
 			message = "* " + param.sender + " " + param.message;
 
@@ -893,3 +910,31 @@ function query_user(elem) {
 	}
 }
 
+function handle_event(connection_id, line) {
+	try {
+		var params = line.message.split(":", 3);
+
+		switch (params[0]) {
+		case "NICK":
+			var old_nick = params[1];
+			var new_nick = params[2];
+			var tabs = get_all_tabs();
+
+			for (var i = 0; i < tabs.length; i++) {
+				var tab_conn = tabs[i].getAttribute("connection_id");
+				var tab_chan = tabs[i].getAttribute("channel");
+
+				if (tab_conn == connection_id && tab_chan == old_nick) {
+					debug("renaming query tab " + tab_chan + " to " + new_nick);
+					tabs[i].setAttribute("channel", new_nick);
+					tabs[i].innerHTML = "&nbsp;&nbsp;" + new_nick;
+					buffers[connection_id][new_nick] = buffers[connection_id][tab_chan];
+				}
+			}
+			break;
+		}
+
+	} catch (e) {
+		exception_error("handle_event", e);
+	}
+}

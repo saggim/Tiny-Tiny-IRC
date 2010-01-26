@@ -241,7 +241,17 @@ class Connection extends Yapircl {
 
 		$message = sprintf("%s is now known as %s", $this->nick, $new_nick);
 
+		$this->push_message('---', '---', 
+			"NICK:" . $this->nick . ":$new_nick", MSGT_EVENT);
+
 		$this->push_message('---', '---', $message, MSGT_BROADCAST);
+
+		$old_nick_utf = $this->to_utf($this->nick);
+		$new_nick_utf = $this->to_utf($new_nick);
+
+		db_query($this->link, "UPDATE ttirc_channels SET
+			channel = '$new_nick_utf' WHERE channel = '$old_nick_utf' AND
+			chan_type = ".CT_PRIVATE." AND connection_id = " . $this->connection_id);
 
 		$this->update_nicklist(false);
 	}
