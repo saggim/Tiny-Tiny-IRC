@@ -243,8 +243,7 @@ function handle_update(transport) {
 				for (var j = 0; j < tabs.length; j++) {
 					var tab = tabs[j];
 
-					if (tab.getAttribute("connection_id") == connection_id &&
-							tab.getAttribute("channel") == chan && 
+					if (tab.getAttribute("channel") == chan && 
 							tab != get_selected_tab()) {
 
 						tab.className = "attention";
@@ -929,7 +928,49 @@ function handle_event(li_class, connection_id, line) {
 	try {
 		var params = line.message.split(":", 3);
 
+		debug("handle_event " + params);
+
 		switch (params[0]) {
+		case "KICK":
+			var nick = params[1];
+			var message = params[2];
+
+			line.message = __("%u has been kicked from %c by %n (%m)").replace("%u", nick);
+			line.message = line.message.replace("%c", line.channel);
+			line.message = line.message.replace("%n", line.sender);
+			line.message = line.message.replace("%m", message);
+			line.sender = "---";
+
+			tmp_html = format_message(li_class, line);
+
+			push_message(connection_id, line.channel, tmp_html, MSGT_PRIVMSG);
+
+			break;
+
+		case "PART":
+			var nick = params[1];
+			var message = params[2];
+
+			line.message = __("%u has left %c (%m)").replace("%u", nick);
+			line.message = line.message.replace("%c", line.channel);
+			line.message = line.message.replace("%m", message);
+
+			tmp_html = format_message(li_class, line);
+
+			push_message(connection_id, line.channel, tmp_html, MSGT_PRIVMSG);
+
+			break;
+		case "JOIN":
+			var nick = params[1];
+
+			line.message = __("%u has joined %c").replace("%u", nick);
+			line.message = line.message.replace("%c", line.channel);
+
+			tmp_html = format_message(li_class, line);
+
+			push_message(connection_id, line.channel, tmp_html, MSGT_PRIVMSG);
+
+			break;
 		case "QUIT":
 			var nick = params[1];
 			var quit_msg = params[2];

@@ -205,9 +205,9 @@ class Connection extends Yapircl {
 
 		$channel = substr($this->_xline[2], 1);
 
-		$message = sprintf("%s has joined %s", $this->nick, $channel);
+		$message = sprintf("JOIN:%s", $this->nick);
 
-		$this->push_message('---', $channel, $message);
+		$this->push_message('---', $channel, $message, MSGT_EVENT);
 
 		$this->update_nicklist($channel);
 	}
@@ -220,7 +220,7 @@ class Connection extends Yapircl {
 			$quit_msg .=  ' ' . $this->_xline[$i];
 		}
 
-		$quit_msg = substr(ltrim($quit_msg), 1);
+		$quit_msg = ltrim($quit_msg);
 
 		$message = sprintf("QUIT:%s:%s",$this->nick, $quit_msg);
 
@@ -282,18 +282,37 @@ class Connection extends Yapircl {
 
 	function event_part() {
 
+		$message = "";
+
+		for ($i=3; $i < $this->_xline_sizeof; $i++) {
+			$message .=  ' ' . $this->_xline[$i];
+		}
+
+		$message = substr(ltrim($message), 1);
+
 		if ($this->nick == $this->_usednick) {
 			$channel = $this->to_utf($this->_xline[2]);
 
 			$result = db_query($this->link, "DELETE FROM ttirc_channels
 				WHERE channel = '$channel' AND connection_id = " .
 				$this->connection_id);
+		} else {
+			$message = sprintf("PART:%s:%s", $this->nick, $message);
+			$this->push_message('---', $this->_xline[2], $message, MSGT_EVENT);
 		}
 
-		$this->update_nicklist($this->from);
+		$this->update_nicklist($this->_xline[2]);
 	}
 
 	function event_kick() {
+
+		$message = "";
+
+		for ($i=4; $i < $this->_xline_sizeof; $i++) {
+			$message .=  ' ' . $this->_xline[$i];
+		}
+
+		$message = substr(ltrim($message), 1);
 
 		if ($this->_usednick == $this->_xline[3]) {
 			$channel = $this->to_utf($this->_xline[2]);
@@ -304,7 +323,16 @@ class Connection extends Yapircl {
 
 			$this->push_message('---', '---', 
 				"You have been kicked from " . $this->_xline[2], MSGT_PRIVMSG);
-		}	
+		} else {
+			//$this->push_message($this->nick, $this->_xline[2], 
+			//	$this->_xline[3] . " has been kicked from " . $this->_xline[2], MSGT_PRIVMSG);
+
+			$message = "KICK:" . $this->_xline[3] . ":" . $message;
+
+			$this->push_message($this->nick, $this->_xline[2], 
+				$message, MSGT_EVENT);
+		
+		}
 
 		$this->update_nicklist($this->_xline[2]);
 	}
