@@ -23,9 +23,9 @@ var CS_CONNECTED = 2;
 var CT_CHANNEL = 0;
 var CT_PRIVATE = 1;
 
-var colormap = [ "#00CCCC", "#000000", "#0000CC", "#CC00CC", "gray", 
+var colormap = [ "#00CCCC", "#000000", "#0000CC", "#CC00CC", "#606060", 
 	"green", "#00CC00", "maroon", "navy", "olive", "purple", 
-	"red", "silver", "teal", "#CCCC00" ]
+	"red", "#909090", "teal", "#CCCC00" ]
 
 function create_tab_if_needed(chan, connection_id, tab_type) {
 	try {
