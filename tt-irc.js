@@ -6,6 +6,7 @@ var li_classes = [];
 var topics = [];
 var active_nicks = [];
 var conndata_last = [];
+var last_update = false;
 
 var MSGT_PRIVMSG = 0;
 var MSGT_COMMAND = 1;
@@ -184,6 +185,8 @@ function handle_update(transport) {
 		var lines = rv[1];
 		var chandata = rv[2];
 
+		last_update = new Date();
+
 		handle_conn_data(conn_data);
 		handle_chan_data(chandata);
 	
@@ -280,7 +283,7 @@ function update(init) {
 	  		
 		if (init) query += "&init=" + init;
 
-		debug("request update..." + query);
+		debug("request update..." + query + " last: " + last_update);
 
 		new Ajax.Request("backend.php", {
 		parameters: query,
