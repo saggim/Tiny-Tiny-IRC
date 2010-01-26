@@ -53,6 +53,15 @@
 		Event.observe(window, 'load', function() {
 			init();
 		});
+
+		Event.observe(window, 'focus', function() {
+			set_window_active(true);
+		});
+
+		Event.observe(window, 'blur', function() {
+			set_window_active(false);
+		});
+
 	</script>
 </head>
 <body class="main">

@@ -1,4 +1,5 @@
 var last_id = 0;
+var last_active_id = 0;
 var delay = 1000;
 var buffers = [];
 var nicklists = [];
@@ -240,6 +241,8 @@ function handle_update(transport) {
 			}
 
 			last_id = lines[i].id;
+
+			if (window_active) last_active_id = last_id;
 		}
 	
 /*		if (prev_last_id == last_id) {
@@ -761,6 +764,10 @@ function update_title() {
 			var title = __("Tiny Tiny IRC [%a @ %b / %c]");
 			var connection_id = tab.getAttribute("connection_id");
 
+			if (!window_active && last_active_id != last_id) {
+				title = "["+(last_id-last_active_id)+"] " + title;
+			}
+
 			if (conndata_last[connection_id]) {
 				title = title.replace("%a", active_nicks[connection_id]);
 				title = title.replace("%b", conndata_last[connection_id].title);
@@ -1058,5 +1065,17 @@ function push_message(connection_id, channel, message, message_type) {
 
 	} catch (e) {
 		exception_error("push_message", e);
+	}
+}
+
+function set_window_active(active) {
+	try {
+		window_active = active;
+
+		if (active) last_active_id = last_id;
+
+		update_title();
+	} catch (e) {
+		exception_error("window_active", e);
 	}
 }
