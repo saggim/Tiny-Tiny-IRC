@@ -931,6 +931,20 @@ function handle_event(li_class, connection_id, line) {
 		debug("handle_event " + params);
 
 		switch (params[0]) {
+		case "MODE":
+			var mode = params[1];
+			var subject = params[2];
+
+			line.message = __("%u has changed mode [%m] on %s").replace("%u", line.sender);
+			line.message = line.message.replace("%m", mode);
+			line.message = line.message.replace("%s", subject);
+			line.sender = "---";
+
+			tmp_html = format_message(li_class, line);
+
+			push_message(connection_id, line.channel, tmp_html, MSGT_PRIVMSG);
+
+			break;
 		case "KICK":
 			var nick = params[1];
 			var message = params[2];

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-01-26 14:49+0300\n"
+"POT-Creation-Date: 2010-01-26 15:19+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -44,7 +44,7 @@ msgstr "Ćōטļḏñ’† âḑḏ ϟéŗΰĕѓ ₍℅š∶℅∂₎∶ Ỉṉ
 msgid "Default profile"
 msgstr "Ḋéϝǎůĺṯ ṕřѳﬁľê"
 
-#: connection.php:494 tt-irc.js:789 tt-irc.js:793
+#: connection.php:522 tt-irc.js:788 tt-irc.js:792
 msgid "Tiny Tiny IRC"
 msgstr "Ṫíñỷ Ṫĭŉỳ ÏƦ℃"
 
@@ -394,52 +394,64 @@ msgstr "Ṗľẽäṡë ﻯĕĺėςṫ şŏṁê ﻱëŗṽęṙś ţѳ ∂ēĺ�
 msgid "Server:Port (e.g. irc.example.org:6667):"
 msgstr "Şèѓΰéѓ∶Ṗõѓṫ ₍ĕ∙ǵ∙ ĩѓĉ·ėẍãṁṕĺę·őŗﻕ∶6667₎∶"
 
-#: tt-irc.js:471
+#: tt-irc.js:470
 msgid "Connected to: "
 msgstr "Ć∅ňņėçṫẻḑ ẗ∅∶ "
 
-#: tt-irc.js:475 tt-irc.js:481
+#: tt-irc.js:474 tt-irc.js:480
 msgid "Disconnected."
 msgstr "Ďǐﺉĉōññěčŧẻď·"
 
-#: tt-irc.js:484
+#: tt-irc.js:483
 msgid "Conversation with"
 msgstr "Ćŏ∩ΰĕṟśảŧïõŊ ẘϊךḣ"
 
-#: tt-irc.js:497
+#: tt-irc.js:496
 msgid "Connect"
 msgstr "℃ơŋṉèҁך"
 
-#: tt-irc.js:502
+#: tt-irc.js:501
 msgid "Connecting..."
 msgstr "ҀỏŊṉë¢ṫí∩ĝ∙·∙"
 
-#: tt-irc.js:507
+#: tt-irc.js:506
 msgid "Disconnect"
 msgstr "Ḋįﻱςǒñמěċṯ"
 
-#: tt-irc.js:672
+#: tt-irc.js:671
 msgid " has changed the topic to: "
 msgstr " Ћáš ¢ЋǡŊǵẽḑ ţḧè ţóṕî¢ ţő∶ "
 
-#: tt-irc.js:780
+#: tt-irc.js:779
 msgid "Tiny Tiny IRC [%a @ %b / %c]"
 msgstr "Ţĩñγ Ťíήў ÎṞÇ [℅ả @ ℅Ъ ⁄ ℅ċ]"
 
-#: tt-irc.js:871
+#: tt-irc.js:870
 #, fuzzy
 msgid "Close this tab?"
 msgstr "Çḻöşẽ †ḧĩš ţâъ؟"
 
-#: tt-irc.js:902
+#: tt-irc.js:901
 msgid "Start conversation with %s?"
 msgstr "§ẗäř† ҁōתѵêṟϟāךϊơŋ ẘíṫĥ ℅ﻱ؟"
 
-#: tt-irc.js:937
+#: tt-irc.js:938
+msgid "%u has been kicked from %c by %n (%m)"
+msgstr ""
+
+#: tt-irc.js:954
+msgid "%u has left %c (%m)"
+msgstr ""
+
+#: tt-irc.js:966
+msgid "%u has joined %c"
+msgstr ""
+
+#: tt-irc.js:978
 msgid "%u has quit IRC (%s)"
 msgstr ""
 
-#: tt-irc.js:953
+#: tt-irc.js:994
 msgid "%u is now known as %n"
 msgstr ""
 

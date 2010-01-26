@@ -69,7 +69,37 @@ class Connection extends Yapircl {
 			case "nick":
 				$this->nick($arguments);
 				break;
+			case "op":
+				list ($nick, $on) = explode(" ", $arguments, 2);
+				if (!$on) $on = $channel;
+				//$this->sendBuf("MODE $on +o :$nick");
+				$this->setmode($on, "+o", $nick);
+				break;
+			case "deop":
+				list ($nick, $on) = explode(" ", $arguments, 2);
+				if (!$on) $on = $channel;
+				$this->setmode($on, "-o", $nick);
+				break;
+			case "voice":
+				list ($nick, $on) = explode(" ", $arguments, 2);
+				if (!$on) $on = $channel;
+				//$this->sendBuf("MODE $on +o :$nick");
+				$this->setmode($on, "+v", $nick);
+				break;
+			case "devoice":
+				list ($nick, $on) = explode(" ", $arguments, 2);
+				if (!$on) $on = $channel;
+				$this->setmode($on, "-v", $nick);
+				break;
+			case "mode":
+				list ($on, $mode, $nicks) = explode(" ", $arguments, 2);
+				$this->setmode($on, $mode, $nicks);
+				break;
 		}
+	}
+
+	function setmode($channel, $mode, $subject) {
+		$this->sendBuf("MODE $channel $mode :$subject");
 	}
 
 	function check_messages() {
@@ -271,11 +301,11 @@ class Connection extends Yapircl {
 
 		$subject = ltrim($subject);
 
-		$message = sprintf("Mode change [%s] on %s by %s", 
-			$subject, $this->_xline[2], $this->nick);
+		$message = sprintf("MODE:%s:%s", 
+			$subject, $this->_xline[2]);
 
-		$this->push_message("---", $this->_xline[2], 
-				$message, MSGT_PRIVMSG);
+		$this->push_message($this->nick, $this->_xline[2], 
+				$message, MSGT_EVENT);
 
 		$this->update_nicklist($this->_xline[2]);
 	}
