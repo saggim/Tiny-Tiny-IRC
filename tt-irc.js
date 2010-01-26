@@ -922,7 +922,7 @@ function handle_event(li_class, connection_id, line) {
 		switch (params[0]) {
 		case "TOPIC":
 			var params_topic = line.message.split(":", 2);
-			var topic = params_topic[1];
+			var topic = line.message.replace("TOPIC:", "");
 
 			line.message = __("%u has changed the topic to: %s").replace("%u", line.sender);
 			line.message = line.message.replace("%s", topic);
@@ -1077,5 +1077,14 @@ function set_window_active(active) {
 		update_title();
 	} catch (e) {
 		exception_error("window_active", e);
+	}
+}
+
+function u_i(elem) {
+	try {	
+		debug(elem.href);
+
+	} catch (e) {
+		exception_error("u_i", e);
 	}
 }
