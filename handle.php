@@ -46,7 +46,7 @@
 		$server_str = db_escape_string($server["server"] . ":" . $server["port"]);
 
 		push_message($link, $connection_id, "---", 
-			"Connecting to $server_str...", true);
+			"CONNECTING:$server_str...", true, MSGT_EVENT);
 
 		$connection = new Connection($link, $connection_id, $line["encoding"], 
 			$line["last_sent_id"]);

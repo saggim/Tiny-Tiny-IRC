@@ -140,7 +140,8 @@
 					db_query($link, "UPDATE ttirc_channels SET
 						nicklist = '' WHERE connection_id = '$id'");
 
-					push_message($link, $id, "---", "Requesting connection...", true);
+					push_message($link, $id, "---", "REQUEST_CONNECTION", true,
+						MSGT_EVENT);
 
 					db_close($link);
 
@@ -149,7 +150,7 @@
 					$link = db_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);	
 					init_connection($link);
 
-					push_message($link, $id, "---", "Connection terminated.", true);
+					push_message($link, $id, "---", "DISCONNECT", true, MSGT_EVENT);
 
 					db_query($link, "UPDATE ttirc_connections SET
 						status = ".CS_DISCONNECTED." WHERE id = '$id'");

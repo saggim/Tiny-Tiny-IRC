@@ -1015,6 +1015,56 @@ function handle_event(li_class, connection_id, line) {
 
 			push_message(connection_id, '---', tmp_html, MSGT_BROADCAST);
 			break;
+		case "DISCONNECT":
+			line.message = __("Connection terminated.");
+
+			tmp_html = format_message(li_class, line);
+			push_message(connection_id, '---', tmp_html);
+			break;
+		case "REQUEST_CONNECTION":
+			line.message = __("Requesting connection...");
+
+			tmp_html = format_message(li_class, line);
+			push_message(connection_id, '---', tmp_html);
+			break;
+		case "CONNECTING":
+			var server = params[1];
+			var port = params[2];
+
+			line.message = __("Connecting to %s:%d...").replace("%s", server);
+			line.message = line.message.replace("%d", port);
+
+			tmp_html = format_message(li_class, line);
+			push_message(connection_id, '---', tmp_html);
+			break;
+		case "PING_REPLY":
+			var args = params[1];
+
+			line.message = __("Ping reply from %u: %d second(s).").replace("%u", 
+					line.sender);
+			line.message = line.message.replace("%d", args);
+			line.sender = '---';
+
+			tmp_html = format_message(li_class, line);
+			push_message(connection_id, '---', tmp_html, MSGT_BROADCAST);
+			break;
+
+		case "PING":
+			var args = params[1];
+
+			line.message = __("Received ping (%s) from %u").replace("%s", args);
+			line.message = line.message.replace("%u", line.sender);
+			line.sender = '---';
+
+			tmp_html = format_message(li_class, line);
+			push_message(connection_id, '---', tmp_html, MSGT_BROADCAST);
+			break;
+		case "CONNECT":
+			line.message = __("Connection established.");
+
+			tmp_html = format_message(li_class, line);
+			push_message(connection_id, '---', tmp_html);
+			break;
 		case "NICK":
 			var old_nick = params[1];
 			var new_nick = params[2];

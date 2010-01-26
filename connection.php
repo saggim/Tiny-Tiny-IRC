@@ -174,7 +174,7 @@ class Connection extends Yapircl {
 	}
 
 	function run() {
-		$this->push_message('---', '---', 'Connection established.');
+		$this->push_message('---', '---', 'CONNECT', MSGT_EVENT);
 		$this->join_channels();
 		$this->update_nick();
 
@@ -228,10 +228,26 @@ class Connection extends Yapircl {
 		db_query($this->link, $query, false);
 	}
 
+	function event_private_notice() {
+
+		if ($this->word == "\001PING") {
+			$seconds = time() - trim($this->rest, "\001");
+
+			$this->push_message($this->from, 
+				'---', "PING_REPLY:$seconds", MSGT_EVENT);
+		} else {
+			$this->push_message('---', '---', $this->_fline);
+		}
+
+	}
+
 	function event_all() {
 		if (!$this->registered) {
 			if (!method_exists($this, 'event_' . $this->_event)) {
-				$this->push_message('---', '---', $this->_fline, 0);
+
+//				echo $this->_event . "\n";
+
+				$this->push_message('---', '---', $this->_fline);
 			}
 		}
 	}
@@ -354,6 +370,8 @@ class Connection extends Yapircl {
 
 		$message = substr(ltrim($message), 1);
 
+		$message = "KICK:" . $this->_xline[3] . ":" . $message;
+
 		if ($this->_usednick == $this->_xline[3]) {
 			$channel = $this->to_utf($this->_xline[2]);
 
@@ -361,17 +379,11 @@ class Connection extends Yapircl {
 				WHERE channel = '$channel' AND connection_id = " .
 				$this->connection_id);
 
-			$this->push_message('---', '---', 
-				"You have been kicked from " . $this->_xline[2], MSGT_PRIVMSG);
+			$this->push_message($this->nick, "---", 
+				$message, MSGT_EVENT);
 		} else {
-			//$this->push_message($this->nick, $this->_xline[2], 
-			//	$this->_xline[3] . " has been kicked from " . $this->_xline[2], MSGT_PRIVMSG);
-
-			$message = "KICK:" . $this->_xline[3] . ":" . $message;
-
 			$this->push_message($this->nick, $this->_xline[2], 
 				$message, MSGT_EVENT);
-		
 		}
 
 		$this->update_nicklist($this->_xline[2]);
@@ -405,10 +417,10 @@ class Connection extends Yapircl {
 		$this->ctcp($this->nick, $this->full);
 		//echo $this->mask . " requested CTCP PING from " . $this->from . "\n";
 
-		$message = sprintf("Received CTCP PING from %s (%s)", 
-			$this->from, $this->full);
+		$message = sprintf("PING:%s", 
+			$this->rest);
 		
-		$this->push_message('---', '---', $message, MSGT_PRIVMSG);
+		$this->push_message($this->from, '---', $message, MSGT_EVENT);
 
 	}
 
