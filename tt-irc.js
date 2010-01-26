@@ -73,7 +73,7 @@ function create_tab_if_needed(chan, connection_id, tab_type) {
 
 			var img = "<img class=\"conn-img\" "+
 				"src=\"images/close_tab.png\" alt=\"[X]\" " +
-				"title=\"Close this tab\"" +
+				"title=\"" + __('Close this tab') + "\"" +
 				"tab_id=\"" + tab_id + "\"" +
 				"onclick=\"close_tab(this)\">";
 
@@ -510,6 +510,8 @@ function update_buffer() {
 		} 
 
 		$('connect-btn').setAttribute("connection_id", connection_id);
+
+		update_title();
 
 	} catch (e) {
 		exception_error("update_buffer", e);
