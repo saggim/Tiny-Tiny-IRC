@@ -44,6 +44,9 @@ class Connection extends Yapircl {
 	function handle_command($command, $arguments, $channel) {
 
 		switch (strtolower($command)) {
+			case "quote":
+				$this->sendBuf($arguments);
+				break;
 			case "ping":
 				$this->ping($arguments);
 				break;
