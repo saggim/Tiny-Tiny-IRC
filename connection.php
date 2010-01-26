@@ -448,7 +448,7 @@ class Connection extends Yapircl {
 		$this->set_topic($this->_xline[2], $topic, $this->nick, time());
 
 		$this->push_message($this->nick, $this->_xline[2], 
-			$topic, MSGT_TOPIC);
+			"TOPIC:$topic", MSGT_EVENT);
 	}
 
 

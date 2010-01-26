@@ -667,14 +667,7 @@ function format_message(row_class, param) {
 			color = "style=\"color : " + colormap[param.sender_color] + "\"";
 		}
 
-		if (param.message_type == MSGT_TOPIC) {
-			var message = param.sender + __(" has changed the topic to: ") + 
-				param.message;
-
-			tmp = "<li class=\""+row_class+"\"><span class='timestamp'>" + 
-				param.ts + "</span>" +
-				"<span class='sys-message'>" + message + "</span>";
-		} else if (param.message_type == MSGT_ACTION) {
+		if (param.message_type == MSGT_ACTION) {
 
 			message = "* " + param.sender + " " + param.message;
 
@@ -931,6 +924,19 @@ function handle_event(li_class, connection_id, line) {
 		debug("handle_event " + params);
 
 		switch (params[0]) {
+		case "TOPIC":
+			var params_topic = line.message.split(":", 2);
+			var topic = params_topic[1];
+
+			line.message = __("%u has changed the topic to: %s").replace("%u", line.sender);
+			line.message = line.message.replace("%s", topic);
+			line.sender = "---";
+
+			tmp_html = format_message(li_class, line);
+
+			push_message(connection_id, line.channel, tmp_html, MSGT_PRIVMSG);
+
+			break;
 		case "MODE":
 			var mode = params[1];
 			var subject = params[2];
