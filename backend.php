@@ -110,6 +110,9 @@
 
 		if ($chan && valid_connection($link, $connection_id)) {
 			handle_command($link, $connection_id, $chan, "/part");
+
+			db_query($link, "DELETE FROM ttirc_channels WHERE channel = '$chan'
+				AND connection_id = '$connection_id'");
 		}
 
 		$lines = get_new_lines($link, $last_id);
