@@ -213,11 +213,11 @@ function handle_update(transport) {
 				var tmp_html = format_message(li_classes[chan],
 					lines[i]);
 	
-				if (!buffers[connection_id]) buffers[connection_id] = [];
+/*				if (!buffers[connection_id]) buffers[connection_id] = [];
 				if (!buffers[connection_id][chan]) buffers[connection_id][chan] = [];
 
 				if (lines[i].message_type == MSGT_EVENT) {
-					handle_event(connection_id, lines[i]);
+					handle_event(li_classes[chan], connection_id, lines[i]);
 				} else if (lines[i].message_type != MSGT_BROADCAST) {
 					buffers[connection_id][chan].push(tmp_html);
 				} else {
@@ -226,13 +226,19 @@ function handle_update(transport) {
 							buffers[connection_id][b].push(tmp_html);						
 						}
 					}
+				} */
+
+				if (lines[i].message_type == MSGT_EVENT) {
+					handle_event(li_classes[chan], connection_id, lines[i]);
+				} else {
+					push_message(connection_id, chan, tmp_html, lines[i].message_type);
 				}
 
 				while (buffers[connection_id][chan].length > 100) {
 					buffers[connection_id][chan].shift();
 				}
 
-				var tabs = get_all_tabs();
+				var tabs = get_all_tabs(connection_id);
 
 				for (var j = 0; j < tabs.length; j++) {
 					var tab = tabs[j];
@@ -307,9 +313,16 @@ function get_selected_tab() {
 	}
 }
 
-function get_all_tabs() {
+function get_all_tabs(connection_id) {
 	try {
-		var tabs = $("tabs-list").getElementsByTagName("li");
+		var tabs;
+
+		if (connection_id) {
+			tabs = $("tabs-" + connection_id).getElementsByTagName("LI");
+		} else {
+			tabs = $("tabs-list").getElementsByTagName("li");
+		}
+
 		var rv = [];
 
 		for (var i = 0; i < tabs.length; i++) {
@@ -611,6 +624,8 @@ function change_tab(elem) {
 
 		elem.className = "selected";
 
+		debug("changing tab to " + elem.id);
+
 		update_buffer();
 
 		$("input-prompt").focus();
@@ -910,17 +925,45 @@ function query_user(elem) {
 	}
 }
 
-function handle_event(connection_id, line) {
+function handle_event(li_class, connection_id, line) {
 	try {
 		var params = line.message.split(":", 3);
 
 		switch (params[0]) {
+		case "QUIT":
+			var nick = params[1];
+			var quit_msg = params[2];
+
+			line.message = __("%u has quit IRC (%s)").replace("%u", nick);
+			line.message = line.message.replace("%s", quit_msg);
+
+			tmp_html = format_message(li_class, line);
+
+			push_message(connection_id, '---', tmp_html, MSGT_BROADCAST);
+			break;
 		case "NICK":
 			var old_nick = params[1];
 			var new_nick = params[2];
 			var tabs = get_all_tabs();
 
-			for (var i = 0; i < tabs.length; i++) {
+			if (buffers[connection_id] && buffers[connection_id][old_nick]) {
+				buffers[connection_id][new_nick] = buffers[connection_id][old_nick];
+			}
+
+			line.message = __("%u is now known as %n").replace("%u", old_nick);
+			line.message = line.message.replace("%n", new_nick);
+
+			tmp_html = format_message(li_class, line);
+
+			push_message(connection_id, '---', tmp_html, MSGT_BROADCAST);
+
+/*			for (var b in buffers[connection_id]) {
+				if (typeof buffers[connection_id][b] == 'object') {
+					buffers[connection_id][b].push(tmp_html);
+				}
+			} */
+
+/*			for (var i = 0; i < tabs.length; i++) {
 				var tab_conn = tabs[i].getAttribute("connection_id");
 				var tab_chan = tabs[i].getAttribute("channel");
 
@@ -928,13 +971,40 @@ function handle_event(connection_id, line) {
 					debug("renaming query tab " + tab_chan + " to " + new_nick);
 					tabs[i].setAttribute("channel", new_nick);
 					tabs[i].innerHTML = "&nbsp;&nbsp;" + new_nick;
+					tabs[i].id = "tab-" + new_nick + ":" + connection_id;
 					buffers[connection_id][new_nick] = buffers[connection_id][tab_chan];
 				}
-			}
-			break;
+			} */
+			break; 
 		}
 
 	} catch (e) {
 		exception_error("handle_event", e);
+	}
+}
+
+function push_message(connection_id, channel, message, message_type) {
+	try {
+		if (!message_type) message_type = MSGT_PRIVMSG;
+
+		if (!buffers[connection_id]) buffers[connection_id] = [];
+		if (!buffers[connection_id][channel]) buffers[connection_id][channel] = [];
+
+		if (message_type != MSGT_BROADCAST) {
+			buffers[connection_id][channel].push(message);
+		} else {
+			var tabs = get_all_tabs(connection_id);
+
+			for (var i = 0; i < tabs.length; i++) {
+				var chan = tabs[i].getAttribute("channel");
+
+				if (!buffers[connection_id][chan]) buffers[connection_id][chan] = [];
+
+				buffers[connection_id][chan].push(message);
+			}
+		}
+
+	} catch (e) {
+		exception_error("push_message", e);
 	}
 }

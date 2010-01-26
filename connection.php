@@ -220,12 +220,11 @@ class Connection extends Yapircl {
 			$quit_msg .=  ' ' . $this->_xline[$i];
 		}
 
-		$topic = substr(ltrim($topic), 1);
+		$quit_msg = substr(ltrim($quit_msg), 1);
 
-		$message = sprintf("%s has quit IRC (%s)",
-			$this->nick, $quit_msg);
+		$message = sprintf("QUIT:%s:%s",$this->nick, $quit_msg);
 
-		$this->push_message('---', '---', $message, MSGT_BROADCAST);
+		$this->push_message('---', '---', $message, MSGT_EVENT);
 
 		$this->update_nicklist(false);
 	}
@@ -239,12 +238,12 @@ class Connection extends Yapircl {
 			$this->update_nick();
 		}
 
-		$message = sprintf("%s is now known as %s", $this->nick, $new_nick);
+		//$message = sprintf("%s is now known as %s", $this->nick, $new_nick);
 
 		$this->push_message('---', '---', 
 			"NICK:" . $this->nick . ":$new_nick", MSGT_EVENT);
 
-		$this->push_message('---', '---', $message, MSGT_BROADCAST);
+		//$this->push_message('---', '---', $message, MSGT_BROADCAST);
 
 		$old_nick_utf = $this->to_utf($this->nick);
 		$new_nick_utf = $this->to_utf($new_nick);
@@ -252,6 +251,11 @@ class Connection extends Yapircl {
 		db_query($this->link, "UPDATE ttirc_channels SET
 			channel = '$new_nick_utf' WHERE channel = '$old_nick_utf' AND
 			chan_type = ".CT_PRIVATE." AND connection_id = " . $this->connection_id);
+
+		db_query($this->link, "UPDATE ttirc_messages SET
+			channel = '$new_nick_utf', sender = '$new_nick_utf' 
+			WHERE channel = '$old_nick_utf' AND
+			connection_id = " . $this->connection_id);
 
 		$this->update_nicklist(false);
 	}
