@@ -1200,6 +1200,54 @@ function set_window_active(active) {
 	}
 }
 
+var _tooltip_elem;
+
+function show_thumbnail(img) {
+	try {
+		if (_tooltip_elem) {
+
+			hide_spinner();
+
+			var elem = _tooltip_elem;
+
+			var xy = Element.cumulativeOffset(elem);
+
+			xy[1] -= $("log-list").scrollTop;
+			xy[1] -= $("log").scrollTop;
+
+			var scaled_height = img.height;
+
+			if (img.height > 250 && img.height > img.width) {
+				scaled_height = 250;
+			} else if (img.width > 250) {
+				scaled_height *= (250 / img.width);
+			}
+
+			scaled_height = parseInt(scaled_height);
+
+			//debug("SH:" + scaled_height);
+
+			if (xy[1] + scaled_height >= $("log").offsetHeight - 50) {
+				xy[1] -= 10;
+				xy[1] -= scaled_height;
+			} else {
+				xy[1] += Element.getHeight(elem);
+				xy[1] += 10;
+			}
+
+			debug(xy[1]);
+
+			$("image-tooltip").style.left = xy[0] + "px";
+			$("image-tooltip").style.top = xy[1] + "px";
+
+			Effect.Appear($("image-tooltip"));
+		}
+
+	} catch (e) {
+		exception_error("show_thumbnail", e);
+	}
+}
+
 function m_i(elem) {
 	try {	
 
@@ -1208,25 +1256,14 @@ function m_i(elem) {
 
 		var timeout = window.setTimeout(function() {
 
-			var xy = Element.cumulativeOffset(elem);
+			show_spinner();
 
-			xy[1] += Element.getHeight(elem);
-			xy[1] -= $("log-list").scrollTop;
-			xy[1] -= $("log").scrollTop;
+			$("image-tooltip").innerHTML = "<img onload=\"show_thumbnail(this)\" " + 
+				"src=\"" + elem.href + "\"/>";
 
-			//debug(xy[1] + " vs " + $("log").offsetHeight);
+			_tooltip_elem = elem;
 
-			if (xy[1] >= $("log").offsetHeight) {
-				xy[1] -= Element.getHeight(elem);
-				xy[1] -= 250; /* preview size */
-			}
-
-			$("image-tooltip").style.left = xy[0] + "px";
-			$("image-tooltip").style.top = xy[1] + "px";
-			$("image-tooltip").innerHTML = "<img src=\"" + elem.href + "\"/>";
-
-			Effect.Appear($("image-tooltip"));
-			}, 1000);
+			}, 250);
 
 		elem.setAttribute("timeout", timeout);
 
@@ -1237,6 +1274,7 @@ function m_i(elem) {
 
 function m_o(elem) {
 	try {	
+		hide_spinner();
 
 		window.clearTimeout(elem.getAttribute("timeout"));
 
