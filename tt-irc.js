@@ -108,6 +108,11 @@ function init_second_stage(transport) {
 
 		var params = _eval(transport.responseText);
 
+		if (!params || params.status != 1) {
+			return fatal_error(14, __("The application failed to initialize."), 
+				transport.responseText);
+		}
+
 //		last_id = params.max_id;
 
 		Element.hide("overlay");
@@ -164,7 +169,7 @@ function handle_update(transport) {
 			return true;
 		}
 
-		if (!handle_error(rv)) return false;
+		if (!handle_error(rv, transport)) return false;
 
 		var conn_data = rv[0];
 		var lines = rv[1];
@@ -563,10 +568,10 @@ function send(elem, evt) {
 	}
 }
 
-function handle_error(obj) {
+function handle_error(obj, transport) {
 	try {
 		if (obj && obj.error) {
-			return fatal_error(obj.error, obj.errormsg);
+			return fatal_error(obj.error, obj.errormsg, transport.responseText);
 		}
 		return true;
 	} catch (e) {

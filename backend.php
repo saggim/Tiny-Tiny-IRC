@@ -209,6 +209,8 @@
 			$rv["max_id"] = 0;
 		}
 
+		$rv["status"] = 1;
+
 		print json_encode($rv);
 
 		break;
