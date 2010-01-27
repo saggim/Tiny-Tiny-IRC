@@ -801,8 +801,10 @@ function send_command(command) {
 
 			var channel = tab.getAttribute("channel");
 
+			if (tab.getAttribute("tab_type") == "S") channel = "---";
+
 			var query = "?op=send&message=" + param_escape(command) + 
-				"&channel=" + param_escape("---") +
+				"&channel=" + param_escape(channel) +
 				"&connection=" + param_escape(tab.getAttribute("connection_id")) +
 				"&last_id=" + last_id;
 	
@@ -831,6 +833,17 @@ function change_nick() {
 
 	} catch (e) {
 		exception_error("change_nick", e);
+	}
+}
+
+function join_channel() {
+	try {
+		var channel = prompt("Channel to join:");
+
+		if (channel) send_command("/join " + channel);
+
+	} catch (e) {
+		exception_error("join_channel", e);
 	}
 }
 
