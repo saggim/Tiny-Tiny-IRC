@@ -1,3 +1,4 @@
+var window_active = false;
 var last_id = 0;
 var last_active_id = 0;
 var delay = 1000;
