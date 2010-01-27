@@ -1153,7 +1153,17 @@ function m_i(elem) {
 		var timeout = window.setTimeout(function() {
 
 			var xy = Element.cumulativeOffset(elem);
+
 			xy[1] += Element.getHeight(elem);
+			xy[1] -= $("log-list").scrollTop;
+			xy[1] -= $("log").scrollTop;
+
+			//debug(xy[1] + " vs " + $("log").offsetHeight);
+
+			if (xy[1] >= $("log").offsetHeight) {
+				xy[1] -= Element.getHeight(elem);
+				xy[1] -= 120; /* preview size */
+			}
 
 			$("image-tooltip").style.left = xy[0] + "px";
 			$("image-tooltip").style.top = xy[1] + "px";
