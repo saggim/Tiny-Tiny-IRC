@@ -705,3 +705,6 @@ div#image-tooltip img {
 	max-width : 250px;
 }
 
+button, input, select {
+	font-family : "Lucida Grande", "Segoe UI", Tahoma, Arial, sans-serif;
+}
