@@ -2,6 +2,16 @@ body {
 	background : #507AAA;
 }
 
+a {
+	color : white;
+}
+
+a:hover {
+	text-decoration : underline;
+	color : white;
+}
+
+
 div#topLinks {
 	color : white;
 }

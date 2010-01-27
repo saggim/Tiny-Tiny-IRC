@@ -126,7 +126,7 @@
 	<img src="<?php echo theme_image($link, 'images/logo.png') ?>" alt="Tiny Tiny IRC"/>	
 </div>
 
-<div id="actions">
+<!-- <div id="actions">
 	<select onchange="handle_action(this)" disabled>
 		<option value="">Actions...</option>
 		<option value="cmd_nick">Change nick</option>
@@ -140,6 +140,10 @@
 			<option value="cmd_disconnect">Disconnect</option>
 		</optgroup>
 	</select>
+</div> -->
+
+<div id="actions">
+	<a href="#" onclick="join_channel()">Join channel</a>
 </div>
 
 <div id="tabs">

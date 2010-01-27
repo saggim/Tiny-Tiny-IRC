@@ -482,6 +482,8 @@ function update_buffer() {
 			$("input-prompt").disabled = conndata_last[connection_id].status != 2;
 		}
 
+		$("topic-input").title = $("topic-input").value;
+
 		$("nick").innerHTML = active_nicks[connection_id];
 
 		switch (conndata_last[connection_id].status) {
@@ -786,6 +788,15 @@ function update_title() {
 
 	} catch (e) {
 		exception_error("update_title", e);
+	}
+}
+
+function send_command(command) {
+	try {
+		//
+
+	} catch (e) {
+		exception_error("send_command", e);
 	}
 }
 
