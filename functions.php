@@ -3,6 +3,8 @@
 	require_once "message_types.php";
 	require_once "db-prefs.php";
 
+	define('SINGLE_USER_MODE', false);
+
 	if (defined('MEMCACHE_SERVER') && MEMCACHE_SERVER) {
 		$memcache = new Memcache;
 		$memcache->connect(MEMCACHE_SERVER, 11211);
@@ -115,6 +117,9 @@
 	}
 
 	function login_sequence($link, $mobile = false) {
+
+		$_SESSION["prefs_cache"] = array();
+
 		if (!SINGLE_USER_MODE) {
 
 			$login_action = $_POST["login_action"];

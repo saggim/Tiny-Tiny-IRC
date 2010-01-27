@@ -1,0 +1,71 @@
+body {
+	background : #507AAA;
+}
+
+div#topLinks {
+	color : white;
+}
+
+div#topLinks a {
+	color : white;
+}
+
+div#topLinks a:hover {
+	text-decoration : underline;
+}
+
+div.infoBoxContents a {
+	color : #3b679c;
+}
+
+
+#infoBoxTitle {
+	border-color : #507AAA;
+	background : #507AAA;
+	text-shadow : #5d82c0 0px 1px 0px;
+}
+
+
+#infoBox {	
+	border-color : #507AAA;
+	background : #eee;
+}
+
+ul.container {
+	border : 1px solid #ccc;
+}
+
+#log {	
+	border-color : #ccc;
+}
+
+#content {
+	background : white;
+	border-color : #ccc;
+}
+
+#topic div.wrapper {
+	border : 1px solid #ccc;
+}
+
+#tabs-list li {
+	color : white;
+}
+
+#tabs-list li.selected {
+	border-color : #3b679c;
+	background : white;
+	color : #484848;
+}
+
+#input div.wrapper {
+	border : 1px solid #ccc;
+}
+
+#sidebar {
+	background : #eeeeee;
+	border-width : 0px 0px 0px 1px;
+	border-color : #ccc;
+	border-style : solid;
+}
+

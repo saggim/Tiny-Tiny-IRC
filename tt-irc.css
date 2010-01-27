@@ -100,6 +100,30 @@ table.loginForm2 .innerLoginCell {
 	text-align : center;
 }
 
+#sidebar {
+	position : absolute;
+	top : 0px;
+	right : 0px;
+	width : 150px;
+	overflow : auto;
+	bottom : 0px;
+}
+
+#connect {
+	top : 5px;
+	right : 5px;
+	position : absolute;
+	width : 143px;
+	overflow : auto;
+	bottom : 5px;
+	text-align : center;
+}
+
+#connect-btn {
+	width : 90%;
+}
+
+
 #nick {
 	position : absolute;
 	left : 5px;
@@ -255,19 +279,6 @@ ul.sub-tabs {
 	list-style-type : none;
 	margin : 0px;
 	padding : 0px;
-}
-
-#connect {
-	top : 5px;
-	right : 5px;
-	position : absolute;
-	width : 143px;
-	overflow : auto;
-	bottom : 5px;
-}
-
-#connect-btn {
-	width : 100%;
 }
 
 #content {

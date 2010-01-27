@@ -151,16 +151,22 @@
 		<input disabled onkeypress="change_topic(this, event)" 
 			id="topic-input" value=""></div>
 	</div>
+	<div id="log"><ul id="log-list"></ul></div>	
+
+	<div id="sidebar">&nbsp;</div>
+
 	<div id="connect"><button onclick="toggle_connection(this)" 
 		id="connect-btn">Connect</button></div>
-	<div id="log"><ul id="log-list"></ul></div>	
-	<div id="nick" onclick="change_nick()"></div>
-	<div id="input"><div class="wrapper">
-		<input disabled="true" id="input-prompt" onkeypress="send(this, event)"></input>
-	</div></div>
+
 	<div id="userlist">
 		<div id="userlist-inner"><ul id="userlist-list"></ul></div>
 	</div>
+
+	<div id="nick" onclick="change_nick()"></div>
+
+	<div id="input"><div class="wrapper">
+		<input disabled="true" id="input-prompt" onkeypress="send(this, event)"></input>
+	</div></div>
 </div>
 
 <?php db_close($link); ?>
