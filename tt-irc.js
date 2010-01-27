@@ -1,4 +1,3 @@
-var window_active = false;
 var last_id = 0;
 var last_active_id = 0;
 var delay = 1000;
@@ -60,7 +59,7 @@ function create_tab_if_needed(chan, connection_id, tab_type) {
 
 			var img = "<img class=\"conn-img\" "+
 				"src=\"images/close_tab.png\" alt=\"[X]\" " +
-				"title=\"" + __('Close this tab') + "\"" +
+				"title=\"" + __("Close this tab") + "\"" +
 				"tab_id=\"" + tab_id + "\"" +
 				"onclick=\"close_tab(this)\">";
 
@@ -108,6 +107,11 @@ function init_second_stage(transport) {
 	try {
 
 		var params = _eval(transport.responseText);
+
+		if (!params || params.status != 1) {
+			return fatal_error(14, __("The application failed to initialize."), 
+				transport.responseText);
+		}
 
 //		last_id = params.max_id;
 
@@ -165,7 +169,7 @@ function handle_update(transport) {
 			return true;
 		}
 
-		if (!handle_error(rv)) return false;
+		if (!handle_error(rv, transport)) return false;
 
 		var conn_data = rv[0];
 		var lines = rv[1];
@@ -401,7 +405,7 @@ function update_buffer() {
 					} */
 	
 					var tmp_html = "<li class=\""+row_class+"\" " +
-						"title=\"" + __('Start conversation') + "\"" + 
+						"title=\"" + __("Start conversation") + "\"" + 
 					  	"nick=\"" + nick + "\" " +
 						"onclick=\"query_user(this)\">" +
 						nick_image + " " + nick + "</li>";
@@ -564,10 +568,10 @@ function send(elem, evt) {
 	}
 }
 
-function handle_error(obj) {
+function handle_error(obj, transport) {
 	try {
 		if (obj && obj.error) {
-			return fatal_error(obj.error, obj.errormsg);
+			return fatal_error(obj.error, obj.errormsg, transport.responseText);
 		}
 		return true;
 	} catch (e) {
@@ -1118,11 +1122,41 @@ function set_window_active(active) {
 	}
 }
 
-function u_i(elem) {
+function m_i(elem) {
 	try {	
-		debug(elem.href);
+
+		if (!elem.href.toLowerCase().match("(jpg|gif|png|bmp)$"))
+			return;
+
+		var timeout = window.setTimeout(function() {
+
+			var xy = Element.cumulativeOffset(elem);
+			xy[1] += Element.getHeight(elem);
+
+			$("image-tooltip").style.left = xy[0] + "px";
+			$("image-tooltip").style.top = xy[1] + "px";
+			$("image-tooltip").innerHTML = "<img src=\"" + elem.href + "\"/>";
+
+			Effect.Appear($("image-tooltip"));
+			}, 1000);
+
+		elem.setAttribute("timeout", timeout);
 
 	} catch (e) {
-		exception_error("u_i", e);
+		exception_error("m_i", e);
 	}
+}
+
+function m_o(elem) {
+	try {	
+
+		window.clearTimeout(elem.getAttribute("timeout"));
+
+		Element.hide("image-tooltip");
+
+	} catch (e) {
+		exception_error("m_o", e);
+	}
+
+
 }
