@@ -147,7 +147,12 @@
 			if (strpos($message, "/") === 0) {
 				handle_command($link, $connection_id, $chan, $message);
 			} else {
-				push_message($link, $connection_id, $chan, $message);
+
+				$lines = explode("\n", wordwrap($message, 200, "\n"));
+
+				foreach ($lines as $line) {
+					push_message($link, $connection_id, $chan, $line);
+				}
 			}
 		}
 

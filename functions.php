@@ -607,7 +607,7 @@
 			FROM ttirc_messages, ttirc_connections WHERE
 			connection_id = ttirc_connections.id AND
 			message_type != ".MSGT_COMMAND." AND
-			ts > NOW() - INTERVAL '35 minutes' AND
+			ts > NOW() - INTERVAL '5 minutes' AND
 			ttirc_messages.id > '$last_id' AND 
 			owner_uid = ".$_SESSION["uid"]." ORDER BY ttirc_messages.id LIMIT 50");
 
