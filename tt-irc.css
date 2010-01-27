@@ -283,10 +283,6 @@ ul.sub-tabs {
 }
 
 #topic {
-	border-width : 0px;
-	border-style : solid;
-	border-color : #88b0f0;
-	background : #c0d8ff;
 	position : absolute;
 	top : 0px;
 	left : 5px;
