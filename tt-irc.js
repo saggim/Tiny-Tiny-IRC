@@ -30,6 +30,9 @@ var colormap = [ "#00CCCC", "#000000", "#0000CC", "#CC00CC", "#606060",
 	"green", "#00CC00", "maroon", "navy", "olive", "purple", 
 	"red", "#909090", "teal", "#CCCC00" ]
 
+var commands = [ "/join", "/part", "/nick", "/query", "/quote", "/msg", 
+	 "/op", "/deop" ];
+
 function create_tab_if_needed(chan, connection_id, tab_type) {
 	try {
 		var tab_id = "tab-" + chan + ":" + connection_id;
@@ -1320,8 +1323,6 @@ function hotkey_handler(e) {
 				var nicks = get_nick_list(tab.getAttribute("connection_id"),
 							tab.getAttribute("channel"));
 
-				debug(nicks);
-
 				var elem = $("input-prompt");
 	
 				for (var i = 0; i < nicks.length; i++) {
@@ -1330,6 +1331,14 @@ function hotkey_handler(e) {
 						return false;
 					}
 				}
+
+				for (var i = 0; i < commands.length; i++) {
+					if (commands[i].match("^" + elem.value)) {
+						elem.value = commands[i] + " ";
+						return false;
+					}
+				}
+
 			}
 
 			return false;
