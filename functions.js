@@ -17,7 +17,7 @@ function exception_error(location, e, ext_info) {
 
 	if (!ext_info) ext_info = "N/A";
 
-	disableHotkeys();
+	disable_hotkeys();
 
 	try {
 
@@ -73,11 +73,11 @@ function format_exception_error(location, e) {
 }
 
 
-function disableHotkeys() {
+function disable_hotkeys() {
 	hotkeys_enabled = false;
 }
 
-function enableHotkeys() {
+function enable_hotkeys() {
 	hotkeys_enabled = true;
 }
 
@@ -163,7 +163,7 @@ function closeErrorBox() {
 		Element.hide("dialog_overlay");
 		Element.hide("errorBoxShadow");
 
-		enableHotkeys();
+		enable_hotkeys();
 	}
 
 	return false;
@@ -173,7 +173,7 @@ function closeErrorBox() {
 function closeInfoBox(cleanup) {
 
 	try {
-		enableHotkeys();
+		enable_hotkeys();
 
 		if (Element.visible("infoBoxShadow")) {
 			Element.hide("dialog_overlay");
@@ -239,7 +239,7 @@ function infobox_callback2(transport) {
 			Element.show("infoBoxShadow");
 		}
 
-		disableHotkeys();
+		disable_hotkeys();
 	} catch (e) {
 		exception_error("infobox_callback2", e);
 	}
@@ -248,7 +248,7 @@ function infobox_callback2(transport) {
 function close_infobox(cleanup) {
 
 	try {
-		enableHotkeys();
+		enable_hotkeys();
 
 		if (Element.visible("infoBoxShadow")) {
 			Element.hide("dialog_overlay");

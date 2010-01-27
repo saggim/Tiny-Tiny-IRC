@@ -132,6 +132,7 @@ table.loginForm2 .innerLoginCell {
 	height : 25px;
 	line-height : 25px;
 	text-align : right;
+	cursor : pointer;
 }
 
 #input div.wrapper {

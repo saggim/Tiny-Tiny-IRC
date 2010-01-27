@@ -127,6 +127,10 @@ function init_second_stage(transport) {
 
 		debug("init_second_stage");
 
+		document.onkeydown = hotkey_handler;
+
+		enable_hotkeys();
+
 		hide_spinner();
 
 		update(true);
@@ -791,6 +795,27 @@ function change_nick() {
 
 		if (tab) {
 
+			var nick = prompt("Enter new nickname:");
+
+			if (!nick) return;
+		
+			var channel = tab.getAttribute("channel");
+
+			var query = "?op=send&message=" + param_escape("/nick " + nick) + 
+				"&channel=" + param_escape("---") +
+				"&connection=" + param_escape(tab.getAttribute("connection_id")) +
+				"&last_id=" + last_id;
+	
+			debug(query);
+
+			show_spinner();
+
+			new Ajax.Request("backend.php", {
+			parameters: query,
+			onComplete: function (transport) {
+				handle_update(transport);
+				hide_spinner();
+			} });
 
 		}
 	} catch (e) {
@@ -1189,6 +1214,82 @@ function m_o(elem) {
 	} catch (e) {
 		exception_error("m_o", e);
 	}
+}
 
+function hotkey_handler(e) {
 
+	try {
+
+		var keycode;
+		var shift_key = false;
+
+		var cmdline = $('cmdline');
+		var feedlist = $('feedList');
+
+		try {
+			shift_key = e.shiftKey;
+		} catch (e) {
+
+		}
+	
+		if (window.event) {
+			keycode = window.event.keyCode;
+		} else if (e) {
+			keycode = e.which;
+		}
+
+		var keychar = String.fromCharCode(keycode);
+
+		if (keycode == 27) { // escape
+			close_infobox();
+		} 
+
+		if (!hotkeys_enabled) {
+			debug("hotkeys disabled");
+			return;
+		}
+
+		if (keycode == 38 && e.ctrlKey) {
+			debug("moving up...");
+
+			var tabs = get_all_tabs();
+			var tab = get_selected_tab();
+
+			if (tab) {
+				for (var i = 0; i < tabs.length; i++) {
+					if (tabs[i] == tab) {
+						change_tab(tabs[i-1]);
+						return;
+					}
+				}
+			}
+
+			return false;
+		}
+
+		if (keycode == 40 && e.ctrlKey) {
+			debug("moving down...");
+
+			var tabs = get_all_tabs();
+			var tab = get_selected_tab();
+
+			if (tab) {
+				for (var i = 0; i < tabs.length; i++) {
+					if (tabs[i] == tab) {
+						change_tab(tabs[i+1]);
+						return;
+					}
+				}
+			}
+
+			return false;
+		}
+
+//		debug(keychar + " " + keycode + " " + e.ctrlKey);
+
+		return true;
+
+	} catch (e) {
+		exception_error("hotkey_handler", e);
+	}
 }
