@@ -9,6 +9,7 @@ var topics = [];
 var active_nicks = [];
 var conndata_last = [];
 var last_update = false;
+var input_cache = [];
 
 var MSGT_PRIVMSG = 0;
 var MSGT_COMMAND = 1;
@@ -577,6 +578,8 @@ function send(elem, evt) {
 				"&chan=" + param_escape(channel) +			
 				"&connection=" + param_escape(tab.getAttribute("connection_id")) +
 				"&last_id=" + last_id + "&tab_type=" + tab.getAttribute("tab_type");
+
+			push_cache(elem.value);
 
 			elem.value = '';
 
@@ -1309,11 +1312,82 @@ function hotkey_handler(e) {
 			return false;
 		}
 
-//		debug(keychar + " " + keycode + " " + e.ctrlKey);
+		if (keycode == 9) {
+			var tab = get_selected_tab();
+
+			if (tab) {
+
+				var nicks = get_nick_list(tab.getAttribute("connection_id"),
+							tab.getAttribute("channel"));
+
+				debug(nicks);
+
+				var elem = $("input-prompt");
+	
+				for (var i = 0; i < nicks.length; i++) {
+					if (nicks[i].match("^" + elem.value)) {
+						elem.value = nicks[i] + ": ";
+						return false;
+					}
+				}
+			}
+
+			return false;
+		}
+
+		//debug(keychar + " " + keycode + " " + e.ctrlKey);
 
 		return true;
 
 	} catch (e) {
 		exception_error("hotkey_handler", e);
+	}
+}
+
+function push_cache(line) {
+	try {
+		//if (!input_cache.find(line)) input_cache.push(line);
+
+		//input_cache.push(line);
+
+		debug(input_cache);
+
+	} catch (e) {
+		exception_error("push_cache", e);
+	}
+}
+
+function get_nick_list(connection_id, channel) {
+	try {
+		var rv = [];
+
+		if (nicklists[connection_id]) {
+
+			var nicklist = nicklists[connection_id][channel];
+
+			if (nicklist) {
+	
+				for (var i = 0; i < nicklist.length; i++) {				
+	
+					var nick = nicklist[i];
+	
+					switch (nick.substr(0,1)) {
+					case "@":
+						nick = nick.substr(1);
+						break;
+					case "+":
+						nick = nick.substr(1);
+						break;
+					}
+
+					rv.push(nick);
+				}
+			}
+		}
+
+		return rv;
+
+	} catch (e) {
+		exception_error("get_nick_list", e);
 	}
 }

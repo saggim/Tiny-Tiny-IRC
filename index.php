@@ -170,6 +170,7 @@
 
 	<div id="input"><div class="wrapper">
 		<input disabled="true" id="input-prompt" onkeypress="send(this, event)"></input>
+		<div class="autocomplete" id="input-suggest" style="display:none"></div>
 	</div></div>
 </div>
 
