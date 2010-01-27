@@ -577,7 +577,9 @@ function send(elem, evt) {
 				"&chan=" + param_escape(channel) +			
 				"&connection=" + param_escape(tab.getAttribute("connection_id")) +
 				"&last_id=" + last_id + "&tab_type=" + tab.getAttribute("tab_type");
-	
+
+			elem.value = '';
+
 			debug(query);
 
 			show_spinner();
@@ -585,7 +587,6 @@ function send(elem, evt) {
 			new Ajax.Request("backend.php", {
 			parameters: query,
 			onComplete: function (transport) {
-				elem.value = '';
 				handle_update(transport);
 				hide_spinner();
 			} });
@@ -793,26 +794,14 @@ function update_title() {
 
 function send_command(command) {
 	try {
-		//
 
-	} catch (e) {
-		exception_error("send_command", e);
-	}
-}
-
-function change_nick() {
-	try {
 		var tab = get_selected_tab();
 
 		if (tab) {
 
-			var nick = prompt("Enter new nickname:");
-
-			if (!nick) return;
-		
 			var channel = tab.getAttribute("channel");
 
-			var query = "?op=send&message=" + param_escape("/nick " + nick) + 
+			var query = "?op=send&message=" + param_escape(command) + 
 				"&channel=" + param_escape("---") +
 				"&connection=" + param_escape(tab.getAttribute("connection_id")) +
 				"&last_id=" + last_id;
@@ -827,8 +816,19 @@ function change_nick() {
 				handle_update(transport);
 				hide_spinner();
 			} });
-
 		}
+
+	} catch (e) {
+		exception_error("send_command", e);
+	}
+}
+
+function change_nick() {
+	try {
+		var nick = prompt("Enter new nickname:");
+
+		if (nick) send_command("/nick " + nick);		
+
 	} catch (e) {
 		exception_error("change_nick", e);
 	}
