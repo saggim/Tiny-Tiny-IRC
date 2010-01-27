@@ -10,6 +10,7 @@ var active_nicks = [];
 var conndata_last = [];
 var last_update = false;
 var input_cache = [];
+var input_cache_offset = 0;
 
 var MSGT_PRIVMSG = 0;
 var MSGT_COMMAND = 1;
@@ -1315,15 +1316,50 @@ function hotkey_handler(e) {
 			return false;
 		}
 
+		if (keycode == 38) {
+			var elem = $("input-prompt");
+
+			if (input_cache_offset > -input_cache.length)
+				--input_cache_offset;
+
+			var real_offset = input_cache.length + input_cache_offset;
+
+			if (input_cache[real_offset]) elem.value = input_cache[real_offset];
+
+//			debug(input_cache_offset + " " + real_offset);
+
+		}
+
+		if (keycode == 40) {
+			var elem = $("input-prompt");
+
+			if (input_cache_offset < -1) {
+			  	++input_cache_offset;
+
+				var real_offset = input_cache.length + input_cache_offset;
+
+//				debug(input_cache_offset + " " + real_offset);
+
+				if (input_cache[real_offset]) elem.value = input_cache[real_offset];
+
+			} else {
+				elem.value = '';
+				input_cache_offset = 0;
+			}
+
+		}
+
 		if (keycode == 9) {
 			var tab = get_selected_tab();
+
+			var elem = $("input-prompt");
+
+			if (elem.value.trim().length == 0) return false;
 
 			if (tab) {
 
 				var nicks = get_nick_list(tab.getAttribute("connection_id"),
 							tab.getAttribute("channel"));
-
-				var elem = $("input-prompt");
 	
 				for (var i = 0; i < nicks.length; i++) {
 					if (nicks[i].match("^" + elem.value)) {
@@ -1355,11 +1391,20 @@ function hotkey_handler(e) {
 
 function push_cache(line) {
 	try {
-		//if (!input_cache.find(line)) input_cache.push(line);
+		line = line.trim();
 
-		//input_cache.push(line);
+		if (line.length == 0) return;
 
-		debug(input_cache);
+		for (var i = 0; i < input_cache.length; i++) {
+			if (input_cache[i] == line) return;
+		}
+
+		input_cache.push(line);
+
+		while (input_cache.length > 100) 
+			input_cache.shift();
+
+		input_cache_offset = 0;
 
 	} catch (e) {
 		exception_error("push_cache", e);
