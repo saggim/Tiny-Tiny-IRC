@@ -47,6 +47,12 @@
 			$auto_connect_checked = '';
 		}
 
+		if (sql_bool_to_bool($line['visible'])) {
+			$visible_checked = 'checked';
+		} else {
+			$visible_checked = '';
+		}
+
 		if (sql_bool_to_bool($line['permanent'])) {
 			$permanent_checked = 'checked';
 		} else {
@@ -93,6 +99,12 @@
 		<div class="dlgSec">Options</div>
 
 		<div class="dlgSecCont">
+			<input name="visible" <?php echo $visible_checked ?> 
+				id="pr_visible" type="checkbox" value="1">
+				<label for="pr_visible"><?php echo __('Enable connection') ?>
+					</label>
+			<br clear='left'/>
+
 			<input name="auto_connect" <?php echo $auto_connect_checked ?> 
 				id="pr_auto_connect" type="checkbox" value="1">
 				<label for="pr_auto_connect"><?php echo __('Automatically connect') ?>

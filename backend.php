@@ -231,6 +231,7 @@
 		$auto_connect = bool_to_sql_bool(db_escape_string($_REQUEST["auto_connect"]));
 		$permanent = bool_to_sql_bool(db_escape_string($_REQUEST["permanent"]));
 		$connection_id = db_escape_string($_REQUEST["connection_id"]);
+		$visible = bool_to_sql_bool(db_escape_string($_REQUEST["visible"]));
 
 		if (!$title) $title = __("[Untitled]");
 
@@ -240,6 +241,7 @@
 				autojoin = '$autojoin',
 				connect_cmd = '$connect_cmd',
 				auto_connect = '$auto_connect',
+				visible = '$visible',
 				nick = '$nick',
 				encoding = '$encoding',
 				permanent = '$permanent'

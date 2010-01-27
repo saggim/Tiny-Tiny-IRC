@@ -662,7 +662,7 @@
 		$result = db_query($link, "SELECT id,active_server,active_nick,status,
 			title,userhosts
 			FROM ttirc_connections
-			WHERE owner_uid = ".$_SESSION["uid"]);
+			WHERE visible = true AND owner_uid = ".$_SESSION["uid"]);
 	
 		$conn = array();
 
