@@ -695,13 +695,12 @@ div#image-tooltip {
 	border-color : #e7d796;
 	font-size : 8px;
 	color : #9a8c59;
-	max-width : 150px;
 	position : absolute;
 	z-index : 4;
 }
 
 div#image-tooltip img {
-	max-height : 120px;
-	max-width : 120px;
+	max-height : 250px;
+	max-width : 250px;
 }
 

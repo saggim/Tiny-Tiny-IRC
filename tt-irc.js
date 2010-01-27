@@ -1162,7 +1162,7 @@ function m_i(elem) {
 
 			if (xy[1] >= $("log").offsetHeight) {
 				xy[1] -= Element.getHeight(elem);
-				xy[1] -= 120; /* preview size */
+				xy[1] -= 250; /* preview size */
 			}
 
 			$("image-tooltip").style.left = xy[0] + "px";
