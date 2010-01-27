@@ -69,3 +69,15 @@ ul.container {
 	border-style : solid;
 }
 
+#log span.sys-message {
+	color : #507AAA;
+}
+
+#log a {
+	color : black;
+}
+
+#log a:hover {
+	color : #507AAA;
+	text-decoration : underline;
+}
