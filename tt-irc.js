@@ -405,12 +405,20 @@ function update_buffer() {
 						break;
 					}
 	
+					var userhosts = conndata_last[connection_id]["userhosts"];
+					var nick_ext_info = "";
+
+					if (userhosts && userhosts[nick]) {
+						nick_ext_info = userhosts[nick][0] + '@' + 
+							userhosts[nick][1] + " <" + userhosts[nick][3] + ">";
+					}					
+
 /*					if (nick == active_nicks[connection_id]) {
 						nick = "<strong>" + nick + "</strong>";
 					} */
 	
 					var tmp_html = "<li class=\""+row_class+"\" " +
-						"title=\"" + __("Start conversation") + "\"" + 
+						"title=\"" + nick_ext_info + "\"" + 
 					  	"nick=\"" + nick + "\" " +
 						"onclick=\"query_user(this)\">" +
 						nick_image + " " + nick + "</li>";
@@ -452,8 +460,17 @@ function update_buffer() {
 			$("topic-input").value = __("Disconnected.");
 			$("topic-input").disabled = true;
 		} else {
+
+			var nick = tab.getAttribute("channel");
+			var userhosts = conndata_last[connection_id]["userhosts"];
+			var nick_ext_info = "";
+
+			if (userhosts && userhosts[nick]) {
+				nick_ext_info = userhosts[nick][0] + '@' + userhosts[nick][1];
+			}					
+
 			$("topic-input").value = __("Conversation with") + " " +
-				tab.getAttribute("channel");
+				tab.getAttribute("channel") + " (" + nick_ext_info + ")";
 			$("topic-input").disabled = true;
 		}
 

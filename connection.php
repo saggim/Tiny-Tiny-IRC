@@ -14,6 +14,7 @@ class Connection extends Yapircl {
 	var $encoding = false;
 	var $memcache = false;
 	var $owner_uid = false;
+	var $userhosts = false;
 
 	function Connection($link, $connection_id, $encoding, $last_sent_id) {
 		$this->Yapircl();
@@ -24,6 +25,7 @@ class Connection extends Yapircl {
 		$this->last_sent_id = $last_sent_id;
 		$this->encoding = $encoding;
 		$this->_resolution = 25000;
+		$this->userhosts = array();
 
 		$result = db_query($this->link, "SELECT owner_uid FROM ttirc_connections
 			WHERE id = '$connection_id'");
@@ -266,6 +268,8 @@ class Connection extends Yapircl {
 		$this->push_message('---', $channel, $message, MSGT_EVENT);
 
 		$this->update_nicklist($channel);
+		$this->update_userhost($this->nick);
+
 	}
 
 	function event_quit() {
@@ -283,6 +287,9 @@ class Connection extends Yapircl {
 		$this->push_message('---', '---', $message, MSGT_EVENT);
 
 		$this->update_nicklist(false);
+
+		unset($this->userhosts[$this->nick]);
+
 	}
 
 	function event_nick() {
@@ -298,6 +305,10 @@ class Connection extends Yapircl {
 
 		$this->push_message('---', '---', 
 			"NICK:" . $this->nick . ":$new_nick", MSGT_EVENT);
+
+		$this->userhosts[$new_nick] = $this->userhosts[$this->nick];
+
+		unset($this->userhosts[$this->nick]);
 
 		//$this->push_message('---', '---', $message, MSGT_BROADCAST);
 
@@ -501,6 +512,66 @@ class Connection extends Yapircl {
 //			__('You have joined the channel.'));
 
 		$this->update_nicklist($this->_xline[3]);
+		$this->update_userhost();
+
+	}
+
+	function update_userhost($check_nick = false) {
+
+		$nicks = array();
+
+		if (!$check_nick) {
+			foreach (array_keys($this->channels) as $chan) {
+
+//				print_r($this->channels);
+
+				if (is_array($this->channels[$chan])) {
+					foreach (array_keys($this->channels[$chan]) as $nick) {
+						if (!array_key_exists($nick, $nicks)) {
+							array_push($nicks, $nick);
+						}
+					}
+				}
+			}
+
+		} else {
+			array_push($nicks, $check_nick);
+		}
+
+		foreach ($nicks as $nick) {
+			$this->sendBuf("WHO :$nick");
+		}
+	}
+
+	function event_rpl_whoreply() {
+		//print_r($this->_xline);
+
+		$nick = $this->_xline[7];
+
+		$realname = "";
+
+		for ($i=10; $i < $this->_xline_sizeof; $i++) {
+			$realname .=  ' ' . $this->_xline[$i];
+		}
+
+		$realname = ltrim($realname);
+
+		$this->userhosts[$nick] = array(
+			$this->to_utf($this->_xline[4]),
+			$this->to_utf($this->_xline[5]), 
+			$this->to_utf($this->_xline[6]), 
+			$this->to_utf($realname));
+
+		$tmp = array();
+
+		foreach (array_keys($this->userhosts) as $nick) {
+			$tmp[$this->to_utf($nick)] = $this->userhosts[$nick];
+		}
+
+		$tmp = db_escape_string(json_encode($tmp));
+
+		db_query($this->link, "UPDATE ttirc_connections SET userhosts = '$tmp'
+			WHERE id = " . $this->connection_id);
 	}
 
 	function event_rpl_topic() {
