@@ -268,7 +268,7 @@ class Connection extends Yapircl {
 		$this->push_message('---', $channel, $message, MSGT_EVENT);
 
 		$this->update_nicklist($channel);
-		$this->update_userhost($this->nick);
+		$this->request_userhost($this->nick);
 
 	}
 
@@ -286,9 +286,11 @@ class Connection extends Yapircl {
 
 		$this->push_message('---', '---', $message, MSGT_EVENT);
 
-		$this->update_nicklist(false);
-
 		unset($this->userhosts[$this->nick]);
+
+		$this->update_nicklist(false);
+		$this->update_userhosts();
+
 
 	}
 
@@ -325,6 +327,8 @@ class Connection extends Yapircl {
 			connection_id = " . $this->connection_id);
 
 		$this->update_nicklist(false);
+		$this->update_userhosts();
+
 	}
 
 	function event_mode() {
@@ -512,11 +516,11 @@ class Connection extends Yapircl {
 //			__('You have joined the channel.'));
 
 		$this->update_nicklist($this->_xline[3]);
-		$this->update_userhost();
+		$this->request_userhost();
 
 	}
 
-	function update_userhost($check_nick = false) {
+	function request_userhost($check_nick = false) {
 
 		$nicks = array();
 
@@ -562,6 +566,10 @@ class Connection extends Yapircl {
 			$this->to_utf($this->_xline[6]), 
 			$this->to_utf($realname));
 
+		$this->update_userhosts();
+	}
+
+	function update_userhosts() {
 		$tmp = array();
 
 		foreach (array_keys($this->userhosts) as $nick) {
