@@ -66,8 +66,6 @@
 </head>
 <body class="main">
 
-<div id="image-tooltip" style="display : none"></div>
-
 <div id="overlay" style="display : block">
 	<div id="overlay_inner">
 		<?php echo __("Loading, please wait...") ?>

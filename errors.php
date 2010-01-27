@@ -32,5 +32,4 @@
 	$ERRORS[12] = __("SQL escaping test failed, check your database and PHP configuration");
 	$ERRORS[13] = __("Backend connection daemon is not running.");
 
-	$ERRORS[14] = __("The application failed to initialize.");
 ?>
