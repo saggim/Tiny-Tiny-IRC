@@ -36,7 +36,8 @@
 		$link = db_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);	
 		init_connection($link);
 
-		db_query($link, "UPDATE ttirc_connections SET status = 0");
+		db_query($link, "UPDATE ttirc_connections SET status = ".CS_DISCONNECTED.", 
+			userhosts = ''");
 
 		db_query($link, "UPDATE ttirc_channels SET nicklist = ''");
 
@@ -135,7 +136,7 @@
 					init_connection($link);
 
 					db_query($link, "UPDATE ttirc_connections SET
-						status = ".CS_CONNECTING." WHERE id = '$id'");
+						status = ".CS_CONNECTING.", userhosts = '' WHERE id = '$id'");
 
 					db_query($link, "UPDATE ttirc_channels SET
 						nicklist = '' WHERE connection_id = '$id'");
