@@ -76,6 +76,10 @@ function create_tab_if_needed(chan, connection_id, tab_type) {
 			$(tab_list_id).innerHTML += tab;
 
 			sort_connection_tabs($(tab_list_id));
+			
+			var tab = $(tab_id);
+
+			if (tab && tab_type =="C") change_tab(tab);
 		}
 
 		return tab_id;
