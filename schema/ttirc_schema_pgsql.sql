@@ -104,6 +104,8 @@ insert into ttirc_prefs (pref_name,type_id,def_value,short_desc,section_id) valu
 
 insert into ttirc_prefs (pref_name,type_id,def_value,short_desc,section_id) values('USER_STYLESHEET', 2, '', '', 2);
 
+insert into ttirc_prefs (pref_name,type_id,def_value,short_desc,section_id) values('HIGHLIGHT_ON', 2, '', '', 1);
+
 create table ttirc_settings_profiles(id serial not null primary key,
 	title varchar(250) not null,
 	owner_uid integer not null references ttirc_users(id) on delete cascade);

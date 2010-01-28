@@ -214,6 +214,7 @@
 	$email = db_fetch_result($result, 0, "email");
 	$quit_message = db_fetch_result($result, 0, "quit_message");
 
+	$highlight_on = get_pref($link, "HIGHLIGHT_ON");
 ?>
 
 	<div id="infoBoxTitle"><?php echo __("Preferences") ?></div>
@@ -242,6 +243,10 @@
 
 			<label class="fixed"><?php echo __('Quit message:') ?></label>
 			<input name="quit_message" size="30" value="<?php echo $quit_message ?>">
+			<br clear='left'/>
+
+			<label class="fixed"><?php echo __('Highlight on:') ?></label>
+			<input name="highlight_on" size="30" value="<?php echo $highlight_on ?>">
 			<br clear='left'/>
 
 			<label class="fixed"><?php echo __('Theme:') ?></label>

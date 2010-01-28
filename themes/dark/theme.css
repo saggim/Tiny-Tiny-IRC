@@ -50,6 +50,10 @@ input, select, button, textarea {
 	color : green;
 }
 
+#tabs li {
+	color : gray;
+}
+
 #tabs li.selected {
 	color : green;
 	border-color : #303030;

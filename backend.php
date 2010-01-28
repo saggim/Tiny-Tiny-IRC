@@ -263,6 +263,7 @@
 		$nick = db_escape_string($_REQUEST["nick"]);
 		$email = db_escape_string($_REQUEST["email"]);
 		$theme = db_escape_string($_REQUEST["theme"]);
+		$highlight_on = db_escape_string($_REQUEST["highlight_on"]);
 
 		$theme_changed = false;
 
@@ -272,6 +273,8 @@
 			set_pref($link, "USER_THEME", $theme);
 			$theme_changed = true;
 		}
+
+		set_pref($link, "HIGHLIGHT_ON", $highlight_on);
 
 		db_query($link, "UPDATE ttirc_users SET realname = '$realname',
 			quit_message = '$quit_message', 
