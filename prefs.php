@@ -1,5 +1,35 @@
 <?php
 	require_once "functions.php";
+	
+	function css_editor($link) {
+		$user_css = get_pref($link, "USER_STYLESHEET");
+	?>
+	<div id="infoBoxTitle"><?php echo __("Customize Theme") ?></div>
+	<div class="infoBoxContents">
+		<div id="mini-notice" style='display : none'>&nbsp;</div>
+
+		<div class="dlgSec"><?php echo __('Custom CSS declarations') ?></div>
+
+		<form id="prefs_css_form" onsubmit="return false;">
+
+		<input type="hidden" name="op" value="prefs-save-css"/>
+
+		<?php echo T_sprintf("You can override colors, fonts and layout of your currently selected theme with custom CSS declarations here. <a target=\"_blank\" href=\"%s\">This file</a> can be used as a baseline.", "tt-irc.css") ?>
+
+		<p><textarea name="user_css" class="user-css"><?php echo $user_css ?></textarea>
+
+		<div class="dlgButtons">
+			<button type="submit" onclick="save_css()"><?php echo __('Save & Reload') ?></button>
+			<button type="submit" onclick="show_prefs()"><?php echo __('Go back') ?></button></div>
+		</div>
+
+		</form>
+
+	</div>
+	<?php
+
+	}
+
 
 	function print_servers($link, $id) {
 		$result = db_query($link, "SELECT ttirc_servers.*,
@@ -216,6 +246,10 @@
 
 			<label class="fixed"><?php echo __('Theme:') ?></label>
 			<?php print_theme_select($link); ?>
+			&nbsp;
+
+			<a href="#" onclick="customize_css()">
+				<?php echo __("Customize") ?></a>
 
 			<br clear='left'/>
 

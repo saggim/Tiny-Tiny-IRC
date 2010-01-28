@@ -910,4 +910,12 @@
 
 		print "</select>";
 	}
+
+	function print_user_css($link) {
+		$user_css = get_pref($link, "USER_STYLESHEET");
+
+		if ($user_css) {
+			print "<style type=\"text/css\">$user_css</style>";
+		}
+	}
 ?>

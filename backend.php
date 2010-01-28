@@ -298,7 +298,16 @@
 		$connection_id = (int) db_escape_string($_REQUEST["id"]);
 		connection_editor($link, $connection_id);
 		break;
+	case "prefs-customize-css":
+		css_editor($link);
+		break;
+	case "prefs-save-css":
+		$user_css = db_escape_string($_REQUEST["user_css"]);
 
+		set_pref($link, "USER_STYLESHEET", $user_css);
+
+		//print json_encode(array("error" => "Function not implemented."));
+		break;
 	case "create-server":
 		$connection_id = (int) db_escape_string($_REQUEST["connection_id"]);
 		list($server, $port) = explode(":", db_escape_string($_REQUEST["data"]));

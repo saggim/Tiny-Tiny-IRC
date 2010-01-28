@@ -270,4 +270,48 @@ function create_server() {
 	}
 }
 
+function customize_css() {
+	try {
+
+		save_prefs(function (obj) {
+			new Ajax.Request("backend.php", {
+			parameters: "?op=prefs-customize-css",
+			onComplete: function (transport) {
+				infobox_callback2(transport);
+			} });
+		});
+
+	} catch (e) {
+		exception_error("customize_css", e);
+	}
+}
+
+function save_css(callback) {
+	try {
+		var query = Form.serialize("prefs_css_form");
+
+		debug(query);
+
+		new Ajax.Request("backend.php", {
+		parameters: query,
+		onComplete: function (transport) {
+
+			var obj = _eval(transport.responseText, true);
+
+			if (obj && obj.error) {
+				mini_error(obj.error);
+			} else if (callback) {
+				callback(obj);
+			} else {
+				window.location.reload();
+			}
+
+			hide_spinner();
+		} });
+
+
+	} catch (e) {
+		exception_error("save_css", e);
+	}
+}
 
