@@ -523,6 +523,10 @@ ul#userlist-list li {
 	cursor : pointer;
 }
 
+ul#userlist-list li:hover {
+	color : #4684ff;
+}
+
 #actions {
 	position : relative;
 	left : 5px;
