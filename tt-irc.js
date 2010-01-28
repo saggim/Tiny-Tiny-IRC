@@ -693,7 +693,7 @@ function format_message(row_class, param, connection_id) {
 			param.message = param.message.replace(/\(oo\)/g,
 					"<img src='images/piggie_icon.png' alt='(oo)'>");
 
-			param.message = param.message.replace(/:piggie:/g,
+			param.message = param.message.replace(/(OO)/g,
 					"<img src='images/piggie.png' alt='(oo)'>");
 
 			tmp = "<li class=\""+row_class+"\"><span class='timestamp'>" + 
