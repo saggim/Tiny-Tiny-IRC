@@ -1,6 +1,6 @@
 var window_active = false;
 var last_id = 0;
-var last_active_id = 0;
+var new_messages = 0;
 var delay = 1000;
 var buffers = [];
 var nicklists = [];
@@ -213,6 +213,7 @@ function handle_update(transport) {
 					handle_event(li_classes[chan], connection_id, lines[i]);
 				} else {
 					push_message(connection_id, chan, lines[i], lines[i].message_type);
+					if (!window_active) ++new_messages;
 				}
 
 				while (buffers[connection_id][chan].length > 100) {
@@ -234,8 +235,6 @@ function handle_update(transport) {
 			}
 
 			last_id = lines[i].id;
-
-			if (window_active) last_active_id = last_id;
 		}
 	
 /*		if (prev_last_id == last_id) {
@@ -691,7 +690,7 @@ function format_message(row_class, param, connection_id) {
 					userhosts[param.sender][1] + " <" + userhosts[param.sender][3] + ">";
 			}					
 
-			param.message = param.message.replace("(oo)",
+			param.message = param.message.replace(/\(oo\)/g,
 					"<img src='images/piggie_icon.png' alt='(oo)'>");
 
 			tmp = "<li class=\""+row_class+"\"><span class='timestamp'>" + 
@@ -791,8 +790,8 @@ function update_title() {
 			var title = __("Tiny Tiny IRC [%a @ %b / %c]");
 			var connection_id = tab.getAttribute("connection_id");
 
-			if (!window_active && last_active_id != last_id) {
-				title = "["+(last_id-last_active_id)+"] " + title;
+			if (!window_active && new_messages) {
+				title = "["+new_messages+"] " + title;
 			}
 
 			if (conndata_last[connection_id]) {
@@ -1207,7 +1206,7 @@ function set_window_active(active) {
 		window_active = active;
 
 		if (active) {
-			last_active_id = last_id;
+			new_messages = 0;
 			$("input-prompt").focus();
 		}
 
