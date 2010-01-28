@@ -141,16 +141,21 @@ class Connection extends Yapircl {
 					$tmp_id = $line["id"];
 
 					$message = iconv("UTF-8", $this->encoding, $line["message"]);
+					$channel = iconv("UTF-8", $this->encoding, $line["channel"]);
 
 					switch ($line["message_type"]) {
-						case 0:
-							$this->privmsg($line["channel"], $message);
-							break;
-						case 1:
-							echo "CMD $message\n";
-							list($cmd, $args) = explode(":", $message, 2);
-							$this->handle_command($cmd, $args, $line["channel"]);
-							break;
+					case 0:
+						$msgs = explode("\n", wordwrap($message, 200, "\n"));
+
+						foreach ($msgs as $msg) {
+							$this->privmsg($channel, $msg);
+						}
+
+						break;
+					case 1:
+						list($cmd, $args) = explode(":", $message, 2);
+						$this->handle_command($cmd, $args, $channel);
+						break;
 					}
 					
 				}
@@ -546,7 +551,7 @@ class Connection extends Yapircl {
 			if (!$this->userhosts[$nick]) {
 				//echo "[*] requesting userhost for $nick...\n";
 				$this->userhosts[$nick] = array('', '', '', '', time());
-				$this->sendBuf("WHO :$nick");
+				//$this->sendBuf("WHO :$nick");
 			}
 		}
 	}
