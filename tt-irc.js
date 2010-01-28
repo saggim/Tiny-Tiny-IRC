@@ -661,7 +661,7 @@ function toggle_connection(elem) {
 	}
 }
 
-function format_message(row_class, param) {
+function format_message(row_class, param, connection_id) {
 	try {
 
 		var tmp;
@@ -682,6 +682,12 @@ function format_message(row_class, param) {
 
 		} else if (param.sender != "---") {
 			var nick_ext_info = "";
+			var userhosts = conndata_last[connection_id]["userhosts"];
+
+			if (userhosts && userhosts[param.sender]) {
+				nick_ext_info = userhosts[param.sender][0] + '@' + 
+					userhosts[param.sender][1] + " <" + userhosts[param.sender][3] + ">";
+			}					
 
 			tmp = "<li class=\""+row_class+"\"><span class='timestamp'>" + 
 				param.ts + "</span><span title=\""+nick_ext_info+"\" " +
@@ -1167,7 +1173,7 @@ function push_message(connection_id, channel, message, message_type) {
 		if (message_type != MSGT_BROADCAST) {
 			toggle_li_class(channel);
 
-			var tmp_html = format_message(li_classes[channel], message);
+			var tmp_html = format_message(li_classes[channel], message, connection_id);
 
 			buffers[connection_id][channel].push(tmp_html);
 		} else {
@@ -1180,7 +1186,7 @@ function push_message(connection_id, channel, message, message_type) {
 
 				toggle_li_class(chan);
 
-				var tmp_html = format_message(li_classes[chan], message);
+				var tmp_html = format_message(li_classes[chan], message, connection_id);
 
 				buffers[connection_id][chan].push(tmp_html);
 			}
