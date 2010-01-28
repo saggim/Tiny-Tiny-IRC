@@ -681,8 +681,11 @@ function format_message(row_class, param) {
 				"<span class='action'>" + message + "</span>";
 
 		} else if (param.sender != "---") {
+			var nick_ext_info = "";
+
 			tmp = "<li class=\""+row_class+"\"><span class='timestamp'>" + 
-				param.ts + "</span><span class='sender' "+color+">&lt;" +
+				param.ts + "</span><span title=\""+nick_ext_info+"\" " +
+				"class='sender' "+color+">&lt;" +
 				param.sender + "&gt;</span><span class='message'>" + 
 				param.message + "</span>";
 		} else {
@@ -1392,7 +1395,7 @@ function hotkey_handler(e) {
 
 			var elem = $("input-prompt");
 
-			if (elem.value.trim().length == 0) return false;
+			if (elem.value.length == 0) return false;
 
 			if (tab) {
 
