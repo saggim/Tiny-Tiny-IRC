@@ -118,6 +118,8 @@ function init_second_stage(transport) {
 
 		var params = _eval(transport.responseText);
 
+		if (!handle_error(params, transport)) return false;
+
 		if (!params || params.status != 1) {
 			return fatal_error(14, __("The application failed to initialize."), 
 				transport.responseText);

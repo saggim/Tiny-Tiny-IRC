@@ -180,59 +180,6 @@ table.loginForm2 .innerLoginCell {
 	overflow : auto;
 }
 
-/*#tabs div {
-	float : left;
-	border-width : 1px 1px 0px 1px;
-	border-color : transparent;;
-	border-style : solid;
-	margin : 0px 0px 0px 5px;
-	padding : 3px 5px 3px 5px;
-	font-size : 12px;
-	font-family : "Lucida Grande", "Segoe UI", Tahoma, Arial, sans-serif;
-	min-width : 100px;
-	text-align : center;
-	cursor : pointer;
-	position : relative;
-	bottom : -1px;
-	height : 20px;
-}
-
-#tabs div.first {
-	width : 10px;
-	min-width : 0px;
-	padding : 0px;
-	margin : 0px;
-}
-
-#tabs div:hover {
-	border-color : #88b0f0;
-}
-
-#tabs div.attention {
-	color : red;
-}
-
-#tabs div.selected {
-	float : left;
-	border-width : 1px 1px 0px 1px;
-	border-color : #88b0f0;
-	border-style : solid;
-	margin : 0px 0px 0px 5px;
-	padding : 3px 5px 3px 5px;
-	background : #c0d8ff;
-	color : black;
-	text-shadow : #ffffff 0 1px;
-	font-size : 12px;
-	font-family : "Lucida Grande", "Segoe UI", Tahoma, Arial, sans-serif;
-	font-weight : bold;
-	min-width : 100px;
-	text-align : center;
-	cursor : pointer;
-	position : relative;
-	bottom : -1px;
-	z-index : 2;
-} */
-
 #tabs-list img.conn-img {
 	vertical-align : middle;
 	margin-right : 5px;
@@ -258,7 +205,7 @@ table.loginForm2 .innerLoginCell {
 	font-size : 12px;
 	font-family : "Lucida Grande", "Segoe UI", Tahoma, Arial, sans-serif;
 	cursor : pointer;
-	z-index : 100;
+	z-index : 3;
 	position : relative;
 }
 
