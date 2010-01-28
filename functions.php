@@ -571,7 +571,7 @@
 			$my_nick = "---";
 		}
 
-		$message = db_escape_string($message);
+		//$message = db_escape_string($message);
 
 		$result = db_query($link, "INSERT INTO ttirc_messages 
 			(incoming, connection_id, channel, sender, message, message_type) VALUES
