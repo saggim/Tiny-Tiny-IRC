@@ -551,6 +551,10 @@ class Connection extends Yapircl {
 		}
 	}
 
+	function event_rpl_endofwho() {
+		// no-op
+	}
+
 	function event_rpl_whoreply() {
 		//print_r($this->_xline);
 
