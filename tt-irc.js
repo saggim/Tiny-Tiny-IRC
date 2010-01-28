@@ -1403,6 +1403,8 @@ function hotkey_handler(e) {
 
 			var elem = $("input-prompt");
 
+			elem.focus();
+
 			if (elem.value.length == 0) return false;
 
 			if (tab) {
