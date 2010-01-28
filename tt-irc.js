@@ -1203,7 +1203,10 @@ function set_window_active(active) {
 	try {
 		window_active = active;
 
-		if (active) last_active_id = last_id;
+		if (active) {
+			last_active_id = last_id;
+			$("input-prompt").focus();
+		}
 
 		update_title();
 	} catch (e) {
