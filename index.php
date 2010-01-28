@@ -26,13 +26,6 @@
 
 	<link rel="stylesheet" type="text/css" href="tt-irc.css?<?php echo $dt_add ?>"/>
 
-	<?php	$user_theme = get_user_theme_path($link);
-		if ($user_theme) { ?>
-			<link rel="stylesheet" type="text/css" href="<?php echo $user_theme ?>/theme.css?<?php echo $dt_add ?>">
-	<?php } ?>
-
-	<?php print_user_css($link); ?>
-
 	<link rel="shortcut icon" type="image/png" href="images/favicon.png"/>
 		
 	<script type="text/javascript" charset="utf-8" src="localized_js.php?<?php echo $dt_add ?>"></script>
@@ -48,6 +41,7 @@
 			<link rel="stylesheet" type="text/css" href="<?php echo $user_theme ?>/theme.css?<?php echo $dt_add ?>">
 	<?php } ?>
 
+	<?php print_user_css($link); ?>
 
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 
