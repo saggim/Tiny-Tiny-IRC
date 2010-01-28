@@ -1,3 +1,62 @@
+body {
+	background : black;
+}
+
+a { 
+	color : green;
+}
+
+a:hover {
+	color : #00cc00;
+}
+
+
+div.topLinks, div.topLinks a  {
+	color : green;
+}
+
+div.topLinks a:hover {
+	color : #00cc00;
+}
+
+#log {
+	border-color : #303030;
+}
+
+#log a {
+	color : green;
+}
+
+#log a:hover {
+	color : #00cc00;
+}
+
+#log span.sys-message {
+	color : gray;
+}
+
+#log span.message {
+	color : #ccc;
+}
+
+input, select, button, textarea {
+	border : 1px solid #303030;
+	background : black;
+	color : green;
+}
+
+#tabs li.selected {
+	color : green;
+	border-color : #303030;
+	background : #202020;
+	text-shadow : black 0px 0px;
+}
+
+#content {
+	background : #202020;
+	border : 1px solid #303030;
+}
+
 #log, #log-list {
 	background : black;
 	color : white;
@@ -9,11 +68,29 @@
 }
 
 #log .even {
-	background-color : #101010;
+	background-color : black;
 	border-color : #101010;
 }
 
-#log span.message {
-	color : #f0f0f0;
+
+#topic div.wrapper {
+	border : 1px solid #303030;
+}
+
+#input div.wrapper {
+	border : 1px solid #303030;
+}
+
+ul#userlist-list li {
+	color : green;
+}
+
+ul#userlist-list li:hover {
+	color : #00cc00;
+}
+
+div#image-tooltip {
+	background : black;
+	border-color : #303030;
 }
 
