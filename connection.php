@@ -429,8 +429,12 @@ class Connection extends Yapircl {
 	}
 
 	function handle_ctcp_version() {
-		$this->ctcp($this->nick, "VERSION " . $this->getVersion());
-		echo $this->mask . " requested CTCP VERSION from " . $this->from . "\n";
+
+		$version_str = sprintf("Tiny Tiny IRC (%s) %s",
+			VERSION, $this->getVersion());
+		
+		$this->ctcp($this->nick, "VERSION $version_str");
+		//echo $this->mask . " requested CTCP VERSION from " . $this->from . "\n";
 	}
 
 	function handle_ctcp_ping() {

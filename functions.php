@@ -1,5 +1,6 @@
 <?php
 	require_once "config.php";
+	require_once "version.php";
 	require_once "message_types.php";
 	require_once "db-prefs.php";
 
