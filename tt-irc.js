@@ -1,6 +1,7 @@
 var window_active = false;
 var last_id = 0;
 var new_messages = 0;
+var new_highlights = 0;
 var delay = 1000;
 var buffers = [];
 var nicklists = [];
@@ -11,6 +12,8 @@ var conndata_last = [];
 var last_update = false;
 var input_cache = [];
 var input_cache_offset = 0;
+var highlight_on = [];
+var theme_images = [];
 
 var MSGT_PRIVMSG = 0;
 var MSGT_COMMAND = 1;
@@ -46,7 +49,7 @@ function create_tab_if_needed(chan, connection_id, tab_type) {
 		if (!$(tab_caption_id)) {
 
 			var cimg = "<img class=\"conn-img\" "+
-				"src=\"images/srv_offline.png\" alt=\"\" " +
+				"src=\"" + theme_images['srv_offline.png'] + "\" alt=\"\" " +
 				"id=\"cimg-" + connection_id + "\">";
 
 			var tab = "<li id=\"" + tab_caption_id + "\" " +
@@ -64,7 +67,7 @@ function create_tab_if_needed(chan, connection_id, tab_type) {
 		} else if (!$(tab_id) && tab_type != "S") {
 
 			var img = "<img class=\"conn-img\" "+
-				"src=\"images/close_tab.png\" alt=\"[X]\" " +
+				"src=\""+theme_images['close_tab.png']+"\" alt=\"[X]\" " +
 				"title=\"" + __("Close this tab") + "\"" +
 				"tab_id=\"" + tab_id + "\"" +
 				"onclick=\"close_tab(this)\">";
@@ -126,6 +129,8 @@ function init_second_stage(transport) {
 		}
 
 //		last_id = params.max_id;
+
+		theme_images = params.images;
 
 		Element.hide("overlay");
 
@@ -190,6 +195,11 @@ function handle_update(transport) {
 		var conn_data = rv[0];
 		var lines = rv[1];
 		var chandata = rv[2];
+		var params = rv[3];
+
+		if (params) {
+			highlight_on = params.highlight_on;
+		}
 
 		last_update = new Date();
 
@@ -197,7 +207,7 @@ function handle_update(transport) {
 		handle_chan_data(chandata);
 	
 		var prev_last_id = last_id;
-	
+
 		for (var i = 0; i < lines.length; i++) {
 
 			if (last_id < lines[i].id) {
@@ -228,7 +238,12 @@ function handle_update(transport) {
 					if (tab.getAttribute("channel") == chan && 
 							tab != get_selected_tab()) {
 
-						tab.className = "attention";
+						if (is_highlight(connection_id, lines[i].message)) {
+							tab.className = "highlight";					
+							++new_highlights;
+						} else {
+							if (tab.className != "highlight") tab.className = "attention";
+						}
 					}
 				}	
 
@@ -401,16 +416,18 @@ function update_buffer() {
 	
 					var row_class = (i % 2) ? "even" : "odd";
 	
-					var nick_image = "<img src=\"images/user_normal.png\" alt=\"\">";
+					var nick_image = "<img src=\""+theme_images['user_normal.png']+
+						"\" alt=\"\">";
+
 					var nick = nicklist[i];
 	
 					switch (nick.substr(0,1)) {
 					case "@":
-						nick_image = "<img src=\"images/user_op.png\" alt=\"\">";
+						nick_image = "<img src=\""+theme_images['user_op.png']+"\" alt=\"\">";
 						nick = nick.substr(1);
 						break;
 					case "+":
-						nick_image = "<img src=\"images/user_voice.png\" alt=\"\">";
+						nick_image = "<img src=\""+theme_images['user_voice.png']+"\" alt=\"\">";
 						nick = nick.substr(1);
 						break;
 					}
@@ -665,6 +682,8 @@ function toggle_connection(elem) {
 function format_message(row_class, param, connection_id) {
 	try {
 
+		var is_hl = is_highlight(connection_id, param.message);
+
 		var tmp;
 
 		var color = "";
@@ -675,6 +694,8 @@ function format_message(row_class, param, connection_id) {
 
 		if (param.message_type == MSGT_ACTION) {
 
+			if (is_hl) row_class += "HL";
+
 			message = "* " + param.sender + " " + param.message;
 
 			tmp = "<li class=\""+row_class+"\"><span class='timestamp'>" + 
@@ -684,6 +705,8 @@ function format_message(row_class, param, connection_id) {
 		} else if (param.sender != "---") {
 			var nick_ext_info = "";
 			var userhosts = conndata_last[connection_id]["userhosts"];
+
+			if (is_hl) row_class += "HL";
 
 			if (userhosts && userhosts[param.sender]) {
 				nick_ext_info = userhosts[param.sender][0] + '@' + 
@@ -794,8 +817,13 @@ function update_title() {
 			var connection_id = tab.getAttribute("connection_id");
 
 			if (!window_active && new_messages) {
-				title = "["+new_messages+"] " + title;
+				if (new_highlights) {
+					title = "[*"+new_messages+"] " + title;
+				} else {
+					title = "["+new_messages+"] " + title;
+				}
 			}
+
 
 			if (conndata_last[connection_id]) {
 				title = title.replace("%a", active_nicks[connection_id]);
@@ -1210,6 +1238,7 @@ function set_window_active(active) {
 
 		if (active) {
 			new_messages = 0;
+			new_highlights = 0;
 			$("input-prompt").focus();
 		}
 
@@ -1502,5 +1531,22 @@ function get_nick_list(connection_id, channel) {
 
 	} catch (e) {
 		exception_error("get_nick_list", e);
+	}
+}
+
+function is_highlight(connection_id, message) {
+	try {
+		if (message.match(active_nicks[connection_id])) 
+			return true;
+
+		for (var i = 0; i < highlight_on.length; i++) {
+			if (message.match(highlight_on[i]))
+				return true;
+		}
+
+		return false;
+
+	} catch (e) {
+		exception_error("is_highlight", e);
 	}
 }

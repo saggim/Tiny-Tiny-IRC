@@ -166,6 +166,7 @@
 				db_query($link, "UPDATE ttirc_connections SET enabled = true 
 					WHERE auto_connect = true AND owner_uid = " . $_SESSION["uid"]);
 
+				initialize_user_prefs($link, $_SESSION["uid"]);
 
 /*				$tmp_result = db_query($link, "SELECT id FROM ttirc_connections
 					WHERE status != ".CS_DISCONNECTED." AND owner_uid = " .
@@ -917,5 +918,11 @@
 		if ($user_css) {
 			print "<style type=\"text/css\">$user_css</style>";
 		}
+	}
+
+	function get_misc_params($link) {
+		$rv = array("highlight_on" => explode(",", get_pref($link, "HIGHLIGHT_ON")));
+
+		return $rv;
 	}
 ?>

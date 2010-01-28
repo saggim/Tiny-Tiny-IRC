@@ -118,8 +118,9 @@
 		$lines = get_new_lines($link, $last_id);
 		$conn = get_conn_info($link);
 		$chandata = get_chan_data($link, false);
+		$params = get_misc_params($link);
 
-		print json_encode(array($conn, $lines, $chandata));
+		print json_encode(array($conn, $lines, $chandata, $params));
 		break;
 	case "query-user":
 		$nick = db_escape_string(trim($_REQUEST["nick"]));
@@ -133,8 +134,9 @@
 		$lines = get_new_lines($link, $last_id);
 		$conn = get_conn_info($link);
 		$chandata = get_chan_data($link, false);
+		$params = get_misc_params($link);
 
-		print json_encode(array($conn, $lines, $chandata));
+		print json_encode(array($conn, $lines, $chandata, $params));
 		break;
 
 	case "send":
@@ -161,8 +163,9 @@
 		$lines = get_new_lines($link, $last_id);
 		$conn = get_conn_info($link);
 		$chandata = get_chan_data($link, false);
+		$params = get_misc_params($link);
 
-		print json_encode(array($conn, $lines, $chandata));
+		print json_encode(array($conn, $lines, $chandata, $params));
 		break;
 
 	case "update":
@@ -181,8 +184,9 @@
 		$lines = get_new_lines($link, $last_id);
 		$conn = get_conn_info($link);
 		$chandata = get_chan_data($link, false);
+		$params = get_misc_params($link);
 
-		print json_encode(array($conn, $lines, $chandata));
+		print json_encode(array($conn, $lines, $chandata, $params));
 		break;
 
 	case "set-topic":
@@ -198,8 +202,9 @@
 		$lines = get_new_lines($link, $last_id);
 		$conn = get_conn_info($link);
 		$chandata = get_chan_data($link, false);
+		$params = get_misc_params($link);
 
-		print json_encode(array($conn, $lines, $chandata));
+		print json_encode(array($conn, $lines, $chandata, $params));
 
 		break;
 
@@ -217,6 +222,12 @@
 		}
 
 		$rv["status"] = 1;
+
+		foreach (array("srv_offline.png", "srv_online.png", "close_tab.png",
+				"user_normal.png", "user_voice.png", "user_op.png") as $img) {
+
+			$rv["images"][$img] = theme_image($link, "images/$img");
+		}
 
 		print json_encode($rv);
 

@@ -44,6 +44,11 @@ button:active {
 	color : black;
 }
 
+input:disabled {
+	background : #101010;
+	color : gray;
+}
+
 input, select, button, textarea {
 	border : 1px solid #303030;
 	background : black;
@@ -81,6 +86,10 @@ input, select, button, textarea {
 	border-color : #101010;
 }
 
+.oddHL, .evenHL {
+	border-color : #101010;
+	background-color : #001000;
+}
 
 #topic div.wrapper {
 	border : 1px solid #303030;

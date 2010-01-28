@@ -213,6 +213,10 @@ table.loginForm2 .innerLoginCell {
 	color : red;
 }
 
+#tabs-list li.highlight {
+	color : blue;
+}
+
 #tabs-list li.selected {
 	border-width : 1px 0px 1px 0px;
 	border-style : solid;
@@ -555,7 +559,7 @@ ul#userlist-list li:hover {
 	padding : 2px 5px 2px 5px;
 }
 
-.evenSelected, .evenSelected td {
+.evenSelected, .evenSelected td, .evenHL {
 	background-color : #fff7d5;
 	border-style : solid;
 	border-color : #e7d796;
@@ -564,7 +568,7 @@ ul#userlist-list li:hover {
 	padding : 2px 5px 2px 5px;
 }
 
-.oddSelected, .oddSelected td {
+.oddSelected, .oddSelected td, .oddHL {
 	background-color : #fff7d5;
 	border-style : solid;
 	border-color : #e7d796;
@@ -573,7 +577,8 @@ ul#userlist-list li:hover {
 	padding : 2px 5px 2px 5px;
 }
 
-#userlist-list li.odd, #userlist-list li.even {
+#userlist-list li.odd, #userlist-list li.even, #userlist-list li.evenHL,
+	#userlist-list li.oddHL {
 	border-color : transparent;
 	background : transparent;
 }
@@ -668,4 +673,5 @@ div#image-tooltip img {
 button, input, select {
 	font-family : "Lucida Grande", "Segoe UI", Tahoma, Arial, sans-serif;
 }
+
 
