@@ -543,7 +543,11 @@ class Connection extends Yapircl {
 		}
 
 		foreach ($nicks as $nick) {
-			$this->sendBuf("WHO :$nick");
+			if (!$this->userhosts[$nick]) {
+				//echo "[*] requesting userhost for $nick...\n";
+				$this->userhosts[$nick] = array('', '', '', '', time());
+				$this->sendBuf("WHO :$nick");
+			}
 		}
 	}
 
