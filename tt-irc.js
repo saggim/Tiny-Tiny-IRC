@@ -1432,7 +1432,7 @@ function hotkey_handler(e) {
 
 function push_cache(line) {
 	try {
-		line = line.trim();
+//		line = line.trim();
 
 		if (line.length == 0) return;
 
