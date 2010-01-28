@@ -15,7 +15,7 @@ div.infoBoxContents a {
 	background : #ecf4ff;
 }
 
-ul.container {
+ul.container, textarea.user-css {
 	border : 1px solid #88b0f0;
 }
 
