@@ -39,6 +39,11 @@ div.topLinks a:hover {
 	color : #ccc;
 }
 
+button:active {
+	background : green;
+	color : black;
+}
+
 input, select, button, textarea {
 	border : 1px solid #303030;
 	background : black;
@@ -62,12 +67,12 @@ input, select, button, textarea {
 	color : white;
 }
 
-#log .odd {
+.odd {
 	background-color : black;
 	border-color : #101010;
 }
 
-#log .even {
+.even {
 	background-color : black;
 	border-color : #101010;
 }
@@ -94,3 +99,31 @@ div#image-tooltip {
 	border-color : #303030;
 }
 
+div#infoBox, ul.container {
+	color : gray;
+	background : black;
+	border : 1px solid green;
+}
+
+div#infoBoxTitle {
+	color : black;
+	background : green;
+	text-shadow : black 0px 0px;
+	border-color : green;
+}
+
+#dialog_overlay {
+	background-image : url("images/shadow_dark.png");
+}
+
+div.infoBoxContents a {
+	color : green;
+}
+
+div.infoBoxContents a:hover {
+	color : #00cc00;
+}
+
+div.dlgSec {
+	color : green;
+}
