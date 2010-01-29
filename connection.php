@@ -623,6 +623,10 @@ class Connection extends Yapircl {
 		return iconv($this->encoding, "utf-8", $text);
 	}
 
+	function from_utf($text) {
+		return iconv("utf-8", $this->encoding, $text);
+	}
+
 	function join_channels() {
 		$result = db_query($this->link, "SELECT autojoin FROM ttirc_connections
 			WHERE id = " . $this->connection_id);
@@ -666,7 +670,7 @@ class Connection extends Yapircl {
 			$this->connection_id);
 
 		if (db_num_rows($result) == 1) {
-			return db_fetch_result($result, 0, "quit_message");
+			return $this->from_utf(db_fetch_result($result, 0, "quit_message"));
 		} else {
 			return __("Tiny Tiny IRC");
 		}
