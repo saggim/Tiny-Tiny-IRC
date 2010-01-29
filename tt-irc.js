@@ -238,11 +238,15 @@ function handle_update(transport) {
 					if (tab.getAttribute("channel") == chan && 
 							tab != get_selected_tab()) {
 
-						if (is_highlight(connection_id, lines[i].message)) {
-							tab.className = "highlight";					
-							++new_highlights;
-						} else {
-							if (tab.className != "highlight") tab.className = "attention";
+						debug(lines[i].sender + " " + conndata_last[connection_id].active_nick);
+
+						if (lines[i].sender != conndata_last[connection_id].active_nick) {
+						  if (is_highlight(connection_id, lines[i].message)) {
+								tab.className = "highlight";					
+								++new_highlights;
+							} else {
+								if (tab.className != "highlight") tab.className = "attention";
+							}
 						}
 					}
 				}	
@@ -682,7 +686,8 @@ function toggle_connection(elem) {
 function format_message(row_class, param, connection_id) {
 	try {
 
-		var is_hl = is_highlight(connection_id, param.message);
+		var is_hl = param.sender != conndata_last[connection_id].active_nick && 
+			is_highlight(connection_id, param.message);
 
 		var tmp;
 
@@ -1219,11 +1224,11 @@ function push_message(connection_id, channel, message, message_type) {
 
 				if (!buffers[connection_id][chan]) buffers[connection_id][chan] = [];
 
-				toggle_li_class(chan);
-
-				var tmp_html = format_message(li_classes[chan], message, connection_id);
-
-				buffers[connection_id][chan].push(tmp_html);
+				if (tabs[i].getAttribute("tab_type") == "C") {
+					toggle_li_class(chan);
+					var tmp_html = format_message(li_classes[chan], message, connection_id);
+					buffers[connection_id][chan].push(tmp_html);
+				}
 			}
 		}
 
@@ -1540,7 +1545,7 @@ function is_highlight(connection_id, message) {
 			return true;
 
 		for (var i = 0; i < highlight_on.length; i++) {
-			if (message.match(highlight_on[i]))
+			if (highlight_on[i].length > 0 && message.match(highlight_on[i]))
 				return true;
 		}
 
