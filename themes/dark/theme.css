@@ -93,10 +93,12 @@ input, select, button, textarea {
 
 #topic div.wrapper {
 	border : 1px solid #303030;
+	background : black;
 }
 
 #input div.wrapper {
 	border : 1px solid #303030;
+	background : black;
 }
 
 ul#userlist-list li {
@@ -138,5 +140,10 @@ div.infoBoxContents a:hover {
 }
 
 div.dlgSec {
+	color : green;
+}
+
+#overlay {
+	background : black;
 	color : green;
 }

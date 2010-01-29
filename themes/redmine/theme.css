@@ -95,3 +95,7 @@ ul#userlist-list li:hover {
 	color : #c61a1a;
 }
 
+#overlay {
+	background : #507AAA;
+	color : white;
+}

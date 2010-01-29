@@ -1,3 +1,32 @@
+button[disabled], input[disabled], select[disabled], textarea[disabled] {
+	background : #f0f0f0;
+	color : gray;
+}
+
+input, select, button {
+	background : #f0f0f0;
+	border : 1px solid #c0c0c0;
+	color : #404040;
+	padding : 2px 4px 2px 4px;
+	font-size : 12px;
+	font-family : "Lucida Grande", "Segoe UI", Tahoma, Arial, sans-serif;
+}
+
+button:active {
+	background : url("images/button_pressed.png") top left;
+	background-repeat : repeat-x;
+}
+
+button {
+	background : url("images/button.png") top left;
+	background-repeat : repeat-x;
+}
+
+
+body {
+	background : #fafafa;
+}
+
 div.infoBoxContents a {
 	color : #5d82c0;
 }
@@ -30,6 +59,7 @@ ul.container, textarea.user-css {
 
 #topic div.wrapper {
 	border : 1px solid #909090;
+	background : #f0f0f0;
 }
 
 #tabs-list li.selected {
@@ -39,5 +69,12 @@ ul.container, textarea.user-css {
 
 #input div.wrapper {
 	border : 1px solid #909090;
+	background : #f0f0f0;
+
 }
+
+#overlay {
+	background : #fafafa;
+}
+
 
