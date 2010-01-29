@@ -1607,7 +1607,8 @@ function is_highlight(connection_id, message) {
 	try {
 		message = message.toUpperCase();
 
-		if (message.match(active_nicks[connection_id].toUpperCase())) 
+		if (active_nicks[connection_id] && 
+				message.match(active_nicks[connection_id].toUpperCase())) 
 			return true;
 
 		for (var i = 0; i < highlight_on.length; i++) {
