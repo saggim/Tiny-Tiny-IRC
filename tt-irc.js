@@ -1261,7 +1261,7 @@ var _tooltip_elem;
 
 function show_thumbnail(img) {
 	try {
-		if (_tooltip_elem) {
+		if (_tooltip_elem && !Element.visible("image-preview")) {
 
 			hide_spinner();
 
@@ -1298,6 +1298,8 @@ function show_thumbnail(img) {
 			$("image-tooltip").style.top = xy[1] + "px";
 
 			Effect.Appear($("image-tooltip"));
+		} else {
+			hide_spinner();
 		}
 
 	} catch (e) {
@@ -1363,7 +1365,8 @@ function m_c(elem) {
 function m_i(elem) {
 	try {	
 
-		if (!elem.href.toLowerCase().match("(jpg|gif|png|bmp)$"))
+		if (!elem.href.toLowerCase().match("(jpg|gif|png|bmp)$") || 
+				Element.visible("image-preview"))
 			return;
 
 		var timeout = window.setTimeout(function() {
