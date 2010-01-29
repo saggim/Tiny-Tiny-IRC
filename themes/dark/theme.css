@@ -100,7 +100,7 @@ input, select, button, textarea {
 }
 
 ul#userlist-list li {
-	color : green;
+	color : gray;
 }
 
 ul#userlist-list li:hover {
