@@ -1,5 +1,6 @@
 var window_active = false;
 var last_id = 0;
+var last_old_id = 0;
 var new_messages = 0;
 var new_highlights = 0;
 var delay = 1000;
@@ -132,7 +133,7 @@ function init_second_stage(transport) {
 				transport.responseText);
 		}
 
-//		last_id = params.max_id;
+		last_old_id = params.max_id;
 
 		theme_images = params.images;
 
@@ -240,26 +241,29 @@ function handle_update(transport) {
 					buffers[connection_id][chan].shift();
 				}
 
-				var tabs = get_all_tabs(connection_id);
+				if (lines[i].id > last_old_id) {
 
-				for (var j = 0; j < tabs.length; j++) {
-					var tab = tabs[j];
-
-					if (tab.getAttribute("channel") == chan && 
-							tab != get_selected_tab()) {
-
-						if (lines[i].sender != conndata_last[connection_id].active_nick) {
-						  if (tab.getAttribute("tab_type") != "S" && 
-								  is_highlight(connection_id, lines[i].message)) {
-
-								tab.className = "highlight";					
-								++new_highlights;
-							} else {
-								if (tab.className != "highlight") tab.className = "attention";
+					var tabs = get_all_tabs(connection_id);
+	
+					for (var j = 0; j < tabs.length; j++) {
+						var tab = tabs[j];
+	
+						if (tab.getAttribute("channel") == chan && 
+								tab != get_selected_tab()) {
+	
+							if (lines[i].sender != conndata_last[connection_id].active_nick) {
+							  if (tab.getAttribute("tab_type") != "S" && 
+									  is_highlight(connection_id, lines[i].message)) {
+	
+									tab.className = "highlight";					
+									++new_highlights;
+								} else {
+									if (tab.className != "highlight") tab.className = "attention";
+								}
 							}
 						}
 					}
-				}	
+				}
 
 			}
 
