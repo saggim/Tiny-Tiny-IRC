@@ -20,6 +20,10 @@
 
 		$line = db_fetch_assoc($result);
 
+		foreach (array_keys($line) as $k) {
+			$line[$k] = iconv("UTF-8", $line['encoding'], $line[$k]);
+		}
+
 		if (!sql_bool_to_bool($line['enabled'])) {
 			debug("[$connection_id] connection disabled, aborting");
 			return;

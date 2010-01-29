@@ -466,6 +466,7 @@ class Connection extends Yapircl {
 
 	function check_channel($channel, $chan_type = CT_CHANNEL) {
 		$connection_id = $this->connection_id;
+		$channel = $this->to_utf($channel);
 
 		db_query($this->link, "BEGIN");
 
@@ -687,7 +688,7 @@ class Connection extends Yapircl {
 
 			$nicklist = db_escape_string(json_encode(
 				$this->get_unicode_nicklist($channel)));
-			$channel = db_escape_string($channel);
+			$channel = db_escape_string($this->to_utf($channel));
 
 
 			db_query($this->link, "UPDATE ttirc_channels SET nicklist = '$nicklist'
