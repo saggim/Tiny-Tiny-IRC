@@ -199,6 +199,12 @@ function handle_update(transport) {
 
 		if (params) {
 			highlight_on = params.highlight_on;
+
+			/* we can't rely on PHP mb_strtoupper() since it sucks cocks */
+
+			for (var i = 0; i < highlight_on.length; i++) {
+				highlight_on[i] = highlight_on[i].toUpperCase();
+			}
 		}
 
 		last_update = new Date();
@@ -237,8 +243,6 @@ function handle_update(transport) {
 
 					if (tab.getAttribute("channel") == chan && 
 							tab != get_selected_tab()) {
-
-						debug(lines[i].sender + " " + conndata_last[connection_id].active_nick);
 
 						if (lines[i].sender != conndata_last[connection_id].active_nick) {
 						  if (is_highlight(connection_id, lines[i].message)) {
@@ -1541,7 +1545,9 @@ function get_nick_list(connection_id, channel) {
 
 function is_highlight(connection_id, message) {
 	try {
-		if (message.match(active_nicks[connection_id])) 
+		message = message.toUpperCase();
+
+		if (message.match(active_nicks[connection_id].toUpperCase())) 
 			return true;
 
 		for (var i = 0; i < highlight_on.length; i++) {
