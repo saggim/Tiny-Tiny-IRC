@@ -39,6 +39,10 @@ var commands = [ "/join", "/part", "/nick", "/query", "/quote", "/msg",
 
 function create_tab_if_needed(chan, connection_id, tab_type) {
 	try {
+		var caption = chan;
+
+		if (tab_type == "S") chan = "---";
+
 		var tab_id = "tab-" + chan + ":" + connection_id;
 
 		if (!tab_type) tab_type = "C";
@@ -57,7 +61,7 @@ function create_tab_if_needed(chan, connection_id, tab_type) {
 				"tab_type=\"" + tab_type + "\" " +
 				"connection_id=\"" + connection_id + "\" " +
 		  		"onclick=\"change_tab(this)\">" + cimg +
-				chan + "</li>";
+				caption + "</li>";
 
 			tab += "<ul class=\"sub-tabs\" id=\"" + tab_list_id + "\"></ul>";
 
@@ -77,7 +81,7 @@ function create_tab_if_needed(chan, connection_id, tab_type) {
 				"tab_type=\"" + tab_type + "\" " +
 				"connection_id=\"" + connection_id + "\" " +
 		  		"onclick=\"change_tab(this)\">" + img +
-				"&nbsp;&nbsp;" + chan + "</li>";
+				"&nbsp;&nbsp;" + caption + "</li>";
 
 			debug("creating tab: " + tab_id + " " + tab_type);
 
@@ -245,7 +249,9 @@ function handle_update(transport) {
 							tab != get_selected_tab()) {
 
 						if (lines[i].sender != conndata_last[connection_id].active_nick) {
-						  if (is_highlight(connection_id, lines[i].message)) {
+						  if (tab.getAttribute("tab_type") != "S" && 
+								  is_highlight(connection_id, lines[i].message)) {
+
 								tab.className = "highlight";					
 								++new_highlights;
 							} else {
@@ -320,14 +326,15 @@ function get_selected_tab() {
 function get_all_tabs(connection_id) {
 	try {
 		var tabs;
+		var rv = [];
 
 		if (connection_id) {
 			tabs = $("tabs-" + connection_id).getElementsByTagName("LI");
+			rv.push($("tab-" + connection_id));
 		} else {
 			tabs = $("tabs-list").getElementsByTagName("li");
 		}
 
-		var rv = [];
 
 		for (var i = 0; i < tabs.length; i++) {
 			if (tabs[i].id && tabs[i].id.match("tab-")) {
