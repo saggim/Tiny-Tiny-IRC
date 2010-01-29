@@ -62,7 +62,8 @@
 </head>
 <body class="main">
 
-<div id="image-tooltip" style="display : none"></div>
+<div id="image-tooltip" onclick="Element.hide(this)" 
+	title="<?php echo __("Click to close") ?>" style="display : none"></div>
 
 <div id="overlay" style="display : block">
 	<div id="overlay_inner">
