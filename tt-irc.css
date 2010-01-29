@@ -203,7 +203,7 @@ table.loginForm2 .innerLoginCell {
 	border-collapse : collapse;
 	padding : 5px 0px 5px 0px;
 	font-size : 12px;
-	font-family : "Lucida Grande", "Segoe UI", Tahoma, Arial, sans-serif;
+	font-family : "Lucida Grande", "Segoe UI", sans-serif;
 	cursor : pointer;
 	z-index : 3;
 	position : relative;
@@ -683,7 +683,7 @@ div#image-tooltip img {
 }
 
 button, input, select {
-	font-family : "Lucida Grande", "Segoe UI", Tahoma, Arial, sans-serif;
+	font-family : "Lucida Grande", "Segoe UI", sans-serif;
 }
 
 
