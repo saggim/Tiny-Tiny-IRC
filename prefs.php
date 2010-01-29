@@ -271,7 +271,7 @@
 			<input name="confirm_password" type="password" size="30" value="">
 		</div>
 
-		<button type="submit" style="display : none" onclick="save_prefs()">
+		<button type="submit" style="display : none" onclick="save_prefs()"></button>
 
 		</form>
 
@@ -291,7 +291,7 @@
 			<button type="submit" onclick="save_prefs()">
 				<?php echo __('Save') ?></button>
 			<button onclick="close_infobox()"><?php echo __('Close') ?></button>
-		</div>		
+		</div>
 	</div>
 
 <?php } ?>
