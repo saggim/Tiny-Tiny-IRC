@@ -1305,6 +1305,61 @@ function show_thumbnail(img) {
 	}
 }
 
+function show_preview(img) {
+	try {
+		hide_spinner();
+
+		var vp = document.viewport.getDimensions();
+
+		var max_width = vp.width/2;
+
+		if (img.width > max_width) {
+			img.height *= (max_width / img.width);
+			img.width = max_width;
+		}
+
+		var max_height = vp.height/2;
+
+		if (img.height > max_height) {
+			img.height *= (max_height / img.height);
+			img.height = max_height;
+		}
+
+		var dp = $("image-preview").getDimensions();
+
+		$("image-preview").style.left = (vp.width/2 - dp.width/2) + "px";
+		$("image-preview").style.top = (vp.height/2 - dp.height/2) + "px";
+		$("image-preview").style.width = dp.width;
+		$("image-preview").style.height = dp.height;
+
+		new Effect.Appear("image-preview");
+
+	} catch (e) {
+		exception_error("show_preview", e);
+	}
+}
+
+function m_c(elem) {
+	try {	
+
+		if (!elem.href.toLowerCase().match("(jpg|gif|png|bmp)$"))
+			return true;
+
+		window.clearTimeout(elem.getAttribute("timeout"));
+		Element.hide("image-tooltip");
+
+		show_spinner();
+
+		$("image-preview").innerHTML = "<img onload=\"show_preview(this)\" " + 
+			"src=\"" + elem.href + "\"/>";
+
+		return false;
+
+	} catch (e) {
+		exception_error("m_i", e);
+	}
+}
+
 function m_i(elem) {
 	try {	
 
