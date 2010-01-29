@@ -149,7 +149,7 @@
 
 		</div>
 
-		<button type="submit" style="display : none" onclick="save_conn()">
+		<button type="submit" style="display : none" onclick="save_conn()"></button>
 
 		</form>
 
