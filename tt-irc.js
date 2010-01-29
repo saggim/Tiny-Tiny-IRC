@@ -1537,6 +1537,8 @@ function hotkey_handler(e) {
 
 		//debug(keychar + " " + keycode + " " + e.ctrlKey);
 
+		$("input-prompt").focus();
+
 		return true;
 
 	} catch (e) {
