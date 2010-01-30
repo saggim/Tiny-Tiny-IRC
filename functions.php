@@ -509,6 +509,12 @@
 				"$arguments", true, MSGT_ACTION);
 		}
 
+		if ($command == "notice") {
+			list ($nick, $message) = explode(" ", $arguments, 2);
+			push_message($link, $connection_id, $channel,
+				"$message", false, MSGT_NOTICE, $nick);
+		}
+
 		switch ($command) {
 		case "query":
 
@@ -561,7 +567,7 @@
 
 
 	function push_message($link, $connection_id, $channel, $message, 
-		$incoming = false, $message_type = MSGT_PRIVMSG) {
+		$incoming = false, $message_type = MSGT_PRIVMSG, $from_nick = false) {
 
 		global $memcache;
 
@@ -572,6 +578,8 @@
 		} else {
 			$my_nick = "---";
 		}
+
+		if ($from_nick) $my_nick = $from_nick;
 
 		//$message = db_escape_string($message);
 
@@ -604,7 +612,7 @@
 	function get_new_lines($link, $last_id) {
 
 		$result = db_query($link, "SELECT ttirc_messages.id,
-			message_type, sender, channel, connection_id,
+			message_type, sender, channel, connection_id, incoming,
 			message, ".SUBSTRING_FOR_DATE."(ts,12,8) AS ts
 			FROM ttirc_messages, ttirc_connections WHERE
 			connection_id = ttirc_connections.id AND
@@ -618,6 +626,7 @@
 		while ($line = db_fetch_assoc($result)) {
 			$line["message"] = rewrite_urls(htmlspecialchars($line["message"]));
 			$line["sender_color"] = color_of($line["sender"]);
+			$line["incoming"] = sql_bool_to_bool($line["incoming"]);
 			array_push($lines, $line);
 		}
 

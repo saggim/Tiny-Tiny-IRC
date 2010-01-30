@@ -39,6 +39,10 @@ div.topLinks a:hover {
 	color : #ccc;
 }
 
+#log span.notice {
+	color : #0cc;
+}
+
 button:active {
 	background : green;
 	color : black;
@@ -146,4 +150,8 @@ div.dlgSec {
 #overlay {
 	background : black;
 	color : green;
+}
+
+#debug_output {
+	color : white;
 }

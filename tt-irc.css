@@ -501,9 +501,38 @@ pre {
 	margin-right : 0.5em;
 }
 
+#log span.pvt-sender, #log span.pvt-sender-out {
+	color : black;
+	margin-right : 0.5em;
+}
+
+#log span.pvt-sender:before {
+	content: "-";
+}
+
+#log span.pvt-sender:after {
+	content: "-";
+}
+
+#log span.pvt-sender-out:before {
+	content: ">";
+}
+
+#log span.pvt-sender-out:after {
+	content: "<";
+}
+
 #log span.sender {
 	color : green;
 	margin-right : 0.5em;
+}
+
+#log span.sender:before {
+	content: "<";
+}
+
+#log span.sender:after {
+	content: ">";
 }
 
 #log span.message {

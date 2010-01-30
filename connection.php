@@ -62,6 +62,10 @@ class Connection extends Yapircl {
 				list ($nick, $message) = explode(" ", $arguments, 2);
 				$this->privmsg($nick, $message);
 				break;
+			case "notice":
+				list ($nick, $message) = explode(" ", $arguments, 2);
+				$this->sendBuf("NOTICE $nick :$message");
+				break;
 			case "part":
 				$this->part($arguments);
 				break;
@@ -237,13 +241,27 @@ class Connection extends Yapircl {
 
 	function event_private_notice() {
 
+		print_r($this->_xline);
+		print_r($this->rest);
+
 		if ($this->word == "\001PING") {
 			$seconds = time() - trim($this->rest, "\001");
 
-			$this->push_message($this->from, 
-				'---', "PING_REPLY:$seconds", MSGT_EVENT);
+			$this->push_message($this->nick, 
+				$this->from, "PING_REPLY:$seconds", MSGT_EVENT);
 		} else {
-			$this->push_message('---', '---', $this->_fline);
+			$notice = "";
+
+			for ($i=3; $i < $this->_xline_sizeof; $i++) {
+				$notice .=  ' ' . $this->_xline[$i];
+			}
+	
+			$notice = substr(ltrim($notice), 1);
+
+			$this->push_message($this->nick, 
+				$this->from, "NOTICE:$notice", MSGT_EVENT);
+
+
 		}
 
 	}

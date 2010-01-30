@@ -23,6 +23,7 @@ var MSGT_ACTION = 3;
 var MSGT_TOPIC = 4;
 var MSGT_PRIVATE_PRIVMSG = 5;
 var MSGT_EVENT = 6;
+var MSGT_NOTICE = 7;
 
 var CS_DISCONNECTED = 0;
 var CS_CONNECTING = 1;
@@ -36,7 +37,7 @@ var colormap = [ "#00CCCC", "#000000", "#0000CC", "#CC00CC", "#606060",
 	"red", "#909090", "teal", "#CCCC00" ]
 
 var commands = [ "/join", "/part", "/nick", "/query", "/quote", "/msg", 
-	 "/op", "/deop", "/voice", "/devoice", "/ping" ];
+	 "/op", "/deop", "/voice", "/devoice", "/ping", "/notice" ];
 
 function create_tab_if_needed(chan, connection_id, tab_type) {
 	try {
@@ -237,8 +238,10 @@ function handle_update(transport) {
 					if (!window_active) ++new_messages;
 				}
 
-				while (buffers[connection_id][chan].length > 100) {
-					buffers[connection_id][chan].shift();
+				if (buffers[connection_id][chan]) {
+					while (buffers[connection_id][chan].length > 100) {
+						buffers[connection_id][chan].shift();
+					}
 				}
 
 				if (lines[i].id > last_old_id) {
@@ -712,6 +715,14 @@ function format_message(row_class, param, connection_id) {
 			color = "style=\"color : " + colormap[param.sender_color] + "\"";
 		}
 
+		var nick_ext_info = "";
+		var userhosts = conndata_last[connection_id]["userhosts"];
+
+		if (userhosts && userhosts[param.sender]) {
+			nick_ext_info = userhosts[param.sender][0] + '@' + 
+				userhosts[param.sender][1] + " <" + userhosts[param.sender][3] + ">";
+		}					
+
 		if (param.message_type == MSGT_ACTION) {
 
 			if (is_hl) row_class += "HL";
@@ -722,16 +733,25 @@ function format_message(row_class, param, connection_id) {
 				param.ts + "</span>" +
 				"<span class='action'>" + message + "</span>";
 
+		} else if (param.message_type == MSGT_NOTICE) {
+
+			var sender_class = '';
+
+			if (param.incoming == true) {
+				sender_class = 'pvt-sender';
+			} else {
+				sender_class = 'pvt-sender-out';
+			}
+
+			tmp = "<li class=\""+row_class+"\"><span class='timestamp'>" + 
+				param.ts + "</span><span title=\""+nick_ext_info+"\" " +
+				"class='"+sender_class+"' "+color+">" +
+				param.sender + "</span><span class='message'>" + 
+				param.message + "</span>";
+
 		} else if (param.sender != "---") {
-			var nick_ext_info = "";
-			var userhosts = conndata_last[connection_id]["userhosts"];
 
 			if (is_hl) row_class += "HL";
-
-			if (userhosts && userhosts[param.sender]) {
-				nick_ext_info = userhosts[param.sender][0] + '@' + 
-					userhosts[param.sender][1] + " <" + userhosts[param.sender][3] + ">";
-			}					
 
 			param.message = param.message.replace(/\(oo\)/g,
 					"<img src='images/piggie_icon.png' alt='(oo)'>");
@@ -741,8 +761,8 @@ function format_message(row_class, param, connection_id) {
 
 			tmp = "<li class=\""+row_class+"\"><span class='timestamp'>" + 
 				param.ts + "</span><span title=\""+nick_ext_info+"\" " +
-				"class='sender' "+color+">&lt;" +
-				param.sender + "&gt;</span><span class='message'>" + 
+				"class='sender' "+color+">" +
+				param.sender + "</span><span class='message'>" + 
 				param.message + "</span>";
 		} else {
 			tmp = "<li class=\""+row_class+"\"><span class='timestamp'>" + 
@@ -1150,6 +1170,22 @@ function handle_event(li_class, connection_id, line) {
 			line.sender = '---';
 
 			push_message(connection_id, '---', line, MSGT_BROADCAST);
+			break;
+		case "NOTICE":
+			var message = params[1];
+			var tab = get_selected_tab();
+
+			if (!tab) get_all_tabs()[0];
+
+			if (tab) {
+				var chan = tab.getAttribute("channel");
+
+				line.message = message;
+				line.message_type = MSGT_NOTICE;
+
+				push_message(connection_id, chan, line);
+			}
+
 			break;
 
 		case "PING":
