@@ -521,7 +521,7 @@
 			db_query($link, "BEGIN");
 
 			$result = db_query($link, "SELECT id FROM ttirc_channels WHERE
-				channel = '$channel' AND connection_id = '$connection_id'");
+				channel = '$arguments' AND connection_id = '$connection_id'");
 
 			if (db_num_rows($result) == 0) {
 				db_query($link, "INSERT INTO ttirc_channels 
