@@ -723,6 +723,8 @@ function format_message(row_class, param, connection_id) {
 				userhosts[param.sender][1] + " <" + userhosts[param.sender][3] + ">";
 		}					
 
+		if (is_hl) ++new_highlights;
+
 		if (param.message_type == MSGT_ACTION) {
 
 			if (is_hl) row_class += "HL";
@@ -1183,8 +1185,10 @@ function handle_event(li_class, connection_id, line) {
 				line.message = message;
 				line.message_type = MSGT_NOTICE;
 
-				push_message(connection_id, chan, line);
+				//push_message(connection_id, chan, line);
 			}
+
+			push_message(connection_id, line.sender, line);
 
 			break;
 
@@ -1584,7 +1588,7 @@ function hotkey_handler(e) {
 
 		//debug(keychar + " " + keycode + " " + e.ctrlKey);
 
-		if (!e.ctrlKey) $("input-prompt").focus();
+		//if (!e.ctrlKey) $("input-prompt").focus();
 
 		return true;
 

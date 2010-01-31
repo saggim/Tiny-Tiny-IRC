@@ -241,9 +241,6 @@ class Connection extends Yapircl {
 
 	function event_private_notice() {
 
-		print_r($this->_xline);
-		print_r($this->rest);
-
 		if ($this->word == "\001PING") {
 			$seconds = time() - trim($this->rest, "\001");
 
@@ -258,12 +255,11 @@ class Connection extends Yapircl {
 	
 			$notice = substr(ltrim($notice), 1);
 
+			$this->check_channel($this->nick, CT_PRIVATE);
+
 			$this->push_message($this->nick, 
 				$this->from, "NOTICE:$notice", MSGT_EVENT);
-
-
 		}
-
 	}
 
 	function event_all() {
