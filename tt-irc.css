@@ -508,17 +508,21 @@ pre {
 
 #log span.pvt-sender:before {
 	content: "-";
+	color : green;
 }
 
 #log span.pvt-sender:after {
 	content: "-";
+	color : green;
 }
 
 #log span.pvt-sender-out:before {
+	color : green;
 	content: ">";
 }
 
 #log span.pvt-sender-out:after {
+	color : green;
 	content: "<";
 }
 
@@ -529,10 +533,12 @@ pre {
 
 #log span.sender:before {
 	content: "<";
+	color : blue;
 }
 
 #log span.sender:after {
 	content: ">";
+	color : blue;
 }
 
 #log span.message {
