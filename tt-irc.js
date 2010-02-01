@@ -243,6 +243,7 @@ function handle_update(transport) {
 						buffers[connection_id][chan].shift();
 					}
 				}
+			}
 
 			last_id = lines[i].id;
 		}
