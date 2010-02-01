@@ -1657,10 +1657,15 @@ function highlight_tab_if_needed(connection_id, channel, message) {
 	try {
 		var tab = find_tab(connection_id, channel);
 
+		if (message.id <= last_old_id) return;
+
 		if (tab && tab != get_selected_tab()) {
 
-		  if (tab.getAttribute("tab_type") != "S" && 
-				  		is_highlight(connection_id, message.message)) {
+//		  if (tab.getAttribute("tab_type") != "S" &&
+
+			debug("need to highlight tab " + tab.id);
+
+		 if (is_highlight(connection_id, message.message)) {
 
 				tab.className = "highlight";
 
@@ -1680,16 +1685,22 @@ function find_tab(connection_id, channel) {
 	try {
 		var tabs;
 
-		if (connection_id) {
-			tabs = $("tabs-" + connection_id).getElementsByTagName("LI");
-		} else {
-			tabs = $("tabs-list").getElementsByTagName("li");
-		}
+		debug("find_tab : " + connection_id + ";" + channel);
 
-		for (var i = 0; i < tabs.length; i++) {
-			if (tabs[i].id && tabs[i].id.match("tab-")) {
-				if (tabs[i].getAttribute("channel") == channel) {
-					return tabs[i];
+		if (channel != "---") {
+			return $("tab-" + connection_id);
+		} else {
+			if (connection_id) {
+				tabs = $("tabs-" + connection_id).getElementsByTagName("LI");
+			} else {
+				tabs = $("tabs-list").getElementsByTagName("li");
+			}
+	
+			for (var i = 0; i < tabs.length; i++) {
+				if (tabs[i].id && tabs[i].id.match("tab-")) {
+					if (tabs[i].getAttribute("channel") == channel) {
+						return tabs[i];
+					}
 				}
 			}
 		}
