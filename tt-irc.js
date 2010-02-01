@@ -244,41 +244,9 @@ function handle_update(transport) {
 					}
 				}
 
-				if (lines[i].id > last_old_id) {
-
-					var tabs = get_all_tabs(connection_id);
-	
-					for (var j = 0; j < tabs.length; j++) {
-						var tab = tabs[j];
-	
-						if (tab.getAttribute("channel") == chan && 
-								tab != get_selected_tab()) {
-	
-							if (lines[i].sender != conndata_last[connection_id].active_nick) {
-							  if (tab.getAttribute("tab_type") != "S" && 
-									  is_highlight(connection_id, lines[i].message)) {
-	
-									tab.className = "highlight";					
-									++new_highlights;
-								} else {
-									if (tab.className != "highlight") tab.className = "attention";
-								}
-							}
-						}
-					}
-				}
-
-			}
-
 			last_id = lines[i].id;
 		}
 	
-/*		if (prev_last_id == last_id) {
-			if (delay < 4000) delay += 100;
-		} else {
-			delay = 1000;
-		} */
-
 		if (!get_selected_tab()) {
 			change_tab(get_all_tabs()[0]);
 		}
@@ -1271,6 +1239,8 @@ function push_message(connection_id, channel, message, message_type) {
 			var tmp_html = format_message(li_classes[channel], message, connection_id);
 
 			buffers[connection_id][channel].push(tmp_html);
+
+			highlight_tab_if_needed(connection_id, channel, message);
 		} else {
 			var tabs = get_all_tabs(connection_id);
 
@@ -1283,6 +1253,8 @@ function push_message(connection_id, channel, message, message_type) {
 					toggle_li_class(chan);
 					var tmp_html = format_message(li_classes[chan], message, connection_id);
 					buffers[connection_id][chan].push(tmp_html);
+
+					highlight_tab_if_needed(connection_id, channel, message);
 				}
 			}
 		}
@@ -1673,3 +1645,52 @@ function is_highlight(connection_id, message) {
 		exception_error("is_highlight", e);
 	}
 }
+
+function highlight_tab_if_needed(connection_id, channel, message) {
+	try {
+		var tab = find_tab(connection_id, channel);
+
+		if (tab && tab != get_selected_tab()) {
+
+		  if (tab.getAttribute("tab_type") != "S" && 
+				  		is_highlight(connection_id, message.message)) {
+
+				tab.className = "highlight";
+
+				++new_highlights;
+
+			} else {
+				if (tab.className != "highlight") tab.className = "attention";
+			}
+		}
+
+	} catch (e) {
+		exception_error("highlight_tab_if_needed", e);
+	}
+}
+
+function find_tab(connection_id, channel) {
+	try {
+		var tabs;
+
+		if (connection_id) {
+			tabs = $("tabs-" + connection_id).getElementsByTagName("LI");
+		} else {
+			tabs = $("tabs-list").getElementsByTagName("li");
+		}
+
+		for (var i = 0; i < tabs.length; i++) {
+			if (tabs[i].id && tabs[i].id.match("tab-")) {
+				if (tabs[i].getAttribute("channel") == channel) {
+					return tabs[i];
+				}
+			}
+		}
+
+		return false;
+
+	} catch (e) {
+		exception_error("find_tab", e);
+	}
+}
+
