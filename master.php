@@ -30,9 +30,7 @@
 
 		return count($tmp);
 	}
-	function sigint_handler() {
-		unlink(LOCK_DIRECTORY . "/ttirc_master.lock");
-
+	function cleanup() {
 		$link = db_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);	
 		init_connection($link);
 
@@ -45,6 +43,13 @@
 			key = 'MASTER_RUNNING'");
 
 		db_close($link);
+	}
+
+
+	function sigint_handler() {
+		unlink(LOCK_DIRECTORY . "/ttirc_master.lock");
+
+		cleanup();
 
 		die("[SIGINT] removing lockfile and exiting.\n");
 	}
@@ -72,6 +77,8 @@
 	init_connection($link);
 	db_query($link, "DELETE FROM ttirc_channels");
 	db_close($link);
+
+	cleanup();
 
 	while (true) {
 
