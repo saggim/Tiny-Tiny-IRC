@@ -1501,7 +1501,10 @@ function hotkey_handler(e) {
 
 			var real_offset = input_cache.length + input_cache_offset;
 
-			if (input_cache[real_offset]) elem.value = input_cache[real_offset];
+			if (input_cache[real_offset]) { 
+				elem.value = input_cache[real_offset];
+				elem.setSelectionRange(elem.value.length, elem.value.length);
+			}
 
 //			debug(input_cache_offset + " " + real_offset);
 
@@ -1517,7 +1520,10 @@ function hotkey_handler(e) {
 
 //				debug(input_cache_offset + " " + real_offset);
 
-				if (input_cache[real_offset]) elem.value = input_cache[real_offset];
+				if (input_cache[real_offset]) {
+					elem.value = input_cache[real_offset];
+					elem.setSelectionRange(elem.value.length, elem.value.length);
+				}
 
 			} else {
 				elem.value = '';
