@@ -10,6 +10,38 @@
 
 	$children = array();
 
+	function check_children($link) {
+		global $children;
+
+		/* FIXME needs more robust implementation */
+
+		foreach ($children as $child) {
+			$pid = $child["pid"];
+			$conn = $child["id"];
+			$need_term = $child["need_term"];
+
+			if ($need_term == 1) {
+
+				++$need_term;
+
+			} else if ($need_term == 2) {
+
+
+			} else {
+				$result = db_query($link, "SELECT id FROM
+					ttirc_connections WHERE id = '$conn' AND enabled = true");
+
+				if (db_num_rows($result) != 1) {
+					_debug("connection $conn [PID:$pid] needs termination.");
+
+					$need_term = 1;
+					posix_kill($pid, 2);
+
+				}
+			}
+		}
+	}
+
 	function reap_children() {
 		global $children;
 
@@ -22,6 +54,22 @@
 			if (pcntl_waitpid($pid, $status, WNOHANG) != $pid) {
 				array_push($tmp, $child);
 			} else {
+				_debug("[SIGCHLD] child $pid died; cleaning up....");
+
+				$link = db_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);	
+				init_connection($link);
+
+				push_message($link, $conn, "---", "DISCONNECT", true, MSGT_EVENT);
+
+				db_query($link, "UPDATE ttirc_connections SET
+					status = ".CS_DISCONNECTED." WHERE id = '$conn'");
+
+				db_query($link, "UPDATE ttirc_channels 
+					SET nicklist = ''
+					WHERE connection_id = '$conn'");
+
+				db_close($link);
+
 				_debug("[SIGCHLD] child $pid reaped; connection $conn terminated.");
 			}
 		}
@@ -62,16 +110,22 @@
 		pcntl_waitpid(-1, $status, WNOHANG);
 	}
 
+	if (!pcntl_fork()) {
+		pcntl_signal(SIGINT, 'sigint_handler');
+
+		// Try to lock a file in order to avoid concurrent update.
+		$lock_handle = make_lockfile("update_daemon.lock");
+
+		if (!$lock_handle) {
+			die("error: Can't create lockfile. ".
+				"Maybe another daemon is already running.\n");
+		}
+
+		while (true) { sleep(100); }
+	}
+
 	pcntl_signal(SIGCHLD, 'sigchld_handler');
 	pcntl_signal(SIGINT, 'sigint_handler');
-
-	// Try to lock a file in order to avoid concurrent update.
-	$lock_handle = make_lockfile("ttirc_master.lock");
-
-	if (!$lock_handle) {
-		die("error: Can't create lockfile. ".
-			"Maybe another daemon is already running.\n");
-	}
 
 	$link = db_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);	
 	init_connection($link);
@@ -94,6 +148,8 @@
 	
 			db_query($link, "UPDATE ttirc_system SET value = NOW() WHERE
 				key = 'MASTER_HEARTBEAT'");
+
+			check_children($link);
 
 			$result = db_query($link, "SELECT ttirc_connections.id 
 				FROM ttirc_connections, ttirc_users 
@@ -154,23 +210,8 @@
 
 					db_close($link);
 
-					system("./handle.php $id");
-
-					$link = db_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);	
-					init_connection($link);
-
-					push_message($link, $id, "---", "DISCONNECT", true, MSGT_EVENT);
-
-					db_query($link, "UPDATE ttirc_connections SET
-						status = ".CS_DISCONNECTED." WHERE id = '$id'");
-
-					db_query($link, "UPDATE ttirc_channels 
-						SET nicklist = ''
-						WHERE connection_id = '$id'");
-
-					db_close($link);
-
-					sleep(3);
+					//system("./handle.php $id");
+					pcntl_exec("./handle.php", array($id));
 
 					die;
 				}
