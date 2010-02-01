@@ -1661,11 +1661,8 @@ function highlight_tab_if_needed(connection_id, channel, message) {
 
 		if (tab && tab != get_selected_tab()) {
 
-//		  if (tab.getAttribute("tab_type") != "S" &&
-
-			debug("need to highlight tab " + tab.id);
-
-		 if (is_highlight(connection_id, message.message)) {
+		  if (tab.getAttribute("tab_type") != "S" && 
+				  is_highlight(connection_id, message.message)) {
 
 				tab.className = "highlight";
 
