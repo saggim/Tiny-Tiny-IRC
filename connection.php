@@ -286,8 +286,6 @@ class Connection extends Yapircl {
 
 		$this->push_message('---', $channel, $message, MSGT_EVENT);
 
-		_debug("update_nicklist : $channel *");
-
 		$this->update_nicklist($channel);
 		$this->request_userhost($this->nick);
 
@@ -369,7 +367,8 @@ class Connection extends Yapircl {
 		$this->push_message($this->nick, $this->_xline[2], 
 				$message, MSGT_EVENT);
 
-		$this->update_nicklist($this->_xline[2]);
+		if (strpos($this->_xline[2], "#") === 0)
+			$this->update_nicklist($this->_xline[2]);
 	}
 
 	function event_part() {
@@ -710,7 +709,6 @@ class Connection extends Yapircl {
 			$nicklist = db_escape_string(json_encode(
 				$this->get_unicode_nicklist($channel)));
 			$channel = db_escape_string($this->to_utf($channel));
-
 
 			db_query($this->link, "UPDATE ttirc_channels SET nicklist = '$nicklist'
 				WHERE channel = '$channel' AND connection_id = " . 
