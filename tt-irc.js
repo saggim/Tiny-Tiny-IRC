@@ -1516,6 +1516,7 @@ function hotkey_handler(e) {
 
 //			debug(input_cache_offset + " " + real_offset);
 
+			return false;
 		}
 
 		if (keycode == 40) {
@@ -1531,11 +1532,13 @@ function hotkey_handler(e) {
 				if (input_cache[real_offset]) {
 					elem.value = input_cache[real_offset];
 					elem.setSelectionRange(elem.value.length, elem.value.length);
+					return false;
 				}
 
 			} else {
 				elem.value = '';
 				input_cache_offset = 0;
+				return false;
 			}
 
 		}
