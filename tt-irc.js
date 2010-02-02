@@ -715,9 +715,13 @@ function format_message(row_class, param, connection_id) {
 			}
 
 			tmp = "<li class=\""+row_class+"\"><span class='timestamp'>" + 
-				param.ts + "</span><span title=\""+nick_ext_info+"\" " +
+				param.ts + 
+				"<span class='invisible'>&lt;</span>" +
+				"</span><span title=\""+nick_ext_info+"\" " +
 				"class='"+sender_class+"' "+color+">" +
-				param.sender + "</span><span class='message'>" + 
+				param.sender + "</span>" +
+				"<span class='invisible'>&gt;&nbsp;</span>" +
+				"<span class='message'>" + 
 				param.message + "</span>";
 
 		} else if (param.sender != "---") {
@@ -731,9 +735,13 @@ function format_message(row_class, param, connection_id) {
 //					"<img src='images/piggie.png' alt='(oo)'>");
 
 			tmp = "<li class=\""+row_class+"\"><span class='timestamp'>" + 
-				param.ts + "</span><span title=\""+nick_ext_info+"\" " +
+				param.ts + 
+				"<span class='invisible'>&lt;</span>" +
+				"</span><span title=\""+nick_ext_info+"\" " +
 				"class='sender' "+color+">" +
-				param.sender + "</span><span class='message'>" + 
+				param.sender + "</span>" +
+				"<span class='invisible'>&gt;&nbsp;</span>" +
+				"<span class='message'>" + 
 				param.message + "</span>";
 		} else {
 			tmp = "<li class=\""+row_class+"\"><span class='timestamp'>" + 

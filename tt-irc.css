@@ -723,4 +723,6 @@ button, input, select {
 	font-family : "Lucida Grande", "Segoe UI", sans-serif;
 }
 
-
+.invisible {
+	display : none;
+}
