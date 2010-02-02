@@ -9,36 +9,44 @@
 	declare(ticks = 1);
 
 	$children = array();
+	$last_checkpoint = 0;	
 
 	function check_children($link) {
 		global $children;
 
 		/* FIXME needs more robust implementation */
 
-		foreach ($children as $child) {
+		foreach (array_values($children) as $child) {
 			$pid = $child["pid"];
 			$conn = $child["id"];
 			$need_term = $child["need_term"];
 
-			if ($need_term == 1) {
+			$result = db_query($link, "SELECT id FROM
+				ttirc_connections WHERE id = '$conn' AND enabled = true");
 
-				++$need_term;
+			if (db_num_rows($result) != 1) {
+				_debug("connection $conn [PID:$pid] needs termination.");
+				posix_kill($pid, 2);
+			}
 
-			} else if ($need_term == 2) {
+/*			if ($need_term != 0) {
 
+				_debug("connection $conn [PID:$pid] needs termination.");
+				posix_kill($pid, 2);
 
 			} else {
 				$result = db_query($link, "SELECT id FROM
 					ttirc_connections WHERE id = '$conn' AND enabled = true");
 
 				if (db_num_rows($result) != 1) {
-					_debug("connection $conn [PID:$pid] needs termination.");
 
-					$need_term = 1;
-					posix_kill($pid, 2);
+					_debug("connection $conn [PID:$pid] is finished, ".
+						"scheduling termination.");
 
+					$child["need_term"] = 1;
 				}
 			}
+			$children[$conn] = $child; */
 		}
 	}
 
@@ -47,12 +55,13 @@
 
 		$tmp = array();
 
-		foreach ($children as $child) {
+		foreach (array_values($children) as $child) {
 			$pid = $child["pid"];
 			$conn = $child["id"];
 
 			if (pcntl_waitpid($pid, $status, WNOHANG) != $pid) {
-				array_push($tmp, $child);
+				//array_push($tmp, $child);
+				$tmp[$conn] = $child;
 			} else {
 				_debug("[SIGCHLD] child $pid died; cleaning up....");
 
@@ -76,7 +85,7 @@
 
 		$children = $tmp;
 
-		return count($tmp);
+		return count(array_keys($tmp));
 	}
 	function cleanup() {
 		$link = db_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);	
@@ -93,13 +102,13 @@
 		db_close($link);
 	}
 
-
 	function sigint_handler() {
-		unlink(LOCK_DIRECTORY . "/ttirc_master.lock");
+		_debug("[SIGINT] removing lockfile and exiting.");
 
+		unlink(LOCK_DIRECTORY . "/ttirc_master.lock");
 		cleanup();
 
-		die("[SIGINT] removing lockfile and exiting.\n");
+		exit(1);
 	}
 
 	function sigchld_handler($signal) {
@@ -108,6 +117,15 @@
 		_debug("[SIGCHLD] jobs left: $running_jobs");
 
 		pcntl_waitpid(-1, $status, WNOHANG);
+	}
+
+	pcntl_signal(SIGCHLD, 'sigchld_handler');
+
+	_debug("[MASTER] connection daemon initializing... (version " . VERSION . ")");
+
+	if (file_is_locked("update_daemon.lock")) {
+		die("error: Can't create lockfile. ".
+			"Maybe another daemon is already running.\n");
 	}
 
 	if (!pcntl_fork()) {
@@ -124,9 +142,6 @@
 		while (true) { sleep(100); }
 	}
 
-	pcntl_signal(SIGCHLD, 'sigchld_handler');
-	pcntl_signal(SIGINT, 'sigint_handler');
-
 	$link = db_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);	
 	init_connection($link);
 	db_query($link, "DELETE FROM ttirc_channels");
@@ -134,7 +149,12 @@
 
 	cleanup();
 
+
+	_debug("[MASTER] daemon initialized. entering main loop.");
+
 	while (true) {
+
+//		_debug("[MASTER] spawn interval elapsed, checking for connection requests...");
 
 		if ($last_checkpoint + SPAWN_INTERVAL < time()) {
 
@@ -148,7 +168,7 @@
 	
 			db_query($link, "UPDATE ttirc_system SET value = NOW() WHERE
 				key = 'MASTER_HEARTBEAT'");
-
+	
 			check_children($link);
 
 			$result = db_query($link, "SELECT ttirc_connections.id 
@@ -170,8 +190,6 @@
 				}
 	
 				if (!$child_exists) {
-					_debug("launching connection " . $line["id"]);
-
 					array_push($ids_to_launch, $line["id"]);
 				}
 			}
@@ -190,7 +208,9 @@
 					$child["id"] = $id;
 					$child["pid"] = $pid;
 
-					array_push($children, $child);
+					$children[$id] = $child;
+
+					//array_push($children, $child);
 
 				} else {
 					pcntl_signal(SIGCHLD, SIG_IGN);
@@ -210,16 +230,14 @@
 
 					db_close($link);
 
-					//system("./handle.php $id");
 					pcntl_exec("./handle.php", array($id));
 
 					die;
 				}
 
 			}
-
-		} else {
-			sleep(1);
 		}
+
+		sleep(1);
 	} 
 ?>

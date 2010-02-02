@@ -363,6 +363,12 @@ ul.sub-tabs {
 	margin : 10px;
 }
 
+div#errorBox div#xebBtn {
+	text-align : center;
+	clear : both;
+	margin-bottom : 5px;
+}
+
 div#errorBox div#xebTitle {
 	background-color : #ff0000;
 	color : white;

@@ -92,9 +92,11 @@
 
 <div id="errorBoxShadow" style="display : none">
 	<div id="errorBox">
-	<div id="xebTitle"><?php echo __('Fatal Exception') ?></div><div id="xebContent">&nbsp;</div>
-		<div id="xebBtn" align='center'>
-			<button onclick="closeErrorBox()"><?php echo __('Close this window') ?></button>
+		<div id="xebTitle"><?php echo __('Fatal Exception') ?></div>
+		<div id="xebContent">&nbsp;</div>
+		<div id='xebBtn'>
+			<button onclick="window.location.reload()">
+				<?php echo __('Try again') ?></button>
 		</div>
 	</div>
 </div>

@@ -207,7 +207,6 @@ function fatal_error(code, msg, ext_info) {
 	
 				Element.show("dialog_overlay");
 				Element.show("errorBoxShadow");
-				Element.hide("xebBtn");
 
 				if (ext_info) {
 					if (ext_info.responseText) {

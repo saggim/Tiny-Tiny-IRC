@@ -286,6 +286,8 @@ class Connection extends Yapircl {
 
 		$this->push_message('---', $channel, $message, MSGT_EVENT);
 
+		_debug("update_nicklist : $channel *");
+
 		$this->update_nicklist($channel);
 		$this->request_userhost($this->nick);
 
@@ -670,10 +672,11 @@ class Connection extends Yapircl {
 
 		$tmp = array();
 
-		foreach ($nicks as $nick) {
-			array_push($tmp, $this->to_utf($nick));
+		if (is_array($nicks)) {
+			foreach ($nicks as $nick) {
+				array_push($tmp, $this->to_utf($nick));
+			}
 		}
-
 		return $tmp;
 	}
 

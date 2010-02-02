@@ -61,7 +61,7 @@ function db_query($link, $query, $die_on_error = true) {
 		if (!$result) {
 			$query = htmlspecialchars($query); // just in case
 			if ($die_on_error) {
-				die("Query <i>$query</i> failed [$result]: " . pg_last_error($link));			
+				die("Query <i>$query</i> failed [$result]: " . pg_last_error($link) . "\n");			
 			}
 		}
 		return $result;
@@ -70,7 +70,7 @@ function db_query($link, $query, $die_on_error = true) {
 		if (!$result) {
 			$query = htmlspecialchars($query);
 			if ($die_on_error) {
-				die("Query <i>$query</i> failed: " . mysql_error($link));
+				die("Query <i>$query</i> failed: " . mysql_error($link) . "\n");
 			}
 		}
 		return $result;
