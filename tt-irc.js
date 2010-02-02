@@ -1,4 +1,4 @@
-var window_active = false;
+var window_active = true;
 var last_id = 0;
 var last_old_id = 0;
 var new_messages = 0;
