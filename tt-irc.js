@@ -1684,7 +1684,7 @@ function find_tab(connection_id, channel) {
 
 		debug("find_tab : " + connection_id + ";" + channel);
 
-		if (channel != "---") {
+		if (channel == "---") {
 			return $("tab-" + connection_id);
 		} else {
 			if (connection_id) {
