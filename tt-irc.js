@@ -1272,7 +1272,8 @@ function push_message(connection_id, channel, message, message_type) {
 					var tmp_html = format_message(li_classes[chan], message, connection_id);
 					buffers[connection_id][chan].push(tmp_html);
 
-					highlight_tab_if_needed(connection_id, channel, message);
+//					highlight_tab_if_needed(connection_id, 
+//						tabs[i].getAttribute("channel"), message);
 				}
 			}
 		}
@@ -1678,6 +1679,8 @@ function is_highlight(connection_id, message) {
 function highlight_tab_if_needed(connection_id, channel, message) {
 	try {
 		var tab = find_tab(connection_id, channel);
+
+		debug("highlight_tab_if_needed " + connection_id + " " + channel);
 
 		if (message.id <= last_old_id) return;
 
