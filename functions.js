@@ -268,7 +268,7 @@ function show_spinner() {
 		Element.show($("spinner"));
 		++spinner_refs;
 
-		debug("show_spinner " + spinner_refs);
+//		debug("show_spinner " + spinner_refs);
 
 	} catch (e) {
 		exception_error("show_spinner", e);
@@ -278,7 +278,7 @@ function show_spinner() {
 function hide_spinner() {
 	try {
 
-		debug("hide_spinner " + spinner_refs);
+//		debug("hide_spinner " + spinner_refs);
 
 		if (spinner_refs > 0) spinner_refs--;
 		

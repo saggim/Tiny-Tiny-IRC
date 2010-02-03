@@ -617,8 +617,8 @@
 			FROM ttirc_messages, ttirc_connections WHERE
 			connection_id = ttirc_connections.id AND
 			message_type != ".MSGT_COMMAND." AND
-			((ts > NOW() - INTERVAL '5 minutes' AND 
-				message_type = ".MSGT_PRIVMSG.") OR
+			((ts > NOW() - INTERVAL '35 minutes' AND 
+				message_type != ".MSGT_PRIVATE_PRIVMSG.") OR
 			(ts > NOW() - INTERVAL '5 hours' AND 
 				message_type = ".MSGT_PRIVATE_PRIVMSG.")) AND
 			ttirc_messages.id > '$last_id' AND 

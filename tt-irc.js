@@ -1703,7 +1703,7 @@ function find_tab(connection_id, channel) {
 	try {
 		var tabs;
 
-		debug("find_tab : " + connection_id + ";" + channel);
+//		debug("find_tab : " + connection_id + ";" + channel);
 
 		if (channel == "---") {
 			return $("tab-" + connection_id);
