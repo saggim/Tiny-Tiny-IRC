@@ -1355,17 +1355,16 @@ function show_preview(img) {
 
 		var vp = document.viewport.getDimensions();
 
-		var max_width = vp.width/2;
+		var max_width = vp.width/1.5;
+		var max_height = vp.height/1.5;
 
 		if (img.width > max_width) {
 			img.height *= (max_width / img.width);
 			img.width = max_width;
 		}
 
-		var max_height = vp.height/2;
-
 		if (img.height > max_height) {
-			img.height *= (max_height / img.height);
+			img.width *= (max_height / img.height);
 			img.height = max_height;
 		}
 
