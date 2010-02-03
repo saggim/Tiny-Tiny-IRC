@@ -144,13 +144,18 @@
 		$last_id = (int) db_escape_string($_REQUEST["last_id"]);
 		$chan = db_escape_string($_REQUEST["chan"]);
 		$connection_id = db_escape_string($_REQUEST["connection"]);
+		$tab_type = db_escape_string($_REQUEST["tab_type"]);
 
 		if ($message && valid_connection($link, $connection_id)) {
 			if (strpos($message, "/") === 0) {
 				handle_command($link, $connection_id, $chan, $message);
 			} else {
 
-				push_message($link, $connection_id, $chan, $message);
+				if ($tab_type == "P")
+					push_message($link, $connection_id, $chan, $message, false, 
+						MSGT_PRIVATE_PRIVMSG);
+				else
+					push_message($link, $connection_id, $chan, $message);
 
 /*				$lines = explode("\n", wordwrap($message, 200, "\n"));
 
