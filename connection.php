@@ -284,7 +284,7 @@ class Connection extends Yapircl {
 		$message = sprintf("JOIN:%s:%s", $this->nick, 
 			$this->user . '@' . $this->host);
 
-		$this->push_message('---', $channel, $message, MSGT_EVENT);
+		$this->push_message($this->nick, $channel, $message, MSGT_EVENT);
 
 		$this->update_nicklist($channel);
 		$this->request_userhost($this->nick);
@@ -303,7 +303,7 @@ class Connection extends Yapircl {
 
 		$message = sprintf("QUIT:%s:%s",$this->nick, $quit_msg);
 
-		$this->push_message('---', '---', $message, MSGT_EVENT);
+		$this->push_message($this->nick, '---', $message, MSGT_EVENT);
 
 		unset($this->userhosts[$this->nick]);
 
@@ -324,7 +324,7 @@ class Connection extends Yapircl {
 
 		//$message = sprintf("%s is now known as %s", $this->nick, $new_nick);
 
-		$this->push_message('---', '---', 
+		$this->push_message($this->nick, '---', 
 			"NICK:" . $this->nick . ":$new_nick", MSGT_EVENT);
 
 		$this->userhosts[$new_nick] = $this->userhosts[$this->nick];

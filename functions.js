@@ -1,4 +1,5 @@
 var hotkeys_enabled = false;
+var spinner_refs = 0;
 
 /* add method to remove element from array */
 
@@ -265,6 +266,10 @@ function close_infobox(cleanup) {
 function show_spinner() {
 	try {
 		Element.show($("spinner"));
+		++spinner_refs;
+
+		debug("show_spinner " + spinner_refs);
+
 	} catch (e) {
 		exception_error("show_spinner", e);
 	}
@@ -272,7 +277,14 @@ function show_spinner() {
 
 function hide_spinner() {
 	try {
-		Element.hide($("spinner"));
+
+		debug("hide_spinner " + spinner_refs);
+
+		if (spinner_refs > 0) spinner_refs--;
+		
+		if (!spinner_refs) 
+			Element.hide($("spinner"));
+
 	} catch (e) {
 		exception_error("hide_spinner", e);
 	}

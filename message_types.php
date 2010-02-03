@@ -7,6 +7,7 @@
 	define('MSGT_PRIVATE_PRIVMSG', 5);
 	define('MSGT_EVENT', 6);
 	define('MSGT_NOTICE', 7);
+	define('MSGT_SYSTEM', 8);
 
 	define('CS_DISCONNECTED', 0);
 	define('CS_CONNECTING', 1);

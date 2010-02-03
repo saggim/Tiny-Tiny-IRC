@@ -24,6 +24,7 @@ var MSGT_TOPIC = 4;
 var MSGT_PRIVATE_PRIVMSG = 5;
 var MSGT_EVENT = 6;
 var MSGT_NOTICE = 7;
+var MSGT_SYSTEM = 8;
 
 var CS_DISCONNECTED = 0;
 var CS_CONNECTING = 1;
@@ -508,7 +509,7 @@ function update_buffer() {
 				break;
 			case "1":
 				$('connect-btn').innerHTML = __("Connecting...");
-				$('connect-btn').disabled = true;
+				$('connect-btn').disabled = false;
 				$('connect-btn').setAttribute("set_enabled", 0);
 				break;
 			case "2":
@@ -553,7 +554,9 @@ function change_topic(elem, evt) {
 				"&last_id=" + last_id;
 	
 			debug(query);
-	
+
+			show_spinner();
+
 			new Ajax.Request("backend.php", {
 			parameters: query,
 			onComplete: function (transport) {
@@ -651,7 +654,7 @@ function change_tab(elem) {
 function toggle_connection(elem) {
 	try {
 
-		elem.disabled = true;
+//		elem.disabled = true;
 
 		var query = "?op=toggle-connection&set_enabled=" + 
 			param_escape(elem.getAttribute("set_enabled")) + 
@@ -659,10 +662,12 @@ function toggle_connection(elem) {
 
 		debug(query);
 
+		show_spinner();
+
 		new Ajax.Request("backend.php", {
 		parameters: query, 
 		onComplete: function (transport) {
-			delay = 500;
+			hide_spinner();
 		} });
 
 	} catch (e) {
@@ -724,7 +729,7 @@ function format_message(row_class, param, connection_id) {
 				"<span class='message'>" + 
 				param.message + "</span>";
 
-		} else if (param.sender != "---") {
+		} else if (param.sender != "---" && param.message_type != MSGT_SYSTEM) {
 
 			if (is_hl) row_class += "HL";
 
@@ -1035,7 +1040,7 @@ function handle_event(li_class, connection_id, line) {
 	try {
 		var params = line.message.split(":", 3);
 
-		debug("handle_event " + params);
+		debug("handle_event " + params[0]);
 
 		switch (params[0]) {
 		case "TOPIC":
@@ -1108,6 +1113,7 @@ function handle_event(li_class, connection_id, line) {
 			line.message = __("%u (%h) has joined %c").replace("%u", nick);
 			line.message = line.message.replace("%c", line.channel);
 			line.message = line.message.replace("%h", host);
+			line.message_type = MSGT_SYSTEM;
 
 			push_message(connection_id, line.channel, line, MSGT_PRIVMSG);
 
@@ -1118,6 +1124,7 @@ function handle_event(li_class, connection_id, line) {
 
 			line.message = __("%u has quit IRC (%s)").replace("%u", nick);
 			line.message = line.message.replace("%s", quit_msg);
+			line.message_type = MSGT_SYSTEM;
 
 			push_message(connection_id, '---', line, MSGT_BROADCAST);
 			break;
@@ -1146,7 +1153,7 @@ function handle_event(li_class, connection_id, line) {
 			line.message = __("Ping reply from %u: %d second(s).").replace("%u", 
 					line.sender);
 			line.message = line.message.replace("%d", args);
-			line.sender = '---';
+			line.message_type = MSGT_SYSTEM;
 
 			push_message(connection_id, '---', line, MSGT_BROADCAST);
 			break;
@@ -1174,7 +1181,7 @@ function handle_event(li_class, connection_id, line) {
 
 			line.message = __("Received ping (%s) from %u").replace("%s", args);
 			line.message = line.message.replace("%u", line.sender);
-			line.sender = '---';
+			line.message_type = MSGT_SYSTEM;
 
 			push_message(connection_id, '---', line, MSGT_BROADCAST);
 			break;
@@ -1194,6 +1201,7 @@ function handle_event(li_class, connection_id, line) {
 
 			line.message = __("%u is now known as %n").replace("%u", old_nick);
 			line.message = line.message.replace("%n", new_nick);
+			line.message_type = MSGT_SYSTEM;
 
 			push_message(connection_id, '---', line, MSGT_BROADCAST);
 
@@ -1366,7 +1374,9 @@ function show_preview(img) {
 		$("image-preview").style.width = dp.width;
 		$("image-preview").style.height = dp.height;
 
-		new Effect.Appear("image-preview");
+		//Effect.Appear("image-preview");
+
+		Element.show("image-preview");
 
 	} catch (e) {
 		exception_error("show_preview", e);
