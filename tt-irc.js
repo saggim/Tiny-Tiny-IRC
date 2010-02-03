@@ -1155,22 +1155,23 @@ function handle_event(li_class, connection_id, line) {
 			line.message = line.message.replace("%d", args);
 			line.message_type = MSGT_SYSTEM;
 
-			push_message(connection_id, '---', line, MSGT_BROADCAST);
-			break;
-		case "NOTICE":
-			var message = params[1];
 			var tab = get_selected_tab();
 
 			if (!tab) get_all_tabs()[0];
 
 			if (tab) {
 				var chan = tab.getAttribute("channel");
-
-				line.message = message;
-				line.message_type = MSGT_NOTICE;
-
-				//push_message(connection_id, chan, line);
+				line.channel = chan;
 			}
+
+			push_message(connection_id, line.channel, line);
+			break;
+		case "NOTICE":
+			var message = params[1];
+			var tab = get_selected_tab();
+
+			line.message = message;
+			line.message_type = MSGT_NOTICE;
 
 			push_message(connection_id, line.sender, line);
 
