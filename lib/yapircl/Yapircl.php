@@ -614,6 +614,9 @@ class Yapircl
 
         $this->_event = $event;
 
+        // check for method which is called BEFORE the built-in one
+        $this->_tryCallback('event_before_' . $event);
+
         // first check for an internal _event_* callback
         $this->_tryCallback('_event_' . $event);
         // then check for a userscript event_* callback

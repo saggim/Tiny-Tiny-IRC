@@ -1119,14 +1119,13 @@ function handle_event(li_class, connection_id, line) {
 
 			break;
 		case "QUIT":
-			var nick = params[1];
-			var quit_msg = params[2];
+			var quit_msg = params[1];
 
-			line.message = __("%u has quit IRC (%s)").replace("%u", nick);
+			line.message = __("%u has quit IRC (%s)").replace("%u", line.sender);
 			line.message = line.message.replace("%s", quit_msg);
 			line.message_type = MSGT_SYSTEM;
 
-			push_message(connection_id, '---', line, MSGT_BROADCAST);
+			push_message(connection_id, line.channel, line, MSGT_PRIVMSG);
 			break;
 		case "DISCONNECT":
 			line.message = __("Connection terminated.");
@@ -1192,38 +1191,18 @@ function handle_event(li_class, connection_id, line) {
 			push_message(connection_id, '---', line);
 			break;
 		case "NICK":
-			var old_nick = params[1];
-			var new_nick = params[2];
-			var tabs = get_all_tabs();
+			var new_nick = params[1];
 
-			if (buffers[connection_id] && buffers[connection_id][old_nick]) {
-				buffers[connection_id][new_nick] = buffers[connection_id][old_nick];
+			if (buffers[connection_id] && buffers[connection_id][line.sender]) {
+				buffers[connection_id][new_nick] = buffers[connection_id][line.sender];
 			}
 
-			line.message = __("%u is now known as %n").replace("%u", old_nick);
+			line.message = __("%u is now known as %n").replace("%u", line.sender);
 			line.message = line.message.replace("%n", new_nick);
 			line.message_type = MSGT_SYSTEM;
 
-			push_message(connection_id, '---', line, MSGT_BROADCAST);
+			push_message(connection_id, line.channel, line, MSGT_PRIVMSG);
 
-/*			for (var b in buffers[connection_id]) {
-				if (typeof buffers[connection_id][b] == 'object') {
-					buffers[connection_id][b].push(tmp_html);
-				}
-			} */
-
-/*			for (var i = 0; i < tabs.length; i++) {
-				var tab_conn = tabs[i].getAttribute("connection_id");
-				var tab_chan = tabs[i].getAttribute("channel");
-
-				if (tab_conn == connection_id && tab_chan == old_nick) {
-					debug("renaming query tab " + tab_chan + " to " + new_nick);
-					tabs[i].setAttribute("channel", new_nick);
-					tabs[i].innerHTML = "&nbsp;&nbsp;" + new_nick;
-					tabs[i].id = "tab-" + new_nick + ":" + connection_id;
-					buffers[connection_id][new_nick] = buffers[connection_id][tab_chan];
-				}
-			} */
 			break; 
 		}
 

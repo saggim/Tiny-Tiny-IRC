@@ -291,7 +291,9 @@ class Connection extends Yapircl {
 
 	}
 
-	function event_quit() {
+	function event_before_quit() {
+
+		$this->_putUser($this->_xline[0]);
 
 		$quit_msg = "";
 
@@ -301,17 +303,37 @@ class Connection extends Yapircl {
 
 		$quit_msg = ltrim($quit_msg);
 
-		$message = sprintf("QUIT:%s:%s",$this->nick, $quit_msg);
+		$message = sprintf("QUIT:%s", $quit_msg);
 
-		$this->push_message($this->nick, '---', $message, MSGT_EVENT);
+		foreach ($this->channels as $key => $value) {
+			if ($this->channels[$key][$this->nick]) {
+				$this->push_message($this->nick, $key, $message, MSGT_EVENT);
+			}
+		}
 
-		unset($this->userhosts[$this->nick]);
+	}
 
+	function event_quit() {
 		$this->update_nicklist(false);
 		$this->update_userhosts();
 
+		unset($this->userhosts[$this->nick]);
+	}
+
+	function event_before_nick() {
+		$this->_putUser($this->_xline[0]);
+
+		$new_nick = ltrim($this->_xline[2], ':'); 
+
+		foreach ($this->channels as $key => $value) {
+			if ($this->channels[$key][$this->nick]) {
+				$this->push_message($this->nick, $key, 
+					"NICK:$new_nick", MSGT_EVENT);
+			}
+		}
 
 	}
+
 
 	function event_nick() {
 
@@ -322,16 +344,9 @@ class Connection extends Yapircl {
 			$this->update_nick();
 		}
 
-		//$message = sprintf("%s is now known as %s", $this->nick, $new_nick);
-
-		$this->push_message($this->nick, '---', 
-			"NICK:" . $this->nick . ":$new_nick", MSGT_EVENT);
-
 		$this->userhosts[$new_nick] = $this->userhosts[$this->nick];
 
 		unset($this->userhosts[$this->nick]);
-
-		//$this->push_message('---', '---', $message, MSGT_BROADCAST);
 
 		$old_nick_utf = $this->to_utf($this->nick);
 		$new_nick_utf = $this->to_utf($new_nick);
@@ -340,10 +355,10 @@ class Connection extends Yapircl {
 			channel = '$new_nick_utf' WHERE channel = '$old_nick_utf' AND
 			chan_type = ".CT_PRIVATE." AND connection_id = " . $this->connection_id);
 
-		db_query($this->link, "UPDATE ttirc_messages SET
+/*		db_query($this->link, "UPDATE ttirc_messages SET
 			channel = '$new_nick_utf', sender = '$new_nick_utf' 
 			WHERE channel = '$old_nick_utf' AND
-			connection_id = " . $this->connection_id);
+			connection_id = " . $this->connection_id); */
 
 		$this->update_nicklist(false);
 		$this->update_userhosts();
