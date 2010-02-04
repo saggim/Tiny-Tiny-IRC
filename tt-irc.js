@@ -453,7 +453,7 @@ function update_buffer() {
 			var topic = topics[connection_id][channel];
 	
 			if (topic) {
-				if ($("topic-input").value != topics[connection_id][channel][0]) {
+				if ($("topic-input").title != topics[connection_id][channel][0]) {
 					$("topic-input").value = topics[connection_id][channel][0];
 				}
 
@@ -545,12 +545,15 @@ function change_topic(elem, evt) {
 			if (!tab) return;
 	
 			var channel = tab.getAttribute("channel");
+			var connection_id = tab.getAttribute("connection_id")
 	
 			if (tab.getAttribute("tab_type") == "S") channel = "---";
 
+			topics[connection_id][channel] = elem.value;
+
 			var query = "?op=set-topic&topic=" + param_escape(elem.value) + 
 				"&chan=" + param_escape(channel) +			
-				"&connection=" + param_escape(tab.getAttribute("connection_id")) +
+				"&connection=" + param_escape(connection_id) +
 				"&last_id=" + last_id;
 	
 			debug(query);
