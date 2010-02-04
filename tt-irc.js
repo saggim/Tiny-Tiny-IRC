@@ -560,7 +560,7 @@ function change_topic(elem, evt) {
 			new Ajax.Request("backend.php", {
 			parameters: query,
 			onComplete: function (transport) {
-				elem.value = '';
+				hide_spinner();
 				handle_update(transport);
 			} });
 		}
