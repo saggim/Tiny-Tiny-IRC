@@ -132,7 +132,8 @@
 
 		cleanup();
 
-		posix_kill($pid, 2);
+		posix_kill($lock_pid, 2);
+		pcntl_waitpid($lock_pid);
 
 		unlink(LOCK_DIRECTORY . "/" . LOCK_FILE_NAME);
 
