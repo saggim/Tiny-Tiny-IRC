@@ -1540,26 +1540,46 @@ function hotkey_handler(e) {
 			var tab = get_selected_tab();
 
 			var elem = $("input-prompt");
+			var str = elem.value;
+			var comp_str = str;
 
 			elem.focus();
 
-			if (elem.value.length == 0) return false;
+			if (str.length == 0) return false;
 
+			if (str.lastIndexOf(" ") != -1) {
+				comp_str = str.substring(str.lastIndexOf(" ")+1);
+			}
+
+//			debug("COMP STR [" + comp_str + "]");
+		
 			if (tab) {
 
 				var nicks = get_nick_list(tab.getAttribute("connection_id"),
 							tab.getAttribute("channel"));
 	
+				var r = new RegExp(comp_str + "$");
+
 				for (var i = 0; i < nicks.length; i++) {
-					if (nicks[i].match("^" + elem.value)) {
-						elem.value = nicks[i] + ": ";
+					if (nicks[i].match("^" + comp_str)) {
+
+						if (str == comp_str) {
+							str = str.replace(r, nicks[i] + ": ");
+						} else {
+							str = str.replace(r, nicks[i]);
+						}
+
+						elem.value = str;
 						return false;
 					}
 				}
 
 				for (var i = 0; i < commands.length; i++) {
-					if (commands[i].match("^" + elem.value)) {
-						elem.value = commands[i] + " ";
+					if (commands[i].match("^" + comp_str)) {
+
+						str = str.replace(r, commands[i] + " ");
+						elem.value = str;
+
 						return false;
 					}
 				}
