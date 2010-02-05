@@ -19,19 +19,41 @@ public class Master {
 	 */
 	public static void main(String[] args) {
 		
-		Master m = new Master();	
-
-		if (args.length > 0 && args[0].equals("-configure")) {
-			m.Configure();
-		}
+		Master m = new Master(args);	
 
 		m.Run();				
 	}	
 	
-	public Master() {
+	public Master(String[] args) {
 		this.prefs = Preferences.userNodeForPackage(getClass());
 		this.active = true;
 		this.connections = new Hashtable<Integer, ConnectionHandler>(10,10);
+
+		String prefs_node = "";
+		boolean need_configure = false;
+		boolean show_help = false;
+		
+		for (int i = 0; i < args.length; i++) {
+			String arg = args[i];
+			
+			if (arg.equals("-help")) show_help = true;
+			if (arg.equals("-node")) prefs_node = args[i+1]; 
+			if (arg.equals("-configure")) need_configure = true;
+		}
+		
+		if (show_help) {
+			System.out.println("Available options:");
+			System.out.println("==================");
+			System.out.println("     -help        - Show this help");
+			System.out.println("     -node        - Use custom preferences node");
+			System.out.println("     -configure   - Force change configuration");
+			System.exit(0);
+		}
+		
+		if (prefs_node.length() > 0) {
+			System.out.println("Using custom preferences node: " + prefs_node);
+			prefs = prefs.node(prefs_node);
+		}
 		
 		try {
 			Class.forName("org.postgresql.Driver");
@@ -41,7 +63,7 @@ public class Master {
 			System.exit(1);			
 		}
 		
-		if (!prefs.getBoolean("CONFIGURED", false)) {
+		if (!prefs.getBoolean("CONFIGURED", false) || need_configure) {
 			Configure();
 		}
 		
