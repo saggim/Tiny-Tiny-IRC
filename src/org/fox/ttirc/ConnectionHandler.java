@@ -3,19 +3,31 @@ package org.fox.ttirc;
 public class ConnectionHandler extends Thread {
 	
 	protected int connectionId;
-	Master master;
+	protected Master master;
+	protected Process proc;
 	
 	public ConnectionHandler(int connectionId, Master master) {
 		this.connectionId = connectionId;
 		this.master = master;
 	}
-		
+	
+	public void kill() {
+		proc.destroy();
+	}
+	
 	public void run() {
 		try {
 			
-			Runtime.getRuntime().exec("./handle.php " + connectionId);
+			proc = Runtime.getRuntime().exec("./handle.php " + connectionId);
+			
+			proc.waitFor();
+			
+			System.err.println("Exit value = " + proc.exitValue());
+			
+			System.out.println("[" + connectionId + "] Connection terminated.");
+
 		} catch (Exception e) {
-			System.out.println(e);
+			System.err.println(e);
 		}
 	}
 

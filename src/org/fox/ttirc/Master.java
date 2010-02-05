@@ -1,6 +1,7 @@
 package org.fox.ttirc;
 
-import java.lang.Thread.State;
+import java.io.*;
+import java.lang.Thread.*;
 import java.sql.*;
 import java.util.*;
 import java.util.prefs.Preferences;
@@ -10,29 +11,27 @@ public class Master {
 	protected Connection conn;
 	protected Preferences prefs;
 	protected boolean active;
-	protected Hashtable connections;
+	protected Hashtable<Integer, ConnectionHandler> connections;
+	protected int idleTimeout = 1000;
 		
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		Master m = new Master();
 		
+		Master m = new Master();	
+
+		if (args.length > 0 && args[0].equals("-configure")) {
+			m.Configure();
+		}
+
 		m.Run();				
-	}
+	}	
 	
 	public Master() {
 		this.prefs = Preferences.userNodeForPackage(getClass());
 		this.active = true;
 		this.connections = new Hashtable<Integer, ConnectionHandler>(10,10);
-		
-		/*System.out.println("Initializing prefs...");
-		
-		prefs.put("DB_HOST", "naboo.lan");
-		prefs.put("DB_USER", "fox");
-		prefs.put("DB_PASS", "xxx");
-		prefs.put("DB_NAME", "fox");		
-		prefs.put("DB_PORT", "5432");*/
 		
 		try {
 			Class.forName("org.postgresql.Driver");
@@ -41,7 +40,11 @@ public class Master {
 			e.printStackTrace();
 			System.exit(1);			
 		}
-				
+		
+		if (!prefs.getBoolean("CONFIGURED", false)) {
+			Configure();
+		}
+		
 		String DB_HOST = prefs.get("DB_HOST", "localhost");
 		String DB_USER = prefs.get("DB_USER", "user");
 		String DB_PASS = prefs.get("DB_PASS", "pass");
@@ -71,6 +74,54 @@ public class Master {
 		}
 	}
 	
+	public void Configure() {
+		System.out.println("Database configuration");
+		System.out.println("======================");
+		
+		InputStreamReader input = new InputStreamReader(System.in);
+		BufferedReader reader = new BufferedReader(input); 
+		String in;
+		boolean configured = false;
+
+		try {
+		
+			while (!configured) {
+			
+				System.out.print("Database host: ");
+				in = reader.readLine();
+				prefs.put("DB_HOST", in);
+
+				System.out.print("Database port: ");
+				in = reader.readLine();
+				prefs.put("DB_PORT", in);
+
+				System.out.print("Database name: ");
+				in = reader.readLine();
+				prefs.put("DB_NAME", in);
+
+				System.out.print("Database user: ");
+				in = reader.readLine();
+				prefs.put("DB_USER", in);
+
+				System.out.print("Database password: ");
+				in = reader.readLine();
+				prefs.put("DB_PASS", in);
+
+				System.out.print("Done? [Y/N] ");
+				in = reader.readLine();
+				
+				configured = in.equalsIgnoreCase("Y");				
+			}			
+	
+			prefs.putBoolean("CONFIGURED", true);
+			
+			System.out.println("Data saved. Please use -configure switch to change it later.");
+			
+		} catch (IOException e) {
+			System.out.println(e);
+		}
+	}
+	
 	public void Cleanup() throws SQLException {
 		
 		Statement st = conn.createStatement();
@@ -94,6 +145,35 @@ public class Master {
 
 	public void CheckConnections() throws SQLException {
 		Statement st = conn.createStatement();
+
+		Enumeration<Integer> e = connections.keys();
+		
+		while (e.hasMoreElements()) {
+			int connectionId = e.nextElement();	
+			
+    		ConnectionHandler ch = (ConnectionHandler) connections.get(connectionId);
+    		
+    		//System.out.println("Conn state: " + ch.getState());
+    		
+    		PreparedStatement ps = conn.prepareStatement("SELECT id FROM ttirc_connections WHERE id = ? " +
+    			"AND enabled = true");
+    		
+    		ps.setInt(1, connectionId);
+    		ps.execute();
+    		
+    		ResultSet rs = ps.getResultSet();
+    		
+    		if (!rs.next()) {
+    			System.out.println("Connection " + connectionId + " needs termination.");
+    			ch.kill();
+    		}
+    		
+    		if (ch.getState() == State.TERMINATED) {
+    			System.out.println("Connection " + connectionId + " terminated.");
+    			connections.remove(connectionId);
+    			CleanupConnection(connectionId);
+    		}			
+		}
 		
 	    st.execute("SELECT ttirc_connections.id " +
 	    		"FROM ttirc_connections, ttirc_users " +
@@ -103,7 +183,7 @@ public class Master {
 	    		"permanent = true) AND " +
 	    		"enabled = true");
 	
-	    ResultSet rs = st.getResultSet();
+	    ResultSet rs = st.getResultSet();	    
 	    
 	    while (rs.next()) {
 	    	int connectionId = rs.getInt(1);
@@ -113,14 +193,6 @@ public class Master {
 	    	   	ConnectionHandler ch = new ConnectionHandler(connectionId, this);
 	    	   	connections.put(connectionId, ch);
 	    	   	ch.start();
-	    	} else {
-	    		ConnectionHandler ch = (ConnectionHandler) connections.get(connectionId);
-	    		//System.out.println("Conn state: " + ch.getState());
-	    		if (ch.getState() == State.TERMINATED) {
-	    			System.out.println("Connection " + connectionId + " terminated.");
-	    			connections.remove(connectionId);
-	    			CleanupConnection(connectionId);
-	    		}
 	    	}
 	    }
 	}
@@ -186,7 +258,7 @@ public class Master {
 	public void Run() {
 		while (active) {
 			
-			System.out.println("Master::Run()");
+			//System.out.println("Master::Run()");
 			
 			try {
 	
@@ -198,7 +270,7 @@ public class Master {
 			}
 			
 			try {
-				Thread.sleep(1000);
+				Thread.sleep(idleTimeout);
 			} catch (InterruptedException e) {
 				//		
 			}
