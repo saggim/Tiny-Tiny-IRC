@@ -12,7 +12,7 @@ public class Master {
 	protected Preferences prefs;
 	protected boolean active;
 	protected Hashtable<Integer, ConnectionHandler> connections;
-	protected int idleTimeout = 1000;
+	protected int idleTimeout = 5000;
 		
 	/**
 	 * @param args
@@ -165,7 +165,11 @@ public class Master {
     		
     		if (!rs.next()) {
     			System.out.println("Connection " + connectionId + " needs termination.");
-    			ch.kill();
+    			try {
+    				ch.kill();
+    			} catch (Exception ee) {
+    				System.err.println(ee);
+    			}
     		}
     		
     		if (ch.getState() == State.TERMINATED) {
