@@ -38,7 +38,7 @@ var colormap = [ "#00CCCC", "#000000", "#0000CC", "#CC00CC", "#606060",
 	"red", "#909090", "teal", "#CCCC00" ]
 
 var commands = [ "/join", "/part", "/nick", "/query", "/quote", "/msg", 
-	 "/op", "/deop", "/voice", "/devoice", "/ping", "/notice" ];
+	 "/op", "/deop", "/voice", "/devoice", "/ping", "/notice", "/away" ];
 
 function create_tab_if_needed(chan, connection_id, tab_type) {
 	try {
@@ -500,6 +500,21 @@ function update_buffer() {
 		$("topic-input").title = $("topic-input").value;
 
 		$("nick").innerHTML = active_nicks[connection_id];
+
+		if (conndata_last && conndata_last[connection_id]) {
+			var nick = active_nicks[connection_id];
+
+			if (nick && conndata_last[connection_id]["userhosts"][nick]) {
+				
+				
+				if (conndata_last[connection_id]["userhosts"][nick][4] == true) {
+					$("nick").className = "away";
+				} else {
+					$("nick").className = "";
+				}
+			}
+
+		}
 
 		switch (conndata_last[connection_id].status) {
 			case "0":

@@ -732,3 +732,7 @@ button, input, select {
 .invisible {
 	display : none;
 }
+
+.away {
+	color : gray;
+}

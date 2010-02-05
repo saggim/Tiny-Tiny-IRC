@@ -110,6 +110,15 @@ class Connection extends Yapircl {
 			case "umode":
 				$this->usermode($this->_usednick, $arguments);
 				break;
+			case "away":
+				$this->sendBuf("AWAY :$arguments");
+
+				if ($this->userhosts[$this->_usednick]) {
+					$this->userhosts[$this->_usednick][5] = $this->to_utf($arguments);
+					$this->update_userhosts();
+				}
+
+				break;
 		}
 	}
 
@@ -547,6 +556,42 @@ class Connection extends Yapircl {
 			$this->connection_id);
 	}
 
+	function event_rpl_unaway() {
+		$nick = $this->_xline[2];
+
+		if ($this->userhosts[$nick]) {
+			$this->userhosts[$nick][4] = false;
+			$this->update_userhosts();
+		}
+	}
+
+	function event_rpl_awayreason() {
+		$nick = $this->_xline[2];
+
+		if ($this->userhosts[$nick]) {
+
+			$away_reason = "";
+
+			for ($i=4; $i < $this->_xline_sizeof; $i++) {
+				$away_reason .=  ' ' . $this->_xline[$i];
+			}
+
+			$away_reason = substr(ltrim($away_reason), 1);
+
+			$this->userhosts[$nick][5] = $this->to_utf($away_reason);
+			$this->update_userhosts();
+		}
+	}
+
+	function event_rpl_nowaway() {
+		$nick = $this->_xline[2];
+
+		if ($this->userhosts[$nick]) {
+			$this->userhosts[$nick][4] = true;
+			$this->update_userhosts();
+		}
+	}
+
 	function event_rpl_endofnames() {
 		$this->check_channel($this->_xline[3]);
 
@@ -612,7 +657,9 @@ class Connection extends Yapircl {
 			$this->to_utf($this->_xline[4]),
 			$this->to_utf($this->_xline[5]), 
 			$this->to_utf($this->_xline[6]), 
-			$this->to_utf($realname));
+			$this->to_utf($realname),
+			false,						/* away true/false */
+			'');							/* away reason */
 
 		$this->update_userhosts();
 	}

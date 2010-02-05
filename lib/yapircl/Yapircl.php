@@ -493,6 +493,7 @@ class Yapircl
             253 => 'RPL_LUSERUNKNOWN',
             254 => 'RPL_LUSERCHANNELS',
             255 => 'RPL_LUSERME',
+            301 => 'RPL_AWAYREASON',
             302 => 'RPL_USERHOST',
             303 => 'RPL_ISON',
             305 => 'RPL_UNAWAY',
