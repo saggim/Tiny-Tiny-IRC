@@ -157,7 +157,9 @@ class Connection extends Yapircl {
 					$channel = iconv("UTF-8", $this->encoding, $line["channel"]);
 
 					switch ($line["message_type"]) {
-					case 0:
+					case MSGT_PRIVMSG:
+					case MSGT_PRIVATE_PRIVMSG:
+
 						$msgs = explode("\n", wordwrap($message, 200, "\n"));
 
 						foreach ($msgs as $msg) {
@@ -165,9 +167,12 @@ class Connection extends Yapircl {
 						}
 
 						break;
-					case 1:
+					case MSGT_COMMAND:
 						list($cmd, $args) = explode(":", $message, 2);
 						$this->handle_command($cmd, $args, $channel);
+						break;
+					default:
+						_debug("unknown message type to send: " . $line["message_type"]);
 						break;
 					}
 					
