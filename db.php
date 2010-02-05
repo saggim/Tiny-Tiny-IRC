@@ -2,6 +2,29 @@
 
 require_once "config.php";
 
+function db_reconnect($link, $host, $user, $pass, $db) {
+	$attempts = 0;
+
+	while ($attempts < 10) {
+
+		if (!$link) $link = db_connect($host, $user, $pass, $db);
+
+		$result = db_query($link, "SELECT NOW()", false);
+
+		if (db_num_rows($result) == 1) {
+//			echo "[db] connection successful.\n";
+			return $link;
+		} else {
+//			echo "[db] connection failed; reconnect attempt $attempts.\n";
+			$link = false;
+			$attempts++;
+			sleep(1);
+		}
+	}
+
+	return false;
+}
+
 function db_connect($host, $user, $pass, $db) {
 	if (DB_TYPE == "pgsql") {	
 			  

@@ -5,11 +5,26 @@
 	require_once "db.php";
 	require_once "connection.php";
 
-	$link = db_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+	$connection_id = db_escape_string($argv[1]);
+	$lock_file_name = "handle.conn-$connection_id.lock";
+
+	if (file_is_locked($lock_file_name)) {
+		if (!$lock_handle) {
+			die("error: Can't create lockfile [$lock_file_name]. ".
+				"Maybe another daemon is already running.\n");
+		}
+	} else {
+		$lock_handle = make_lockfile($lock_file_name);
+
+		if (!$lock_handle) {
+			die("error: Can't create lockfile [$lock_file_name]. ".
+				"Maybe another daemon is already running.\n");
+		}
+	}
+
+	$link = db_reconnect($link, DB_HOST, DB_USER, DB_PASS, DB_NAME);
 
 	init_connection($link);
-
-	$connection_id = db_escape_string($argv[1]);
 
 	$result = db_query($link, "SELECT *,
 		ttirc_connections.nick AS local_nick, ttirc_users.nick AS nick
@@ -73,6 +88,8 @@
 				"Could not connect to server.", true);
 		}
 	}
+
+	unlink(LOCK_DIRECTORY . "/$lock_file_name");
 
 	db_close($link);
 ?>

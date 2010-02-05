@@ -18,6 +18,11 @@
 		$err_msg = "config: your config file version is incorrect. See config.php-dist.\n";
 	}
 
+	if (!is_dir(LOCK_DIRECTORY)) {
+		$err_msg = "config: LOCK_DIRECTORY doesn't exist or isn't a directory.\n";
+	}
+
+
 	if ($err_msg) {
 		print "<b>Fatal Error</b>: $err_msg\n";
 		exit;

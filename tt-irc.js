@@ -1483,7 +1483,7 @@ function hotkey_handler(e) {
 				for (var i = 0; i < tabs.length; i++) {
 					if (tabs[i] == tab) {
 						change_tab(tabs[i-1]);
-						return;
+						return false;
 					}
 				}
 			}
@@ -1501,7 +1501,7 @@ function hotkey_handler(e) {
 				for (var i = 0; i < tabs.length; i++) {
 					if (tabs[i] == tab) {
 						change_tab(tabs[i+1]);
-						return;
+						return false;
 					}
 				}
 			}

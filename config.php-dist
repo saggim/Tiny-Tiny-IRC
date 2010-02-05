@@ -30,7 +30,7 @@
 	// Operate in single user mode, disables all functionality related to
 	// multiple users.
 
-	define('LOCK_DIRECTORY', '/var/tmp');
+	define('LOCK_DIRECTORY', '/path/to/tt-irc/lock');
 	// Directory for lockfiles, must be writable to the user you run
 	// daemon process or cronjobs under.
 

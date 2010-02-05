@@ -5,11 +5,13 @@
 	require_once "connection.php";
 
 	define('SPAWN_INTERVAL', 5);
+	define('LOCK_FILE_NAME', "master-daemon.lock");
 
 	declare(ticks = 1);
 
 	$children = array();
 	$last_checkpoint = 0;	
+	$lock_pid = -1;
 
 	function check_children($link) {
 		global $children;
@@ -65,7 +67,7 @@
 			} else {
 				_debug("[SIGCHLD] child $pid died; cleaning up....");
 
-				$link = db_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);	
+				$link = db_reconnect($link, DB_HOST, DB_USER, DB_PASS, DB_NAME);	
 				init_connection($link);
 
 				push_message($link, $conn, "---", "DISCONNECT", true, MSGT_EVENT);
@@ -88,7 +90,7 @@
 		return count(array_keys($tmp));
 	}
 	function cleanup() {
-		$link = db_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);	
+		$link = db_reconnect($link, DB_HOST, DB_USER, DB_PASS, DB_NAME);	
 		init_connection($link);
 
 		db_query($link, "UPDATE ttirc_connections SET status = ".CS_DISCONNECTED.", 
@@ -103,11 +105,7 @@
 	}
 
 	function sigint_handler() {
-		_debug("[SIGINT] removing lockfile and exiting.");
-
-		unlink(LOCK_DIRECTORY . "/ttirc_master.lock");
-		cleanup();
-
+		_debug("[SIGINT] exiting.");
 		exit(1);
 	}
 
@@ -119,20 +117,46 @@
 		pcntl_waitpid(-1, $status, WNOHANG);
 	}
 
+	function shutdown_handler() {
+		global $lock_pid;
+		global $children;
+
+		_debug("[MASTER] shutdown handler: cleaning up...");
+
+		foreach (array_values($children) as $child) {
+			$pid = $child["pid"];
+			pcntl_kill($pid, 2);
+		}
+
+		sleep(3);
+
+		cleanup();
+
+		posix_kill($pid, 2);
+
+		unlink(LOCK_DIRECTORY . "/" . LOCK_FILE_NAME);
+
+		_debug("[MASTER] shutdown handler: done.");
+	}
+
+	register_shutdown_function("shutdown_handler");
+
 	pcntl_signal(SIGCHLD, 'sigchld_handler');
 
 	_debug("[MASTER] connection daemon initializing... (version " . VERSION . ")");
 
-	if (file_is_locked("update_daemon.lock")) {
+	if (file_is_locked(LOCK_FILE_NAME)) {
 		die("error: Can't create lockfile. ".
 			"Maybe another daemon is already running.\n");
 	}
 
-	if (!pcntl_fork()) {
+	$lock_pid = pcntl_fork();
+
+	if (!$lock_pid) {
 		pcntl_signal(SIGINT, 'sigint_handler');
 
 		// Try to lock a file in order to avoid concurrent update.
-		$lock_handle = make_lockfile("update_daemon.lock");
+		$lock_handle = make_lockfile(LOCK_FILE_NAME);
 
 		if (!$lock_handle) {
 			die("error: Can't create lockfile. ".
@@ -140,15 +164,16 @@
 		}
 
 		while (true) { sleep(100); }
+	} else {
+		_debug("[MASTER] spawned lock process [PID:$lock_pid]");
 	}
 
-	$link = db_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);	
+	$link = db_reconnect($link, DB_HOST, DB_USER, DB_PASS, DB_NAME);	
 	init_connection($link);
 	db_query($link, "DELETE FROM ttirc_channels");
 	db_close($link);
 
 	cleanup();
-
 
 	_debug("[MASTER] daemon initialized. entering main loop.");
 
@@ -160,7 +185,7 @@
 
 			$last_checkpoint = time();
 
-			$link = db_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);	
+			$link = db_reconnect($link, DB_HOST, DB_USER, DB_PASS, DB_NAME);	
 			init_connection($link);
 
 			db_query($link, "UPDATE ttirc_system SET value = 'true' WHERE
@@ -216,7 +241,7 @@
 					pcntl_signal(SIGCHLD, SIG_IGN);
 					pcntl_signal(SIGINT, SIG_DFL);
 
-					$link = db_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);	
+					$link = db_reconnect($link, DB_HOST, DB_USER, DB_PASS, DB_NAME);	
 					init_connection($link);
 
 					db_query($link, "UPDATE ttirc_connections SET

@@ -474,6 +474,7 @@
 		$fp = fopen(LOCK_DIRECTORY . "/$filename", "w");
 
 		if (flock($fp, LOCK_EX | LOCK_NB)) {		
+			fwrite($fp, posix_getpid() . "\n");
 			return $fp;
 		} else {
 			return false;
