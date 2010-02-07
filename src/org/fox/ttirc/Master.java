@@ -160,13 +160,16 @@ public class Master {
       	st.execute("UPDATE ttirc_system SET value = 'false' WHERE " +
       		"key = 'MASTER_RUNNING'");
 	
+      	st.close();
 	}
 	
 	public void updateHeartbeat() throws SQLException {
 		Statement st = conn.createStatement();
 		
 		st.execute("UPDATE ttirc_system SET value = 'true' WHERE key = 'MASTER_RUNNING'");
-		st.execute("UPDATE ttirc_system SET value = NOW() WHERE key = 'MASTER_HEARTBEAT'");	
+		st.execute("UPDATE ttirc_system SET value = NOW() WHERE key = 'MASTER_HEARTBEAT'");
+		
+		st.close();
 	}
 
 	public void checkConnections() throws SQLException {
@@ -256,8 +259,6 @@ public class Master {
 		}
 		
 		if (fromNick.length() != 0) nick = fromNick;
-
-		//push_message($link, $conn, "---", "DISCONNECT", true, MSGT_EVENT);
 		
 		PreparedStatement ps = conn.prepareStatement("INSERT INTO ttirc_messages " +
 				"(incoming, connection_id, channel, sender, message, message_type) " +
@@ -274,13 +275,20 @@ public class Master {
 	}
 	
 	public void cleanupConnection(int connectionId) throws SQLException {
-		Statement st = conn.createStatement();
+		PreparedStatement ps = conn.prepareStatement("UPDATE ttirc_connections SET status = ? " + 
+				"WHERE id = ?");
 		
-		st.execute("UPDATE ttirc_connections SET status = " + 
-				Constants.CS_DISCONNECTED + " WHERE id = " + connectionId);
-
-		st.execute("UPDATE ttirc_channels SET nicklist = '' " +
-				"WHERE connection_id = " + connectionId);
+		ps.setInt(1, Constants.CS_DISCONNECTED);
+		ps.setInt(2, connectionId);
+		ps.execute();
+		ps.close();
+		
+		ps = conn.prepareStatement("UPDATE ttirc_channels SET nicklist = '' " +
+				"WHERE connection_id = ?");
+		
+		ps.setInt(1, connectionId);
+		ps.execute();
+		ps.close();
 		
 		pushMessage(connectionId, "---", "DISCONNECT", true, Constants.MSGT_EVENT, "");
 	}
@@ -290,8 +298,7 @@ public class Master {
 			
 			//System.out.println("Master::Run()");
 			
-			try {
-	
+			try {	
 				updateHeartbeat();
 				checkConnections();				
 				
