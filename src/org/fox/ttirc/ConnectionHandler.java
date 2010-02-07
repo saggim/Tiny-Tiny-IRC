@@ -448,27 +448,26 @@ public class ConnectionHandler extends Thread {
 		}
 
 		public void onError(String msg) {
-			// TODO Auto-generated method stub
 			System.out.println("ERROR: " + msg);
 			handler.pushMessage("---", "---", "Error: " + msg, Constants.MSGT_SYSTEM);
 		}
 
 		@Override
 		public void onError(int num, String msg) {
-			// TODO Auto-generated method stub
 			System.out.println("ERROR: " + num + " " + msg);
 			handler.pushMessage("---", "---", "Error [" + num + "] " + msg, Constants.MSGT_SYSTEM);
+			
+			if (num == 433) {
+				handler.irc.doNick(handler.irc.getNick() + "-");
+			}
 		}
 
 		@Override
 		public void onInvite(String arg0, IRCUser arg1, String arg2) {
-			// TODO Auto-generated method stub
-			
+			// TODO Auto-generated method stub			
 		}
 
 		public void onJoin(String chan, IRCUser user) {
-			//System.out.println("ON_JOIN" + chan);
-			
 			handler.pushMessage(user.getNick(), chan, 
 					"JOIN:" + user.getNick() + ":" + user.getUsername() + "@" + user.getHost(), 
 					Constants.MSGT_EVENT);
@@ -585,7 +584,7 @@ public class ConnectionHandler extends Thread {
 				String[] params = value.split(" ");
 								
 				try {
-					handler.setTopic(params[1], params[0], msg);
+					handler.setTopic(params[1], params[0], msg);					
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
@@ -612,9 +611,6 @@ public class ConnectionHandler extends Thread {
 		}
 
 		public void onTopic(String chan, IRCUser user, String topic) {
-			
-			//System.out.println("onTopic: " + chan);
-			
 			try {
 				handler.setTopic(chan, user.getNick(), topic);
 				handler.pushMessage(user.getNick(), chan, "TOPIC:" + topic, Constants.MSGT_EVENT);
