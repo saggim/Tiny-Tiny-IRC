@@ -6,18 +6,10 @@ import org.schwering.irc.lib.IRCModeParser;
 import org.schwering.irc.lib.IRCUser;
 import org.schwering.irc.lib.ssl.SSLIRCConnection;
 import org.schwering.irc.lib.ssl.SSLTrustManager;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.io.IOException;
 import java.security.cert.X509Certificate;
-import java.util.Hashtable;
-import java.io.*;
-import java.lang.Thread.*;
 import java.sql.*;
 import java.util.*;
-import java.util.prefs.Preferences;
-
 
 public class ConnectionHandler extends Thread {
 	
@@ -204,82 +196,100 @@ public class ConnectionHandler extends Thread {
 	public void handleCommand(String chan, String message) {
 		String[] command = message.split(":", 2);
 		
-		//System.out.println("COMMAND " + command[0] + "/" + command[1] + " on " + chan);
+		System.out.println("COMMAND " + command[0] + "/" + command[1] + " on " + chan);
 
-		if (command.equals("quote")) {
+		if (command[0].equals("quote")) {
 			irc.send(command[1]);
 		}
 		
-		if (command.equals("ping")) {
+		if (command[0].equals("ping")) {
 			// TODO add ping()
 		}
 		
-		if (command.equals("msg")) {
+		if (command[0].equals("msg")) {
 			String[] msgparts = command[1].split(" ", 2);
 			irc.doPrivmsg(msgparts[0], msgparts[1]);
 		}
 		
-		if (command.equals("nick")) {
+		if (command[0].equals("nick")) {
 			irc.doNick(command[1]);
 		}
 		
-		if (command.equals("whois")) {
+		if (command[0].equals("whois")) {
 			irc.doWhois(command[1]);			
 		}
 		
-		if (command.equals("join")) {
+		if (command[0].equals("join")) {
 			irc.doJoin(command[1]);
 		}
 		
-		if (command.equals("part")) {
+		if (command[0].equals("part")) {
 			irc.doPart(command[1]);
 		}
 		
-		if (command.equals("action")) {
+		if (command[0].equals("action")) {
 			// TODO add doAction() ?
+		}
+
+		if (command[0].equals("mode")) {
+			String[] msgparts = command[1].split(" ", 2);
+			
+			System.out.println(msgparts[0] + " " + msgparts[1]);
+			
+			irc.doMode(msgparts[0], msgparts[1]);
+		}
+
+		if (command[0].equals("umode")) {
+			irc.doMode(irc.getNick(), command[1]);
 		}
 	}
 	
-	public void checkMessages() throws SQLException {
-		PreparedStatement ps = conn.prepareStatement("SELECT * FROM ttirc_messages " +
-				"WHERE incoming = false AND " +
-				"ts > NOW() - INTERVAL '1 year' AND " +
-				"connection_id = ? AND " +
-				"id > ? ORDER BY id");
-		
-		ps.setInt(1, connectionId);
-		ps.setInt(2, this.lastSentId);		
-		ps.execute();
-		
-		ResultSet rs = ps.getResultSet();
+	public void checkMessages() {
 		
 		int tmpLastSentId = lastSentId;
+
+		try {
 		
-		while (rs.next()) {
-			int messageType = rs.getInt("message_type");
+			PreparedStatement ps = conn.prepareStatement("SELECT * FROM ttirc_messages " +
+					"WHERE incoming = false AND " +
+					"ts > NOW() - INTERVAL '1 year' AND " +
+					"connection_id = ? AND " +
+					"id > ? ORDER BY id");
 			
-			tmpLastSentId = rs.getInt("id");
+			ps.setInt(1, connectionId);
+			ps.setInt(2, this.lastSentId);		
+			ps.execute();
 			
-			String channel = rs.getString("channel");
-			String message = rs.getString("message");
+			ResultSet rs = ps.getResultSet();
 			
-			//System.out.println(messageType + ", " + message + " => " + channel);
+			while (rs.next()) {
+				int messageType = rs.getInt("message_type");
+				
+				tmpLastSentId = rs.getInt("id");
+				
+				String channel = rs.getString("channel");
+				String message = rs.getString("message");
+				
+				//System.out.println(messageType + ", " + message + " => " + channel);
+				
+				switch (messageType) {
+				case Constants.MSGT_PRIVMSG:			
+				case Constants.MSGT_PRIVATE_PRIVMSG:				
+					irc.doPrivmsg(channel, message);				
+					break;
+				case Constants.MSGT_COMMAND:
+					handleCommand(channel, message);
+					break;
+				default:
+					System.err.println("Received unknown MSG_TYPE: " + messageType);
+				}			
+			}
 			
-			switch (messageType) {
-			case Constants.MSGT_PRIVMSG:			
-			case Constants.MSGT_PRIVATE_PRIVMSG:				
-				irc.doPrivmsg(channel, message);				
-				break;
-			case Constants.MSGT_COMMAND:
-				handleCommand(channel, message);
-				break;
-			default:
-				System.err.println("Received unknown MSG_TYPE: " + messageType);
-			}			
+			ps.close();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		
-		ps.close();
-		
+			
 		if (lastSentId != tmpLastSentId) {
 			syncLastSentId(tmpLastSentId);
 		}		
@@ -335,14 +345,33 @@ public class ConnectionHandler extends Thread {
 		
 			while (active) {
 				disconnectIfDisabled();
-				checkMessages();
+				
+				try {
+					checkMessages();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 				sleep(1000);
 			}
 			
 
 		} catch (Exception e) {
 			e.printStackTrace();
+			
+			System.err.println("Connection loop terminated, waiting...");
+			
+			irc.doQuit("");
+			
+			try {
+				sleep(2000);
+			} catch (InterruptedException ie) {
+				ie.printStackTrace();
+			}
+			
+			irc.close();
 		}
+		
+		System.out.println("Connection " + connectionId + " done.");
 	}
 	
 	public void setTopic(String channel, String nick, String topic) throws SQLException {
@@ -421,12 +450,14 @@ public class ConnectionHandler extends Thread {
 		public void onError(String msg) {
 			// TODO Auto-generated method stub
 			System.out.println("ERROR: " + msg);
+			handler.pushMessage("---", "---", "Error: " + msg, Constants.MSGT_SYSTEM);
 		}
 
 		@Override
 		public void onError(int num, String msg) {
 			// TODO Auto-generated method stub
 			System.out.println("ERROR: " + num + " " + msg);
+			handler.pushMessage("---", "---", "Error [" + num + "] " + msg, Constants.MSGT_SYSTEM);
 		}
 
 		@Override
@@ -451,16 +482,31 @@ public class ConnectionHandler extends Thread {
 					Constants.MSGT_EVENT);			
 		}
 
-		@Override
 		public void onMode(String chan, IRCUser user, IRCModeParser modeParser) {
-			// TODO Auto-generated method stub
+			handler.pushMessage(user.getNick(), chan, 
+					"MODE:" + modeParser.getLine().trim() + ":" + chan, 
+					Constants.MSGT_EVENT);
 			
+			for (int i = 0; i < modeParser.getCount(); i++) {
+				char mode = modeParser.getModeAt(i+1);
+				char op = modeParser.getOperatorAt(i+1);
+				
+				switch (mode) {
+				case 'o':
+					handler.userlist.setOp(chan, user.getNick(), op != '-');
+					break;
+				case 'v':
+					handler.userlist.setVoiced(chan, user.getNick(), op != '-');
+					break;
+				}					
+			}			
 		}
 
 		@Override
 		public void onMode(IRCUser user, String passiveNick, String mode) {
-			// TODO Auto-generated method stub
-			
+			handler.pushMessage(user.getNick(), "---", 
+					"MODE:" + mode + ":" + passiveNick, 
+					Constants.MSGT_EVENT);						
 		}
 
 		@Override

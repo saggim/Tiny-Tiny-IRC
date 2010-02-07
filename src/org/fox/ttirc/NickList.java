@@ -1,21 +1,9 @@
 package org.fox.ttirc;
 
-import org.schwering.irc.lib.IRCConnection;
-import org.schwering.irc.lib.IRCEventListener;
-import org.schwering.irc.lib.IRCModeParser;
-import org.schwering.irc.lib.IRCUser;
-import org.schwering.irc.lib.ssl.SSLIRCConnection;
-import org.schwering.irc.lib.ssl.SSLTrustManager;
-
-import com.sun.org.apache.xpath.internal.operations.Equals;
-import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
-
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.*;
-
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import org.json.simple.*;
 
 public class NickList {
 	
@@ -185,7 +173,43 @@ public class NickList {
 			Sync(chan);
 		}		
 	}
+
+	public Nick findNick(String channel, String nick) {
+		Enumeration<Nick> nicks = nicklist.get(channel).elements();
+		
+		while (nicks.hasMoreElements()) {
+			Nick n = nicks.nextElement();
+			
+			if (n.equals(nick)) return n;
+		}
+		
+		return null;
+	}
 	
+	public boolean setVoiced(String channel, String nick, boolean v) {
+		Nick n = findNick(channel, nick);
+			
+		if (n != null) {
+			n.setVoiced(v);
+			Sync(channel);
+			return true;
+		}		
+		return false;
+	}
+
+	public boolean setOp(String channel, String nick, boolean o) {
+		Nick n = findNick(channel, nick);
+		
+		//System.out.println("SET OP" + n + " on " + channel + " to " + o);
+		
+		if (n != null) {
+			n.setOp(o);
+			Sync(channel);
+			return true;
+		}		
+		return false;
+	}
+
 	public void renameNick(String oldNick, String newNick) {
 		Enumeration<String> chans = nicklist.keys();
 		
