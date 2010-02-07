@@ -215,7 +215,8 @@ public class ConnectionHandler extends Thread {
 		}
 		
 		if (command.equals("msg")) {
-			// TODO add msg()
+			String[] msgparts = command[1].split(" ", 2);
+			irc.doPrivmsg(msgparts[0], msgparts[1]);
 		}
 		
 		if (command.equals("nick")) {
@@ -280,8 +281,16 @@ public class ConnectionHandler extends Thread {
 		ps.close();
 		
 		if (lastSentId != tmpLastSentId) {
-			this.lastSentId = tmpLastSentId;
-			
+			syncLastSentId(tmpLastSentId);
+		}		
+	}
+	
+	private void syncLastSentId(int tmpLastSentId) {
+		this.lastSentId = tmpLastSentId;
+		
+		try {
+			PreparedStatement ps;
+
 			ps = conn.prepareStatement("UPDATE ttirc_connections SET last_sent_id = ? " +
 					"WHERE id = ?");
 			
@@ -289,9 +298,12 @@ public class ConnectionHandler extends Thread {
 			ps.setInt(2, connectionId);
 			ps.execute();
 			ps.close();		
-		}		
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
-	
+
 	public void disconnectIfDisabled() throws SQLException {
 		PreparedStatement ps = conn.prepareStatement("SELECT enabled " +
             "FROM ttirc_connections, ttirc_users " +
@@ -406,15 +418,15 @@ public class ConnectionHandler extends Thread {
 			}
 		}
 
-		public void onError(String arg0) {
+		public void onError(String msg) {
 			// TODO Auto-generated method stub
-
+			System.out.println("ERROR: " + msg);
 		}
 
 		@Override
-		public void onError(int arg0, String arg1) {
+		public void onError(int num, String msg) {
 			// TODO Auto-generated method stub
-			
+			System.out.println("ERROR: " + num + " " + msg);
 		}
 
 		@Override
