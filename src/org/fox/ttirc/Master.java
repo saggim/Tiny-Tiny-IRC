@@ -223,7 +223,7 @@ public class Master {
 	    	
 	    	if (!connections.containsKey(connectionId)) {
 	    	  	System.out.println("Spawning connection " + connectionId);
-	    	   	ConnectionHandler ch = new ConnectionHandler(connectionId, this);
+	    	   	ConnectionHandler ch = new NativeConnectionHandler(connectionId, this);
 	    	   	connections.put(connectionId, ch);
 	    	   	ch.start();
 	    	}

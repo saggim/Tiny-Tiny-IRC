@@ -95,9 +95,9 @@ public class NickList {
 	}
 
 	private Hashtable<String, Vector<Nick>> nicklist = new Hashtable<String, Vector<Nick>>();
-	private ConnectionHandler handler;
+	private NativeConnectionHandler handler;
 	
-	public NickList(ConnectionHandler handler) {
+	public NickList(NativeConnectionHandler handler) {
 		this.handler = handler;  
 	}
 	
