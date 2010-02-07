@@ -234,6 +234,10 @@ public class NativeConnectionHandler extends ConnectionHandler {
 			irc.doPrivmsg(msgparts[0], msgparts[1]);
 		}
 		
+		if (command[0].equals("notice")) {
+			// TODO add notice()
+		}		
+		
 		if (command[0].equals("nick")) {
 			irc.doNick(command[1]);
 		}
