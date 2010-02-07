@@ -35,7 +35,7 @@ public class ConnectionHandler extends Thread {
 	
 	protected int lastSentId = 0;
 	
-	protected Hashtable userlist = new Hashtable<String, IRCUser[]>();
+	protected NickList userlist = new NickList(this);
 	
 	private IRCConnection irc;
 	private boolean active = true;
@@ -43,10 +43,10 @@ public class ConnectionHandler extends Thread {
 	public ConnectionHandler(int connectionId, Master master) {
 		this.connectionId = connectionId;
 		this.master = master;
-		this.conn = master.conn;
+		this.conn = master.conn;		
 	}
 	
-	public void SetConnected(boolean connected) throws SQLException {
+	public void setConnected(boolean connected) throws SQLException {
 		PreparedStatement ps = conn.prepareStatement("UPDATE ttirc_connections SET " +
 				"status = ?, active_server = ? WHERE id = ?");
 		
@@ -64,7 +64,7 @@ public class ConnectionHandler extends Thread {
 		ps.close();
 	}
 
-	public String[] GetRandomServer() throws SQLException {
+	public String[] getRandomServer() throws SQLException {
 		PreparedStatement ps = conn.prepareStatement("SELECT server,port FROM ttirc_servers " +
 				"WHERE connection_id = ? ORDER BY RANDOM()");
 				
@@ -83,7 +83,7 @@ public class ConnectionHandler extends Thread {
 		return rv;
 	}
 	
-	public boolean Connect() throws SQLException {
+	public boolean connect() throws SQLException {
 		PreparedStatement ps = conn.prepareStatement("SELECT *, " +
 			"ttirc_connections.nick AS local_nick, ttirc_users.nick AS normal_nick " +
 			"FROM ttirc_connections, ttirc_users " +
@@ -111,10 +111,10 @@ public class ConnectionHandler extends Thread {
 					
 			System.out.println(nick + " " + email + " " + realname + " " + autojoin);
 			
-			String[] server = GetRandomServer();
+			String[] server = getRandomServer();
 			
 			if (server.length != 2) {
-				PushMessage("---", "---", "NOSERVER", Constants.MSGT_EVENT);
+				pushMessage("---", "---", "NOSERVER", Constants.MSGT_EVENT);
 				
 				PreparedStatement pst = conn.prepareStatement("UPDATE ttirc_connections SET "+
 						"auto_connect = false, enabled = false WHERE id = ?");
@@ -131,7 +131,7 @@ public class ConnectionHandler extends Thread {
 			String host = server[0];
 			int port = Integer.valueOf(server[1]);
 
-			PushMessage("---", "---", "CONNECTING:" + server[0] + ":" + server[1], Constants.MSGT_EVENT);
+			pushMessage("---", "---", "CONNECTING:" + server[0] + ":" + server[1], Constants.MSGT_EVENT);
 			
 			ps = conn.prepareStatement("UPDATE ttirc_connections SET " +
 					"status = ?, userhosts = '' WHERE id = ?");
@@ -154,7 +154,7 @@ public class ConnectionHandler extends Thread {
 			irc.addIRCEventListener(new Listener(connectionId, this, autojoin));
 			irc.setEncoding(encoding);
 			irc.setPong(true);
-			irc.setDaemon(true);
+			irc.setDaemon(false);
 			irc.setColors(false);
 			
 			try {
@@ -162,7 +162,7 @@ public class ConnectionHandler extends Thread {
 				
 				return true;
 			} catch (IOException e) {
-				PushMessage("---", "---", "CONNECTION_ERROR:" + server[0] + ":" + server[1], 
+				pushMessage("---", "---", "CONNECTION_ERROR:" + server[0] + ":" + server[1], 
 						Constants.MSGT_EVENT);
 				return false;
 			}
@@ -173,38 +173,126 @@ public class ConnectionHandler extends Thread {
 		
 	}
 	
-	public void PushMessage(String sender, String channel, String message,
-			int messageType) throws SQLException {
-		
-		PreparedStatement ps = conn.prepareStatement("INSERT INTO ttirc_messages " +
-				"(incoming, connection_id, channel, sender, message, message_type) " +
-				" VALUES (?, ?, ?, ?, ?, ?)");
+	public void pushMessage(String sender, String channel, String message, int messageType) {
 				
-		ps.setBoolean(1, true);
-		ps.setInt(2, this.connectionId);
-		ps.setString(3, channel);
-		ps.setString(4, sender);
-		ps.setString(5, message);
-		ps.setInt(6, messageType);
-		
-		ps.execute();
-		ps.close();
+		try {
+			PreparedStatement ps;
+
+			ps = conn.prepareStatement("INSERT INTO ttirc_messages " +
+					"(incoming, connection_id, channel, sender, message, message_type) " +
+					" VALUES (?, ?, ?, ?, ?, ?)");
+			
+			ps.setBoolean(1, true);
+			ps.setInt(2, this.connectionId);
+			ps.setString(3, channel);
+			ps.setString(4, sender);
+			ps.setString(5, message);
+			ps.setInt(6, messageType);
+			
+			ps.execute();
+			ps.close();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void kill() {
 		irc.doQuit(quitMessage);
 	}
 	
-	public void CheckMessages() throws SQLException {
-		PreparedStatement ps = conn.prepareStatement("SELECT * FROM ttirc_messages " +
-				"WHERE incoming = false AND" +
-				"ts > NOW() - INTERVAL '1 year' AND " +
-               "connection_id = ? AND" +
-               "id > ? ORDER BY id");
+	public void handleCommand(String chan, String message) {
+		String[] command = message.split(":", 2);
 		
+		//System.out.println("COMMAND " + command[0] + "/" + command[1] + " on " + chan);
+
+		if (command.equals("quote")) {
+			irc.send(command[1]);
+		}
+		
+		if (command.equals("ping")) {
+			// TODO add ping()
+		}
+		
+		if (command.equals("msg")) {
+			// TODO add msg()
+		}
+		
+		if (command.equals("nick")) {
+			irc.doNick(command[1]);
+		}
+		
+		if (command.equals("whois")) {
+			irc.doWhois(command[1]);			
+		}
+		
+		if (command.equals("join")) {
+			irc.doJoin(command[1]);
+		}
+		
+		if (command.equals("part")) {
+			irc.doPart(command[1]);
+		}
+		
+		if (command.equals("action")) {
+			// TODO add doAction() ?
+		}
 	}
 	
-	public void DisconnectIfDisabled() throws SQLException {
+	public void checkMessages() throws SQLException {
+		PreparedStatement ps = conn.prepareStatement("SELECT * FROM ttirc_messages " +
+				"WHERE incoming = false AND " +
+				"ts > NOW() - INTERVAL '1 year' AND " +
+				"connection_id = ? AND " +
+				"id > ? ORDER BY id");
+		
+		ps.setInt(1, connectionId);
+		ps.setInt(2, this.lastSentId);		
+		ps.execute();
+		
+		ResultSet rs = ps.getResultSet();
+		
+		int tmpLastSentId = lastSentId;
+		
+		while (rs.next()) {
+			int messageType = rs.getInt("message_type");
+			
+			tmpLastSentId = rs.getInt("id");
+			
+			String channel = rs.getString("channel");
+			String message = rs.getString("message");
+			
+			//System.out.println(messageType + ", " + message + " => " + channel);
+			
+			switch (messageType) {
+			case Constants.MSGT_PRIVMSG:			
+			case Constants.MSGT_PRIVATE_PRIVMSG:				
+				irc.doPrivmsg(channel, message);				
+				break;
+			case Constants.MSGT_COMMAND:
+				handleCommand(channel, message);
+				break;
+			default:
+				System.err.println("Received unknown MSG_TYPE: " + messageType);
+			}			
+		}
+		
+		ps.close();
+		
+		if (lastSentId != tmpLastSentId) {
+			this.lastSentId = tmpLastSentId;
+			
+			ps = conn.prepareStatement("UPDATE ttirc_connections SET last_sent_id = ? " +
+					"WHERE id = ?");
+			
+			ps.setInt(1, lastSentId);
+			ps.setInt(2, connectionId);
+			ps.execute();
+			ps.close();		
+		}		
+	}
+	
+	public void disconnectIfDisabled() throws SQLException {
 		PreparedStatement ps = conn.prepareStatement("SELECT enabled " +
             "FROM ttirc_connections, ttirc_users " +
             "WHERE owner_uid = ttirc_users.id AND " +
@@ -219,10 +307,10 @@ public class ConnectionHandler extends Thread {
 		if (rs.next()) {
 			boolean enabled = rs.getBoolean("enabled");
 			
-			SetConnected(enabled);
+			setConnected(enabled);
 			
 		} else {
-			SetConnected(false);
+			setConnected(false);
 		}
 		
 		ps.close();
@@ -231,11 +319,11 @@ public class ConnectionHandler extends Thread {
 	public void run() {
 		try {
 			
-			if (!Connect()) return;
+			if (!connect()) return;
 		
 			while (active) {
-				DisconnectIfDisabled();
-				CheckMessages();
+				disconnectIfDisabled();
+				checkMessages();
 				sleep(1000);
 			}
 			
@@ -245,7 +333,7 @@ public class ConnectionHandler extends Thread {
 		}
 	}
 	
-	public void SetTopic(String channel, String nick, String topic) throws SQLException {
+	public void setTopic(String channel, String nick, String topic) throws SQLException {
 		
 		PreparedStatement ps = conn.prepareStatement("UPDATE ttirc_channels SET " +
 				"topic = ?, topic_owner = ?, topic_set = NOW()");
@@ -255,6 +343,46 @@ public class ConnectionHandler extends Thread {
 		
 		ps.execute();
 		ps.close();
+		
+	}
+	
+	public void checkChannel(String channel, int chanType) throws SQLException {	
+		
+		PreparedStatement ps = conn.prepareStatement("SELECT id FROM ttirc_channels WHERE " +
+			"channel = ? AND connection_id = ?");
+				
+		ps.setString(1, channel);
+		ps.setInt(2, connectionId);
+		ps.execute();
+		
+		ResultSet rs = ps.getResultSet();
+		
+		if (!rs.next()) {
+			ps.close();
+			
+			ps = conn.prepareStatement("INSERT INTO ttirc_channels (channel, connection_id, chan_type)" +
+					"VALUES (?, ?, ?)");
+			ps.setString(1, channel);
+			ps.setInt(2, connectionId);
+			ps.setInt(3, chanType);
+			ps.execute();
+			ps.close();			
+		}		
+	}
+	
+	public void syncNick() {
+		try {
+			PreparedStatement ps = conn.prepareStatement("UPDATE ttirc_connections SET active_nick = ?" +
+				"WHERE id = ?");
+		
+			ps.setString(1, irc.getNick());
+			ps.setInt(2, connectionId);
+			ps.execute();
+			ps.close();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		
 	}
 	
@@ -272,7 +400,7 @@ public class ConnectionHandler extends Thread {
 		
 		public void onDisconnected() {			
 			try {
-				handler.SetConnected(false);
+				handler.setConnected(false);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -295,34 +423,43 @@ public class ConnectionHandler extends Thread {
 			
 		}
 
+		public void onJoin(String chan, IRCUser user) {
+			//System.out.println("ON_JOIN" + chan);
+			
+			handler.pushMessage(user.getNick(), chan, 
+					"JOIN:" + user.getNick() + ":" + user.getUsername() + "@" + user.getHost(), 
+					Constants.MSGT_EVENT);
+			
+			handler.userlist.addNick(chan, user.getNick());
+		}
+
 		@Override
-		public void onJoin(String arg0, IRCUser arg1) {
+		public void onKick(String chan, IRCUser user, String passiveNick, String msg) {
+			handler.pushMessage(user.getNick(), chan, "KICK:" + passiveNick + ":" + msg,
+					Constants.MSGT_EVENT);			
+		}
+
+		@Override
+		public void onMode(String chan, IRCUser user, IRCModeParser modeParser) {
 			// TODO Auto-generated method stub
 			
 		}
 
 		@Override
-		public void onKick(String arg0, IRCUser arg1, String arg2, String arg3) {
+		public void onMode(IRCUser user, String passiveNick, String mode) {
 			// TODO Auto-generated method stub
 			
 		}
 
 		@Override
-		public void onMode(String arg0, IRCUser arg1, IRCModeParser arg2) {
-			// TODO Auto-generated method stub
+		public void onNick(IRCUser user, String nick) {
+			Vector<String> chans = handler.userlist.isOn(user.getNick());
 			
-		}
-
-		@Override
-		public void onMode(IRCUser arg0, String arg1, String arg2) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void onNick(IRCUser arg0, String arg1) {
-			// TODO Auto-generated method stub
-			
+			for (String chan : chans) {
+				handler.pushMessage(user.getNick(), chan, "NICK:" + nick, Constants.MSGT_EVENT);
+			}
+			handler.userlist.renameNick(user.getNick(), nick);
+			handler.syncNick();
 		}
 
 		@Override
@@ -331,10 +468,9 @@ public class ConnectionHandler extends Thread {
 			
 		}
 
-		@Override
-		public void onPart(String arg0, IRCUser arg1, String arg2) {
-			// TODO Auto-generated method stub
-			
+		public void onPart(String chan, IRCUser user, String msg) {
+			handler.pushMessage(user.getNick(), chan, "PART:" + msg, Constants.MSGT_EVENT);
+			handler.userlist.delNick(chan, user.getNick());			
 		}
 
 		@Override
@@ -344,29 +480,38 @@ public class ConnectionHandler extends Thread {
 		}
 
 		public void onPrivmsg(String target, IRCUser user, String msg) {
-			//System.out.println(target + ";" + user.getNick() + ";" + msg);
+			//System.out.println(target + ":" + user.getNick() + ":" + msg);
 			
 			try {			
 				if (target.equals(handler.irc.getNick())) {
-					handler.PushMessage(user.getNick(), target, msg, Constants.MSGT_PRIVATE_PRIVMSG);
+					handler.checkChannel(user.getNick(), Constants.CT_PRIVATE);
+					handler.pushMessage(user.getNick(), user.getNick(), msg, Constants.MSGT_PRIVATE_PRIVMSG);
 				} else {
-					handler.PushMessage(user.getNick(), target, msg, Constants.MSGT_PRIVMSG);				
+					handler.pushMessage(user.getNick(), target, msg, Constants.MSGT_PRIVMSG);				
 				}
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
 		}
 
-		@Override
-		public void onQuit(IRCUser arg0, String arg1) {
-			// TODO Auto-generated method stub
+		public void onQuit(IRCUser user, String message) {
+			Vector<String> chans = handler.userlist.isOn(user.getNick());
 			
+			for (String chan : chans) {
+				handler.pushMessage(user.getNick(), chan, "QUIT:" + message, Constants.MSGT_EVENT);
+			}
+			
+			handler.userlist.delNick(user.getNick());
 		}
 
 		public void onRegistered() {
 			
+			System.out.println("Connected to IRC");
+			handler.pushMessage("---", "---", "CONNECT", Constants.MSGT_EVENT);
+			
 			try {
-				handler.SetConnected(true);
+				handler.setConnected(true);
+				handler.syncNick();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -377,26 +522,44 @@ public class ConnectionHandler extends Thread {
 			}
 		}
 
-		@Override
 		public void onReply(int num, String value, String msg) {
 			if (num == RPL_TOPIC) {
 				String[] params = value.split(" ");
 								
 				try {
-					handler.SetTopic(params[1], params[0], msg);
+					handler.setTopic(params[1], params[0], msg);
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
-			}			
+			}	
+			
+			if (num == RPL_NAMREPLY) {
+				System.out.println("NAMREPLY [" + value + "] ["+ msg + "]");
+				String[] params = value.split(" ");
+				String[] nicks = msg.split(" ");
+				
+				for (String nick : nicks) {
+					userlist.addNick(params[2], nick);
+				}
+			}
+			
+			if (num == RPL_ENDOFNAMES) {
+				String[] params = value.split(" ");
+				try {
+					handler.checkChannel(params[1], Constants.CT_CHANNEL);
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 
 		public void onTopic(String chan, IRCUser user, String topic) {
 			
-			System.out.println("onTopic: " + chan);
+			//System.out.println("onTopic: " + chan);
 			
 			try {
-				handler.SetTopic(chan, user.getNick(), topic);
-				handler.PushMessage(user.getNick(), chan, "TOPIC:" + topic, Constants.MSGT_EVENT);
+				handler.setTopic(chan, user.getNick(), topic);
+				handler.pushMessage(user.getNick(), chan, "TOPIC:" + topic, Constants.MSGT_EVENT);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}

@@ -22,7 +22,7 @@ public class Master {
 		Master m = new Master();	
 
 		if (args.length > 0 && args[0].equals("-configure")) {
-			m.Configure();
+			m.configure();
 		}
 
 		m.Run();				
@@ -42,7 +42,7 @@ public class Master {
 		}
 		
 		if (!prefs.getBoolean("CONFIGURED", false)) {
-			Configure();
+			configure();
 		}
 		
 		String DB_HOST = prefs.get("DB_HOST", "localhost");
@@ -67,14 +67,14 @@ public class Master {
 		System.out.println("Database connection established.");
 
 		try {
-			Cleanup();
+			cleanup();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			System.exit(1);
 		}
 	}
 	
-	public void Configure() {
+	public void configure() {
 		System.out.println("Database configuration");
 		System.out.println("======================");
 		
@@ -122,7 +122,7 @@ public class Master {
 		}
 	}
 	
-	public void Cleanup() throws SQLException {
+	public void cleanup() throws SQLException {
 		
 		Statement st = conn.createStatement();
 		
@@ -136,14 +136,14 @@ public class Master {
 	
 	}
 	
-	public void UpdateHeartbeat() throws SQLException {
+	public void updateHeartbeat() throws SQLException {
 		Statement st = conn.createStatement();
 		
 		st.execute("UPDATE ttirc_system SET value = 'true' WHERE key = 'MASTER_RUNNING'");
 		st.execute("UPDATE ttirc_system SET value = NOW() WHERE key = 'MASTER_HEARTBEAT'");	
 	}
 
-	public void CheckConnections() throws SQLException {
+	public void checkConnections() throws SQLException {
 		Statement st = conn.createStatement();
 
 		Enumeration<Integer> e = connections.keys();
@@ -175,7 +175,7 @@ public class Master {
     		if (ch.getState() == State.TERMINATED) {
     			System.out.println("Connection " + connectionId + " terminated.");
     			connections.remove(connectionId);
-    			CleanupConnection(connectionId);
+    			cleanupConnection(connectionId);
     		}			
 		}
 		
@@ -201,7 +201,7 @@ public class Master {
 	    }
 	}
 	
-	public String GetNick(int connectionId) throws SQLException {
+	public String getNick(int connectionId) throws SQLException {
 		PreparedStatement ps = conn.prepareStatement("SELECT active_nick FROM " +
 				"ttirc_connections WHERE id = ?");
 		
@@ -217,7 +217,7 @@ public class Master {
 		}
 	}
 	
-	public void PushMessage(int connectionId, String channel, String message, 
+	public void pushMessage(int connectionId, String channel, String message, 
 			boolean incoming, int messageType, 
 			String fromNick) throws SQLException {
 	
@@ -226,7 +226,7 @@ public class Master {
 		if (channel.equals("---")) {
 			nick = "---";
 		} else {
-			nick = GetNick(connectionId);
+			nick = getNick(connectionId);
 		}
 		
 		if (fromNick.length() != 0) nick = fromNick;
@@ -247,7 +247,7 @@ public class Master {
 		ps.execute();
 	}
 	
-	public void CleanupConnection(int connectionId) throws SQLException {
+	public void cleanupConnection(int connectionId) throws SQLException {
 		Statement st = conn.createStatement();
 		
 		st.execute("UPDATE ttirc_connections SET status = " + 
@@ -256,7 +256,7 @@ public class Master {
 		st.execute("UPDATE ttirc_channels SET nicklist = '' " +
 				"WHERE connection_id = " + connectionId);
 		
-		PushMessage(connectionId, "---", "DISCONNECT", true, Constants.MSGT_EVENT, "");
+		pushMessage(connectionId, "---", "DISCONNECT", true, Constants.MSGT_EVENT, "");
 	}
 	
 	public void Run() {
@@ -266,8 +266,8 @@ public class Master {
 			
 			try {
 	
-				UpdateHeartbeat();
-				CheckConnections();				
+				updateHeartbeat();
+				checkConnections();				
 				
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -281,14 +281,14 @@ public class Master {
 		}
 		
 		try {
-			Cleanup();
+			cleanup();
 		} catch (SQLException e) {
 			e.printStackTrace();			
 		}
 	}
 	
 	public void finalize() throws Throwable {
-		Cleanup();		
+		cleanup();		
 	}
 
 }
