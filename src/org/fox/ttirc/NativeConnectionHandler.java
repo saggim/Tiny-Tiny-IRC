@@ -17,14 +17,6 @@ public class NativeConnectionHandler extends ConnectionHandler {
 	protected Master master;
 	protected Connection conn;	
 	
-	protected String nick;
-	protected String localNick;
-	protected String encoding;
-	protected String email;
-	protected String realname;
-	protected String[] autojoin;
-	protected String quitMessage;
-	
 	protected int lastSentId = 0;
 	
 	protected NickList userlist = new NickList(this);
@@ -86,6 +78,13 @@ public class NativeConnectionHandler extends ConnectionHandler {
 		
 		ResultSet rs = ps.getResultSet();
 		
+		String nick;
+		String localNick;
+		String encoding;
+		String email;
+		String realname;
+		String[] autojoin;
+		
 		if (rs.next()) {
 			nick = rs.getString("normal_nick");
 			localNick = rs.getString("local_nick");
@@ -93,7 +92,6 @@ public class NativeConnectionHandler extends ConnectionHandler {
 			email = rs.getString("email");
 			realname = rs.getString("realname");
 			autojoin = rs.getString("autojoin").split(",");
-			quitMessage = rs.getString("quit_message");
 			lastSentId = rs.getInt("last_sent_id");
 		
 			// wtf? no nick?!
@@ -190,14 +188,39 @@ public class NativeConnectionHandler extends ConnectionHandler {
 	}
 	
 	public void kill() {
-		irc.doQuit(quitMessage);
+		irc.doQuit(getQuitMessage());
 	}
 	
+	private String getQuitMessage() {
+		try {
+			PreparedStatement ps = conn.prepareStatement("SELECT quit_message FROM ttirc_connections "+
+				"WHERE id = ?");
+		
+			ps.setInt(1, connectionId);
+			ps.execute();
+			
+			ResultSet rs = ps.getResultSet();
+			
+			if (rs.next()) {
+				return rs.getString("quit_message");
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return "Tiny Tiny IRC";
+	}
+
 	public void handleCommand(String chan, String message) {
 		String[] command = message.split(":", 2);
 		
 		System.out.println("COMMAND " + command[0] + "/" + command[1] + " on " + chan);
 
+		if (command[0].equals("away")) {
+			irc.doAway(command[1]);
+		}
+		
 		if (command[0].equals("quote")) {
 			irc.send(command[1]);
 		}
@@ -228,7 +251,7 @@ public class NativeConnectionHandler extends ConnectionHandler {
 		}
 		
 		if (command[0].equals("action")) {
-			// TODO add doAction() ?
+			irc.doPrivmsg(chan, "\001ACTION " + command[1] + "\001");
 		}
 
 		if (command[0].equals("mode")) {
