@@ -13,6 +13,7 @@ public class Master {
 	protected boolean active;
 	protected Hashtable<Integer, ConnectionHandler> connections;
 	protected int idleTimeout = 5000;
+	protected boolean useNativeCH = true;
 		
 	/**
 	 * @param args
@@ -41,15 +42,17 @@ public class Master {
 			if (arg.equals("-node")) prefs_node = args[i+1]; 
 			if (arg.equals("-configure")) need_configure = true;
 			if (arg.equals("-cleanup")) need_cleanup = true;
+			if (arg.equals("-native")) useNativeCH = args[i+1].equals("true");
 		}
 		
 		if (show_help) {
 			System.out.println("Available options:");
 			System.out.println("==================");
-			System.out.println("     -help        - Show this help");
-			System.out.println("     -node        - Use custom preferences node");
-			System.out.println("     -configure   - Force change configuration");
-			System.out.println("     -cleanup     - Cleanup data and exit");
+			System.out.println(" -help              - Show this help");
+			System.out.println(" -node node         - Use custom preferences node");
+			System.out.println(" -configure         - Force change configuration");
+			System.out.println(" -cleanup           - Cleanup data and exit");
+			System.out.println(" -native true/false - Use native (Java-based) connection handler");
 			System.exit(0);
 		}
 		
@@ -223,8 +226,16 @@ public class Master {
 	    	
 	    	if (!connections.containsKey(connectionId)) {
 	    	  	System.out.println("Spawning connection " + connectionId);
-	    	   	ConnectionHandler ch = new NativeConnectionHandler(connectionId, this);
+	    	  	
+	    	  	ConnectionHandler ch;
+	    	  	
+	    	  	if (useNativeCH)	    	  	
+	    	  		ch = new NativeConnectionHandler(connectionId, this);
+	    	  	else
+	    	  		ch = new SystemConnectionHandler(connectionId, this);
+	    	  	
 	    	   	connections.put(connectionId, ch);
+	    	   	
 	    	   	ch.start();
 	    	}
 	    }
