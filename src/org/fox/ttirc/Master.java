@@ -8,6 +8,8 @@ import java.util.prefs.Preferences;
 
 public class Master {
 
+	protected final String version = "0.5.0";
+	
 	protected Connection conn;
 	protected Preferences prefs;
 	protected boolean active;
@@ -34,6 +36,8 @@ public class Master {
 		boolean need_configure = false;
 		boolean show_help = false;
 		boolean need_cleanup = false;
+	
+		System.out.println("Master v" + version + " initializing...");
 		
 		for (int i = 0; i < args.length; i++) {
 			String arg = args[i];
@@ -153,6 +157,8 @@ public class Master {
 	
 	public void cleanup() throws SQLException {
 		
+		System.out.println("Cleaning up...");
+		
 		Statement st = conn.createStatement();
 		
 		st.execute("UPDATE ttirc_connections SET status = " +
@@ -224,8 +230,10 @@ public class Master {
 	    while (rs.next()) {
 	    	int connectionId = rs.getInt(1);
 	    	
+	    	String useCHType = (useNativeCH == true) ? "NativeConnectionHandler" : "SystemConnectionHandler"; 
+	    		
 	    	if (!connections.containsKey(connectionId)) {
-	    	  	System.out.println("Spawning connection " + connectionId);
+	    	  	System.out.println("Spawning connection " + connectionId + " using " + useCHType);
 	    	  	
 	    	  	ConnectionHandler ch;
 	    	  	

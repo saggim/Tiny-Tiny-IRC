@@ -1,5 +1,7 @@
 package org.fox.ttirc;
 
+import java.io.*;
+
 public class SystemConnectionHandler extends ConnectionHandler {
 	
 	protected int connectionId;
@@ -16,14 +18,23 @@ public class SystemConnectionHandler extends ConnectionHandler {
 	}
 	
 	public void run() {
-		try {
+		try {		
 			
 			proc = Runtime.getRuntime().exec("./handle.php " + connectionId);
 			
+			InputStream inputstream = proc.getInputStream();			
+            InputStreamReader inputstreamreader = new InputStreamReader(inputstream);            
+            BufferedReader bufferedreader = new BufferedReader(inputstreamreader);
+			
+            String line;
+            
+            while ((line = bufferedreader.readLine()) != null) {
+              System.out.println(line);
+            }
+            
 			proc.waitFor();
 			
-			System.err.println("Exit value = " + proc.exitValue());
-			
+			System.out.println("[" + connectionId + "] Got exit value = " + proc.exitValue());			
 			System.out.println("[" + connectionId + "] Connection terminated.");
 
 		} catch (Exception e) {
