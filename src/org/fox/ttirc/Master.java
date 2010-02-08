@@ -10,12 +10,16 @@ public class Master {
 
 	protected final String version = "0.5.0";
 	
-	private Connection conn;
 	protected Preferences prefs;
 	protected boolean active;
 	protected Hashtable<Integer, ConnectionHandler> connections;
 	protected int idleTimeout = 5000;
 	protected boolean useNativeCH = true;
+
+	private Connection conn;
+	private String jdbcUrl;
+	private String dbUser;
+	private String dbPass;
 		
 	/**
 	 * @param args
@@ -28,6 +32,51 @@ public class Master {
 	}	
 	
 	public Connection getConnection() {
+	
+		return conn;
+		
+		/*boolean isConnected = false;
+		int connAttempt = 0;
+		
+		while (!isConnected && connAttempt < 20) {
+			
+			try {
+				if (conn != null) {
+					
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+				isConnected = false;			
+			}
+			
+			if (!isConnected) {
+				System.out.println("Database connection failed. Retrying...");
+				try {
+					conn = initConnection();
+				} catch (SQLException e) {
+					e.printStackTrace();
+					isConnected = false;
+				}
+			}
+			
+			++connAttempt;
+			try {
+				Thread.sleep(3000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return conn; */
+	}
+	
+	private Connection initConnection() throws SQLException {
+		
+		System.out.println("JDBC URL: " + jdbcUrl);
+		System.out.println("Establishing database connection...");
+		
+		this.conn = DriverManager.getConnection(jdbcUrl, dbUser, dbPass);
+		
 		return conn;
 	}
 	
@@ -90,17 +139,19 @@ public class Master {
 		String jdbcUrl = "jdbc:postgresql://" + DB_HOST + ":" + DB_PORT + 
 			"/" + DB_NAME;
 		
-		System.out.println("JDBC URL: " + jdbcUrl);
+		this.jdbcUrl = jdbcUrl;
+		this.dbUser = DB_USER;
+		this.dbPass = DB_PASS;
 		
 		try {
-			this.conn = DriverManager.getConnection(jdbcUrl, DB_USER, DB_PASS);
+			initConnection();
 		} catch (SQLException e) {
 			System.out.println("error: Couldn't connect to database.");
 			e.printStackTrace();
 			System.exit(1);
 		}
 		
-		System.out.println("Database connection established.");
+		System.out.println("Database connection established."); 
 
 		try {
 			cleanup();
@@ -163,7 +214,7 @@ public class Master {
 		
 		System.out.println("Cleaning up...");
 		
-		Statement st = conn.createStatement();
+		Statement st = getConnection().createStatement();
 		
 		st.execute("UPDATE ttirc_connections SET status = " +
 				String.valueOf(Constants.CS_DISCONNECTED) + ", userhosts = ''");
@@ -177,7 +228,7 @@ public class Master {
 	}
 	
 	public void updateHeartbeat() throws SQLException {
-		Statement st = conn.createStatement();
+		Statement st = getConnection().createStatement();
 		
 		st.execute("UPDATE ttirc_system SET value = 'true' WHERE key = 'MASTER_RUNNING'");
 		st.execute("UPDATE ttirc_system SET value = NOW() WHERE key = 'MASTER_HEARTBEAT'");
@@ -185,8 +236,8 @@ public class Master {
 		st.close();
 	}
 
-	public void checkConnections() throws SQLException {
-		Statement st = conn.createStatement();
+	public void checkHandlers() throws SQLException {
+		Statement st = getConnection().createStatement();
 
 		Enumeration<Integer> e = connections.keys();
 		
@@ -197,7 +248,7 @@ public class Master {
     		
     		//System.out.println("Conn state: " + ch.getState());
     		
-    		PreparedStatement ps = conn.prepareStatement("SELECT id FROM ttirc_connections WHERE id = ? " +
+    		PreparedStatement ps = getConnection().prepareStatement("SELECT id FROM ttirc_connections WHERE id = ? " +
     			"AND enabled = true");
     		
     		ps.setInt(1, connectionId);
@@ -217,7 +268,7 @@ public class Master {
     		if (ch.getState() == State.TERMINATED) {
     			System.out.println("Connection " + connectionId + " terminated.");
     			connections.remove(connectionId);
-    			cleanupConnection(connectionId);
+    			cleanup(connectionId);
     		}			
 		}
 		
@@ -254,7 +305,7 @@ public class Master {
 	}
 	
 	public String getNick(int connectionId) throws SQLException {
-		PreparedStatement ps = conn.prepareStatement("SELECT active_nick FROM " +
+		PreparedStatement ps = getConnection().prepareStatement("SELECT active_nick FROM " +
 				"ttirc_connections WHERE id = ?");
 		
 		ps.setInt(1, connectionId);
@@ -283,7 +334,7 @@ public class Master {
 		
 		if (fromNick.length() != 0) nick = fromNick;
 		
-		PreparedStatement ps = conn.prepareStatement("INSERT INTO ttirc_messages " +
+		PreparedStatement ps = getConnection().prepareStatement("INSERT INTO ttirc_messages " +
 				"(incoming, connection_id, channel, sender, message, message_type) " +
 				" VALUES (?, ?, ?, ?, ?, ?)");
 				
@@ -297,8 +348,8 @@ public class Master {
 		ps.execute();
 	}
 	
-	public void cleanupConnection(int connectionId) throws SQLException {
-		PreparedStatement ps = conn.prepareStatement("UPDATE ttirc_connections SET status = ? " + 
+	public void cleanup(int connectionId) throws SQLException {
+		PreparedStatement ps = getConnection().prepareStatement("UPDATE ttirc_connections SET status = ? " + 
 				"WHERE id = ?");
 		
 		ps.setInt(1, Constants.CS_DISCONNECTED);
@@ -306,7 +357,7 @@ public class Master {
 		ps.execute();
 		ps.close();
 		
-		ps = conn.prepareStatement("UPDATE ttirc_channels SET nicklist = '' " +
+		ps = getConnection().prepareStatement("UPDATE ttirc_channels SET nicklist = '' " +
 				"WHERE connection_id = ?");
 		
 		ps.setInt(1, connectionId);
@@ -317,13 +368,15 @@ public class Master {
 	}
 	
 	public void Run() {
+		System.out.println("Waiting for clients...");
+		
 		while (active) {
 			
 			//System.out.println("Master::Run()");
 			
 			try {	
 				updateHeartbeat();
-				checkConnections();				
+				checkHandlers();				
 				
 			} catch (SQLException e) {
 				e.printStackTrace();

@@ -4,10 +4,12 @@ import org.schwering.irc.lib.IRCConnection;
 import org.schwering.irc.lib.IRCEventListener;
 import org.schwering.irc.lib.IRCModeParser;
 import org.schwering.irc.lib.IRCUser;
-import org.schwering.irc.lib.ssl.SSLIRCConnection;
-import org.schwering.irc.lib.ssl.SSLTrustManager;
+
+//import java.security.cert.X509Certificate;
+//import org.schwering.irc.lib.ssl.SSLIRCConnection;
+//import org.schwering.irc.lib.ssl.SSLTrustManager;
+
 import java.io.IOException;
-import java.security.cert.X509Certificate;
 import java.sql.*;
 import java.util.*;
 
@@ -26,7 +28,6 @@ public class NativeConnectionHandler extends ConnectionHandler {
 	public NativeConnectionHandler(int connectionId, Master master) {
 		this.connectionId = connectionId;
 		this.master = master;
-		//this.conn = master.getConnection();		
 	}
 	
 	public Connection getConnection() {
