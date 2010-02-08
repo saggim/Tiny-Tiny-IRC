@@ -119,6 +119,9 @@ class Connection extends Yapircl {
 				}
 
 				break;
+			default:
+				$this->push_message('---', '---', "UNKNOWN_CMD:$command", MSGT_EVENT);
+				break;
 		}
 	}
 
