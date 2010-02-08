@@ -15,7 +15,6 @@ public class NativeConnectionHandler extends ConnectionHandler {
 	
 	protected int connectionId;
 	protected Master master;
-	protected Connection conn;	
 	
 	protected int lastSentId = 0;
 	
@@ -27,11 +26,15 @@ public class NativeConnectionHandler extends ConnectionHandler {
 	public NativeConnectionHandler(int connectionId, Master master) {
 		this.connectionId = connectionId;
 		this.master = master;
-		this.conn = master.conn;		
+		//this.conn = master.getConnection();		
+	}
+	
+	public Connection getConnection() {
+		return master.getConnection();
 	}
 	
 	public void setConnected(boolean connected) throws SQLException {
-		PreparedStatement ps = conn.prepareStatement("UPDATE ttirc_connections SET " +
+		PreparedStatement ps = getConnection().prepareStatement("UPDATE ttirc_connections SET " +
 				"status = ?, active_server = ? WHERE id = ?");
 		
 		if (connected)
@@ -49,7 +52,7 @@ public class NativeConnectionHandler extends ConnectionHandler {
 	}
 
 	public String[] getRandomServer() throws SQLException {
-		PreparedStatement ps = conn.prepareStatement("SELECT server,port FROM ttirc_servers " +
+		PreparedStatement ps = getConnection().prepareStatement("SELECT server,port FROM ttirc_servers " +
 				"WHERE connection_id = ? ORDER BY RANDOM()");
 				
 		ps.setInt(1, connectionId);
@@ -68,7 +71,7 @@ public class NativeConnectionHandler extends ConnectionHandler {
 	}
 	
 	public boolean connect() throws SQLException {
-		PreparedStatement ps = conn.prepareStatement("SELECT *, " +
+		PreparedStatement ps = getConnection().prepareStatement("SELECT *, " +
 			"ttirc_connections.nick AS local_nick, ttirc_users.nick AS normal_nick " +
 			"FROM ttirc_connections, ttirc_users " +
 			"WHERE ttirc_connections.id = ? AND owner_uid = ttirc_users.id");
@@ -106,7 +109,7 @@ public class NativeConnectionHandler extends ConnectionHandler {
 			if (server.length != 2) {
 				pushMessage("---", "---", "NOSERVER", Constants.MSGT_EVENT);
 				
-				PreparedStatement pst = conn.prepareStatement("UPDATE ttirc_connections SET "+
+				PreparedStatement pst = getConnection().prepareStatement("UPDATE ttirc_connections SET "+
 						"auto_connect = false, enabled = false WHERE id = ?");
 				
 				pst.setInt(1, connectionId);
@@ -123,7 +126,7 @@ public class NativeConnectionHandler extends ConnectionHandler {
 
 			pushMessage("---", "---", "CONNECTING:" + server[0] + ":" + server[1], Constants.MSGT_EVENT);
 			
-			ps = conn.prepareStatement("UPDATE ttirc_connections SET " +
+			ps = getConnection().prepareStatement("UPDATE ttirc_connections SET " +
 					"status = ?, userhosts = '' WHERE id = ?");
 
 			ps.setInt(1, Constants.CS_CONNECTING);
@@ -131,7 +134,7 @@ public class NativeConnectionHandler extends ConnectionHandler {
 			ps.execute();
 			ps.close();
 			
-			ps = conn.prepareStatement("UPDATE ttirc_channels SET " +
+			ps = getConnection().prepareStatement("UPDATE ttirc_channels SET " +
 					"nicklist = '' WHERE connection_id = ?");
 			
 			ps.setInt(1, connectionId);
@@ -168,7 +171,7 @@ public class NativeConnectionHandler extends ConnectionHandler {
 		try {
 			PreparedStatement ps;
 
-			ps = conn.prepareStatement("INSERT INTO ttirc_messages " +
+			ps = getConnection().prepareStatement("INSERT INTO ttirc_messages " +
 					"(incoming, connection_id, channel, sender, message, message_type) " +
 					" VALUES (?, ?, ?, ?, ?, ?)");
 			
@@ -193,7 +196,7 @@ public class NativeConnectionHandler extends ConnectionHandler {
 	
 	private String getQuitMessage() {
 		try {
-			PreparedStatement ps = conn.prepareStatement("SELECT quit_message FROM ttirc_connections "+
+			PreparedStatement ps = getConnection().prepareStatement("SELECT quit_message FROM ttirc_connections "+
 				"WHERE id = ?");
 		
 			ps.setInt(1, connectionId);
@@ -277,7 +280,7 @@ public class NativeConnectionHandler extends ConnectionHandler {
 
 		try {
 		
-			PreparedStatement ps = conn.prepareStatement("SELECT * FROM ttirc_messages " +
+			PreparedStatement ps = getConnection().prepareStatement("SELECT * FROM ttirc_messages " +
 					"WHERE incoming = false AND " +
 					"ts > NOW() - INTERVAL '1 year' AND " +
 					"connection_id = ? AND " +
@@ -328,7 +331,7 @@ public class NativeConnectionHandler extends ConnectionHandler {
 		try {
 			PreparedStatement ps;
 
-			ps = conn.prepareStatement("UPDATE ttirc_connections SET last_sent_id = ? " +
+			ps = getConnection().prepareStatement("UPDATE ttirc_connections SET last_sent_id = ? " +
 					"WHERE id = ?");
 			
 			ps.setInt(1, lastSentId);
@@ -342,7 +345,7 @@ public class NativeConnectionHandler extends ConnectionHandler {
 	}
 
 	public void disconnectIfDisabled() throws SQLException {
-		PreparedStatement ps = conn.prepareStatement("SELECT enabled " +
+		PreparedStatement ps = getConnection().prepareStatement("SELECT enabled " +
             "FROM ttirc_connections, ttirc_users " +
             "WHERE owner_uid = ttirc_users.id AND " +
             "(heartbeat > NOW() - INTERVAL '10 minutes' OR permanent = true) AND " +
@@ -403,7 +406,7 @@ public class NativeConnectionHandler extends ConnectionHandler {
 	
 	public void setTopic(String channel, String nick, String topic) throws SQLException {
 		
-		PreparedStatement ps = conn.prepareStatement("UPDATE ttirc_channels SET " +
+		PreparedStatement ps = getConnection().prepareStatement("UPDATE ttirc_channels SET " +
 				"topic = ?, topic_owner = ?, topic_set = NOW()");
 	
 		ps.setString(1, topic);
@@ -416,7 +419,7 @@ public class NativeConnectionHandler extends ConnectionHandler {
 	
 	public void checkChannel(String channel, int chanType) throws SQLException {	
 		
-		PreparedStatement ps = conn.prepareStatement("SELECT id FROM ttirc_channels WHERE " +
+		PreparedStatement ps = getConnection().prepareStatement("SELECT id FROM ttirc_channels WHERE " +
 			"channel = ? AND connection_id = ?");
 				
 		ps.setString(1, channel);
@@ -428,7 +431,7 @@ public class NativeConnectionHandler extends ConnectionHandler {
 		if (!rs.next()) {
 			ps.close();
 			
-			ps = conn.prepareStatement("INSERT INTO ttirc_channels (channel, connection_id, chan_type)" +
+			ps = getConnection().prepareStatement("INSERT INTO ttirc_channels (channel, connection_id, chan_type)" +
 					"VALUES (?, ?, ?)");
 			ps.setString(1, channel);
 			ps.setInt(2, connectionId);
@@ -440,7 +443,7 @@ public class NativeConnectionHandler extends ConnectionHandler {
 	
 	public void syncNick() {
 		try {
-			PreparedStatement ps = conn.prepareStatement("UPDATE ttirc_connections SET active_nick = ?" +
+			PreparedStatement ps = getConnection().prepareStatement("UPDATE ttirc_connections SET active_nick = ?" +
 				"WHERE id = ?");
 		
 			ps.setString(1, irc.getNick());

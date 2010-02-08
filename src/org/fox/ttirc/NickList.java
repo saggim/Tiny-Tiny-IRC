@@ -247,7 +247,7 @@ public class NickList {
 		
 		try {
 		
-			PreparedStatement ps = handler.conn.prepareStatement("UPDATE ttirc_channels " +
+			PreparedStatement ps = handler.getConnection().prepareStatement("UPDATE ttirc_channels " +
 				"SET nicklist = ? WHERE channel = ? AND connection_id = ?");
 			
 			ps.setString(1, nicks.toJSONString());

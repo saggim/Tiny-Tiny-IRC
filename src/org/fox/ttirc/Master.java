@@ -10,7 +10,7 @@ public class Master {
 
 	protected final String version = "0.5.0";
 	
-	protected Connection conn;
+	private Connection conn;
 	protected Preferences prefs;
 	protected boolean active;
 	protected Hashtable<Integer, ConnectionHandler> connections;
@@ -26,6 +26,10 @@ public class Master {
 
 		m.Run();				
 	}	
+	
+	public Connection getConnection() {
+		return conn;
+	}
 	
 	public Master(String args[]) {
 		this.prefs = Preferences.userNodeForPackage(getClass());
