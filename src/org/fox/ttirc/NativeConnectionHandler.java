@@ -20,7 +20,8 @@ public class NativeConnectionHandler extends ConnectionHandler {
 	
 	protected int lastSentId = 0;
 	
-	protected NickList userlist = new NickList(this);
+	protected NickList nicklist = new NickList(this);
+	protected ExtNickInfo extnickinfo = new ExtNickInfo(this);
 	
 	private IRCConnection irc;
 	private boolean active = true;
@@ -28,6 +29,15 @@ public class NativeConnectionHandler extends ConnectionHandler {
 	public NativeConnectionHandler(int connectionId, Master master) {
 		this.connectionId = connectionId;
 		this.master = master;
+	}
+	
+	public IRCConnection getIRConnection() {
+		return irc;
+	}
+
+	public void requestUserhost(String nick) {
+		System.out.println("requestUserhost: " + nick);
+		irc.doWho(nick);
 	}
 	
 	public Connection getConnection() {
@@ -223,19 +233,23 @@ public class NativeConnectionHandler extends ConnectionHandler {
 
 		if (command[0].equals("away")) {
 			irc.doAway(command[1]);
+			return;
 		}
 		
 		if (command[0].equals("quote")) {
 			irc.send(command[1]);
+			return;
 		}
 		
 		if (command[0].equals("ping")) {
 			// TODO add ping()
+			//return;
 		}
 		
 		if (command[0].equals("msg")) {
 			String[] msgparts = command[1].split(" ", 2);
 			irc.doPrivmsg(msgparts[0], msgparts[1]);
+			return;
 		}
 		
 		if (command[0].equals("notice")) {
@@ -244,22 +258,27 @@ public class NativeConnectionHandler extends ConnectionHandler {
 		
 		if (command[0].equals("nick")) {
 			irc.doNick(command[1]);
+			return;
 		}
 		
 		if (command[0].equals("whois")) {
-			irc.doWhois(command[1]);			
+			irc.doWhois(command[1]);
+			return;
 		}
 		
 		if (command[0].equals("join")) {
 			irc.doJoin(command[1]);
+			return;
 		}
 		
 		if (command[0].equals("part")) {
 			irc.doPart(command[1]);
+			return;
 		}
 		
 		if (command[0].equals("action")) {
 			irc.doPrivmsg(chan, "\001ACTION " + command[1] + "\001");
+			return;
 		}
 
 		if (command[0].equals("mode")) {
@@ -268,11 +287,15 @@ public class NativeConnectionHandler extends ConnectionHandler {
 			System.out.println(msgparts[0] + " " + msgparts[1]);
 			
 			irc.doMode(msgparts[0], msgparts[1]);
+			return;
 		}
 
 		if (command[0].equals("umode")) {
 			irc.doMode(irc.getNick(), command[1]);
+			return;		
 		}
+		
+		pushMessage("---", "---", "UNKNOWN_CMD:" + command[0], Constants.MSGT_EVENT);
 	}
 	
 	public void checkMessages() {
@@ -442,6 +465,35 @@ public class NativeConnectionHandler extends ConnectionHandler {
 		}		
 	}
 	
+	public void removeChannel(String channel) throws SQLException {
+		
+		PreparedStatement ps = getConnection().prepareStatement("DELETE FROM ttirc_channels WHERE " +
+				"channel = ? AND connection_id = ?");
+		
+		ps.setString(1, channel);
+		ps.setInt(2, connectionId);
+		ps.execute();
+		ps.close();
+	}	
+	
+	public Vector<String> getChannels() throws SQLException {
+		PreparedStatement ps = getConnection().prepareStatement("SELECT channel FROM ttirc_channels WHERE " + 
+				"chan_type = ? AND connection_id = ?");
+		
+		ps.setInt(1, Constants.CT_CHANNEL);
+		ps.setInt(2, connectionId);		
+		ps.execute();
+		
+		Vector<String> tmp = new Vector<String>();
+		ResultSet rs = ps.getResultSet();
+		
+		while (rs.next()) {
+			tmp.add(rs.getString(1));
+		}
+		
+		return tmp;
+	}
+	
 	public void syncNick() {
 		try {
 			PreparedStatement ps = getConnection().prepareStatement("UPDATE ttirc_connections SET active_nick = ?" +
@@ -503,13 +555,35 @@ public class NativeConnectionHandler extends ConnectionHandler {
 					"JOIN:" + user.getNick() + ":" + user.getUsername() + "@" + user.getHost(), 
 					Constants.MSGT_EVENT);
 			
-			handler.userlist.addNick(chan, user.getNick());
+			if (user.getNick().equals(irc.getNick())) {
+				try {
+					handler.checkChannel(chan, Constants.CT_CHANNEL);
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+			
+			handler.nicklist.addNick(chan, user.getNick());
 		}
 
 		@Override
 		public void onKick(String chan, IRCUser user, String passiveNick, String msg) {
-			handler.pushMessage(user.getNick(), chan, "KICK:" + passiveNick + ":" + msg,
-					Constants.MSGT_EVENT);			
+			
+			if (passiveNick.equals(irc.getNick())) {
+				
+				handler.pushMessage(user.getNick(), "---", 
+						"KICK:" + passiveNick + ":" + msg + ":" + chan,
+						Constants.MSGT_EVENT);
+				try {
+					handler.removeChannel(chan);
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+				
+			} else {			
+				handler.pushMessage(user.getNick(), chan, "KICK:" + passiveNick + ":" + msg,
+					Constants.MSGT_EVENT);
+			}			
 		}
 
 		public void onMode(String chan, IRCUser user, IRCModeParser modeParser) {
@@ -523,10 +597,10 @@ public class NativeConnectionHandler extends ConnectionHandler {
 				
 				switch (mode) {
 				case 'o':
-					handler.userlist.setOp(chan, user.getNick(), op != '-');
+					handler.nicklist.setOp(chan, user.getNick(), op != '-');
 					break;
 				case 'v':
-					handler.userlist.setVoiced(chan, user.getNick(), op != '-');
+					handler.nicklist.setVoiced(chan, user.getNick(), op != '-');
 					break;
 				}					
 			}			
@@ -541,12 +615,12 @@ public class NativeConnectionHandler extends ConnectionHandler {
 
 		@Override
 		public void onNick(IRCUser user, String nick) {
-			Vector<String> chans = handler.userlist.isOn(user.getNick());
+			Vector<String> chans = handler.nicklist.isOn(user.getNick());
 			
 			for (String chan : chans) {
 				handler.pushMessage(user.getNick(), chan, "NICK:" + nick, Constants.MSGT_EVENT);
 			}
-			handler.userlist.renameNick(user.getNick(), nick);
+			handler.nicklist.renameNick(user.getNick(), nick);
 			handler.syncNick();
 		}
 
@@ -557,8 +631,18 @@ public class NativeConnectionHandler extends ConnectionHandler {
 		}
 
 		public void onPart(String chan, IRCUser user, String msg) {
-			handler.pushMessage(user.getNick(), chan, "PART:" + msg, Constants.MSGT_EVENT);
-			handler.userlist.delNick(chan, user.getNick());			
+			handler.nicklist.delNick(chan, user.getNick());
+			
+			if (user.getNick().equals(irc.getNick())) {
+				try {
+					handler.removeChannel(chan);
+					handler.nicklist.removeChannel(chan);
+				} catch (SQLException e) {
+					e.printStackTrace();					
+				}
+			}
+			
+			handler.pushMessage("---", chan, "PART:" + user.getNick() + ":" + msg, Constants.MSGT_EVENT);		
 		}
 
 		@Override
@@ -583,13 +667,13 @@ public class NativeConnectionHandler extends ConnectionHandler {
 		}
 
 		public void onQuit(IRCUser user, String message) {
-			Vector<String> chans = handler.userlist.isOn(user.getNick());
+			Vector<String> chans = handler.nicklist.isOn(user.getNick());
 			
 			for (String chan : chans) {
 				handler.pushMessage(user.getNick(), chan, "QUIT:" + message, Constants.MSGT_EVENT);
 			}
 			
-			handler.userlist.delNick(user.getNick());
+			handler.nicklist.delNick(user.getNick());
 		}
 
 		public void onRegistered() {
@@ -608,6 +692,17 @@ public class NativeConnectionHandler extends ConnectionHandler {
 			for (String chan : this.autojoin) {
 				handler.irc.doJoin(chan);				
 			}
+			
+			try {
+				Vector<String> activeChans = handler.getChannels();
+			
+				for (String chan : activeChans) {
+					handler.irc.doJoin(chan);
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			
 		}
 
 		public void onReply(int num, String value, String msg) {
@@ -627,17 +722,31 @@ public class NativeConnectionHandler extends ConnectionHandler {
 				String[] nicks = msg.split(" ");
 				
 				for (String nick : nicks) {
-					userlist.addNick(params[2], nick);
+					nicklist.addNick(params[2], nick);
 				}
 			}
 			
 			if (num == RPL_ENDOFNAMES) {
 				String[] params = value.split(" ");
-				try {
-					handler.checkChannel(params[1], Constants.CT_CHANNEL);
+				try {					
+					handler.checkChannel(params[1], Constants.CT_CHANNEL);					
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
+			}
+			
+			if (num == RPL_WHOREPLY) {
+				String[] params = value.split(" ");
+
+				String realName = msg.substring(2);
+				String nick = params[5];
+				String ident = params[2];
+				String host = params[3];
+				String server = params[4];
+				
+				handler.extnickinfo.update(nick, ident, host, server, realName);
+				
+				//System.out.println("WHOREPLY: " + nick + " " + ident + "@" + host + "[" + server + "]" + ", " + realName);				
 			}
 		}
 
@@ -655,6 +764,17 @@ public class NativeConnectionHandler extends ConnectionHandler {
 			// TODO Auto-generated method stub
 			
 		}		
+		
+	}
+
+	public void syncExtInfo(String jsonValue) throws SQLException {
+		PreparedStatement ps = getConnection().prepareStatement("UPDATE ttirc_connections SET userhosts = ? " +
+				"WHERE id = ?");
+		
+		ps.setString(1, jsonValue);
+		ps.setInt(2, connectionId);
+		ps.execute();
+		ps.close();
 		
 	}
 

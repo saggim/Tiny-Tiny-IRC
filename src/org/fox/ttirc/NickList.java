@@ -30,18 +30,19 @@ public class NickList {
 		private String nick;
 		private boolean v = false;
 		private boolean o = false;
-		
+				
 		public Nick(String nick) {
+			
+			//System.err.println("Nick(" + nick + ")");
+			
 			if (nick.charAt(0) == '@') {
 				nick = nick.substring(1);
-				this.o = true;
-			}
-
-			if (nick.charAt(0) == '+') {
+				o = true;
+			} else if (nick.charAt(0) == '+') {
 				nick = nick.substring(1);
-				this.v = true;
+				v = true;
 			}
-			
+		
 			this.nick = nick;		
 		}
 		
@@ -71,10 +72,20 @@ public class NickList {
 			return o;
 		}
 		
+		public String stripPrefix(String nick) {
+			if (nick.charAt(0) == '@') {
+				nick = nick.substring(1);
+			} else if (nick.charAt(0) == '+') {
+				nick = nick.substring(1);
+			}
+			return nick;
+		}
+		
 		public boolean equals(Object obj) {
-			boolean result = this.nick.equalsIgnoreCase(obj.toString());
+			boolean result = this.nick.equalsIgnoreCase(stripPrefix(obj.toString()));
 			
 			//System.out.println(nick + " EQUALS? " + obj + " = " + result);
+			
 			return result;
 		}
 		
@@ -92,6 +103,14 @@ public class NickList {
 		public int hashCode() {
 			return nick.hashCode();
 		}
+
+		public void updateModes(String nick) {
+			if (nick.charAt(0) == '@') {
+				o = true;
+			} else if (nick.charAt(0) == '+') {
+				v = true;
+			}			
+		}
 	}
 
 	private Hashtable<String, Vector<Nick>> nicklist = new Hashtable<String, Vector<Nick>>();
@@ -107,12 +126,23 @@ public class NickList {
 			nicklist.put(chan, new Vector<Nick>());
 	
 		chan = chan.toLowerCase();
-		Nick n = new Nick(nick);
+		//Nick n = new Nick(nick);
+		Nick n = findNick(chan, nick);
 		
-		if (!nicklist.get(chan).contains(n))
+		if (n != null) {
+			n.updateModes(nick);			
+		} else {
+			n = new Nick(nick);
 			nicklist.get(chan).add(n);
+			
+			handler.requestUserhost(nick);
+			
+			System.out.println("Added " + nick + " on " + chan);
+		}
 		
-		//System.out.println("Added " + nick + " on" + chan);
+		//if (!nicklist.get(chan).contains(n))
+		//	nicklist.get(chan).add(n);
+	
 		//System.out.println("L=" + nicklist.get(chan).toArray().length);
 				
 		Sync(chan);
@@ -240,10 +270,16 @@ public class NickList {
 		JSONArray nicks = new JSONArray();
 
 		while (en.hasMoreElements()) {
-			nicks.add(en.nextElement().toString());				
+			Nick n = en.nextElement();
+			
+			//System.out.println(channel + " N:" + n.getChan() + " " + n.toString());
+			
+			nicks.add(n.toString());				
 		}
 
 		Collections.sort(nicks, new NickComparator());
+		
+		//System.out.println("Syncing nicklist of " + channel + " = " + nicks);
 		
 		try {
 		
@@ -261,5 +297,17 @@ public class NickList {
 		}
 		
 	}
-	
+
+	public void removeChannel(String chan) {		
+		nicklist.remove(chan);		
+	}
+
+	/*public void requestUserhosts(String chan) {
+		Enumeration<Nick> en = nicklist.get(chan).elements();
+
+		while (en.hasMoreElements()) {
+			Nick n = en.nextElement();		
+			handler.requestUserhost(n.toString());			
+		}
+	} */	
 }
