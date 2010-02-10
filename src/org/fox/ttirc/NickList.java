@@ -33,8 +33,6 @@ public class NickList {
 				
 		public Nick(String nick) {
 			
-			//System.err.println("Nick(" + nick + ")");
-			
 			if (nick.charAt(0) == '@') {
 				nick = nick.substring(1);
 				o = true;
@@ -83,8 +81,6 @@ public class NickList {
 		
 		public boolean equals(Object obj) {
 			boolean result = this.nick.equalsIgnoreCase(stripPrefix(obj.toString()));
-			
-			//System.out.println(nick + " EQUALS? " + obj + " = " + result);
 			
 			return result;
 		}
@@ -137,14 +133,9 @@ public class NickList {
 			
 			handler.requestUserhost(nick);
 			
-			System.out.println("Added " + nick + " on " + chan);
+			//System.out.println("Added " + nick + " on " + chan);
 		}
 		
-		//if (!nicklist.get(chan).contains(n))
-		//	nicklist.get(chan).add(n);
-	
-		//System.out.println("L=" + nicklist.get(chan).toArray().length);
-				
 		Sync(chan);
 	}
 	
@@ -156,9 +147,6 @@ public class NickList {
 		Nick n = new Nick(nick); 
 		
 		nicklist.get(chan).remove(n);
-		
-		//System.out.println("Removed " + nick + " from" + chan);
-		//System.out.println("L=" + nicklist.get(chan).toArray().length);
 		
 		Sync(chan);
 	}
@@ -230,8 +218,6 @@ public class NickList {
 	public boolean setOp(String channel, String nick, boolean o) {
 		Nick n = findNick(channel, nick);
 		
-		//System.out.println("SET OP" + n + " on " + channel + " to " + o);
-		
 		if (n != null) {
 			n.setOp(o);
 			Sync(channel);
@@ -271,15 +257,10 @@ public class NickList {
 
 		while (en.hasMoreElements()) {
 			Nick n = en.nextElement();
-			
-			//System.out.println(channel + " N:" + n.getChan() + " " + n.toString());
-			
 			nicks.add(n.toString());				
 		}
 
 		Collections.sort(nicks, new NickComparator());
-		
-		//System.out.println("Syncing nicklist of " + channel + " = " + nicks);
 		
 		try {
 		
@@ -301,13 +282,4 @@ public class NickList {
 	public void removeChannel(String chan) {		
 		nicklist.remove(chan);		
 	}
-
-	/*public void requestUserhosts(String chan) {
-		Enumeration<Nick> en = nicklist.get(chan).elements();
-
-		while (en.hasMoreElements()) {
-			Nick n = en.nextElement();		
-			handler.requestUserhost(n.toString());			
-		}
-	} */	
 }

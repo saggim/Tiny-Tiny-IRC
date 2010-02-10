@@ -4,6 +4,7 @@ import java.io.*;
 import java.lang.Thread.*;
 import java.sql.*;
 import java.util.*;
+import java.util.logging.*;
 import java.util.prefs.Preferences;
 
 public class Master {
@@ -20,7 +21,9 @@ public class Master {
 	private String jdbcUrl;
 	private String dbUser;
 	private String dbPass;
-		
+	
+	private Logger logger = Logger.getLogger("org.fox.ttirc");
+	
 	/**
 	 * @param args
 	 */
@@ -30,6 +33,10 @@ public class Master {
 
 		m.Run();				
 	}	
+	
+	public Logger getLogger() {
+		return logger;
+	}
 	
 	public Connection getConnection() {
 	
@@ -72,8 +79,8 @@ public class Master {
 	
 	private Connection initConnection() throws SQLException {
 		
-		System.out.println("JDBC URL: " + jdbcUrl);
-		System.out.println("Establishing database connection...");
+		logger.info("JDBC URL: " + jdbcUrl);
+		logger.info("Establishing database connection...");
 		
 		this.conn = DriverManager.getConnection(jdbcUrl, dbUser, dbPass);
 		
@@ -83,14 +90,23 @@ public class Master {
 	public Master(String args[]) {
 		this.prefs = Preferences.userNodeForPackage(getClass());
 		this.active = true;
-		this.connections = new Hashtable<Integer, ConnectionHandler>(10,10);
+		this.connections = new Hashtable<Integer, ConnectionHandler>(10,10);		
 
+		try {
+			Handler fh = new FileHandler("%t/ttirc-backend.log");
+			fh.setFormatter(new SimpleFormatter()); 
+			logger.addHandler(fh);
+		} catch (IOException e) {
+			logger.warning(e.toString());
+			e.printStackTrace();
+		}
+		
 		String prefs_node = "";
 		boolean need_configure = false;
 		boolean show_help = false;
 		boolean need_cleanup = false;
 	
-		System.out.println("Master v" + version + " initializing...");
+		logger.info("Master v" + version + " initializing...");
 		
 		for (int i = 0; i < args.length; i++) {
 			String arg = args[i];
@@ -114,14 +130,14 @@ public class Master {
 		}
 		
 		if (prefs_node.length() > 0) {
-			System.out.println("Using custom preferences node: " + prefs_node);
+			logger.info("Using custom preferences node: " + prefs_node);
 			prefs = prefs.node(prefs_node);
 		}
 		
 		try {
 			Class.forName("org.postgresql.Driver");
 		} catch (ClassNotFoundException e) {
-			System.out.println("error: JDBC driver for PostgreSQL not found.");
+			logger.severe("error: JDBC driver for PostgreSQL not found.");
 			e.printStackTrace();
 			System.exit(1);			
 		}
@@ -146,12 +162,12 @@ public class Master {
 		try {
 			initConnection();
 		} catch (SQLException e) {
-			System.out.println("error: Couldn't connect to database.");
+			logger.severe("error: Couldn't connect to database.");
 			e.printStackTrace();
 			System.exit(1);
 		}
 		
-		System.out.println("Database connection established."); 
+		logger.info("Database connection established."); 
 
 		try {
 			cleanup();
@@ -203,16 +219,16 @@ public class Master {
 	
 			prefs.putBoolean("CONFIGURED", true);
 			
-			System.out.println("Data saved. Please use -configure switch to change it later.");
+			logger.info("Data saved. Please use -configure switch to change it later.");
 			
 		} catch (IOException e) {
-			System.out.println(e);
+			e.printStackTrace();
 		}
 	}
 	
 	public void cleanup() throws SQLException {
 		
-		System.out.println("Cleaning up...");
+		logger.info("Cleaning up...");
 		
 		Statement st = getConnection().createStatement();
 		
@@ -246,8 +262,6 @@ public class Master {
 			
     		ConnectionHandler ch = (ConnectionHandler) connections.get(connectionId);
     		
-    		//System.out.println("Conn state: " + ch.getState());
-    		
     		PreparedStatement ps = getConnection().prepareStatement("SELECT id FROM ttirc_connections WHERE id = ? " +
     			"AND enabled = true");
     		
@@ -257,16 +271,17 @@ public class Master {
     		ResultSet rs = ps.getResultSet();
     		
     		if (!rs.next()) {
-    			System.out.println("Connection " + connectionId + " needs termination.");
+    			logger.info("Connection " + connectionId + " needs termination.");
     			try {
     				ch.kill();
     			} catch (Exception ee) {
-    				System.err.println(ee);
+    				logger.warning(ee.toString());
+    				ee.printStackTrace();
     			}
     		}
     		
     		if (ch.getState() == State.TERMINATED) {
-    			System.out.println("Connection " + connectionId + " terminated.");
+    			logger.info("Connection " + connectionId + " terminated.");
     			connections.remove(connectionId);
     			cleanup(connectionId);
     		}			
@@ -288,7 +303,7 @@ public class Master {
 	    	String useCHType = (useNativeCH == true) ? "NativeConnectionHandler" : "SystemConnectionHandler"; 
 	    		
 	    	if (!connections.containsKey(connectionId)) {
-	    	  	System.out.println("Spawning connection " + connectionId + " using " + useCHType);
+	    	  	logger.info("Spawning connection " + connectionId + " using " + useCHType);
 	    	  	
 	    	  	ConnectionHandler ch;
 	    	  	
@@ -368,11 +383,9 @@ public class Master {
 	}
 	
 	public void Run() {
-		System.out.println("Waiting for clients...");
+		logger.info("Waiting for clients...");
 		
 		while (active) {
-			
-			//System.out.println("Master::Run()");
 			
 			try {	
 				updateHeartbeat();
@@ -392,6 +405,7 @@ public class Master {
 		try {
 			cleanup();
 		} catch (SQLException e) {
+			logger.warning(e.toString());
 			e.printStackTrace();			
 		}
 	}

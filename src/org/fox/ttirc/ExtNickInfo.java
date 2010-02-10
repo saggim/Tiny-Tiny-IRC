@@ -79,4 +79,9 @@ public class ExtNickInfo {
 			e.printStackTrace();
 		}
 	}
+
+	public void delete(String nick) {
+		extinfo.remove(nick);
+		Sync();
+	}
 }

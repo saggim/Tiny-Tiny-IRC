@@ -12,6 +12,7 @@ import org.schwering.irc.lib.IRCUser;
 import java.io.IOException;
 import java.sql.*;
 import java.util.*;
+import java.util.logging.*;
 
 public class NativeConnectionHandler extends ConnectionHandler {
 	
@@ -22,6 +23,7 @@ public class NativeConnectionHandler extends ConnectionHandler {
 	
 	protected NickList nicklist = new NickList(this);
 	protected ExtNickInfo extnickinfo = new ExtNickInfo(this);
+	protected Logger logger;
 	
 	private IRCConnection irc;
 	private boolean active = true;
@@ -29,6 +31,7 @@ public class NativeConnectionHandler extends ConnectionHandler {
 	public NativeConnectionHandler(int connectionId, Master master) {
 		this.connectionId = connectionId;
 		this.master = master;
+		this.logger = master.getLogger();
 	}
 	
 	public IRCConnection getIRConnection() {
@@ -36,7 +39,6 @@ public class NativeConnectionHandler extends ConnectionHandler {
 	}
 
 	public void requestUserhost(String nick) {
-		System.out.println("requestUserhost: " + nick);
 		irc.doWho(nick);
 	}
 	
@@ -113,8 +115,6 @@ public class NativeConnectionHandler extends ConnectionHandler {
 			
 			if (localNick.length() > 0) nick = localNick;
 					
-			System.out.println(nick + " " + email + " " + realname + " " + autojoin);
-			
 			String[] server = getRandomServer();
 			
 			if (server.length != 2) {
@@ -229,7 +229,7 @@ public class NativeConnectionHandler extends ConnectionHandler {
 	public void handleCommand(String chan, String message) {
 		String[] command = message.split(":", 2);
 		
-		System.out.println("COMMAND " + command[0] + "/" + command[1] + " on " + chan);
+		logger.info("COMMAND " + command[0] + "/" + command[1] + " on " + chan);
 
 		if (command[0].equals("away")) {
 			irc.doAway(command[1]);
@@ -284,8 +284,6 @@ public class NativeConnectionHandler extends ConnectionHandler {
 		if (command[0].equals("mode")) {
 			String[] msgparts = command[1].split(" ", 2);
 			
-			System.out.println(msgparts[0] + " " + msgparts[1]);
-			
 			irc.doMode(msgparts[0], msgparts[1]);
 			return;
 		}
@@ -324,8 +322,6 @@ public class NativeConnectionHandler extends ConnectionHandler {
 				String channel = rs.getString("channel");
 				String message = rs.getString("message");
 				
-				//System.out.println(messageType + ", " + message + " => " + channel);
-				
 				switch (messageType) {
 				case Constants.MSGT_PRIVMSG:			
 				case Constants.MSGT_PRIVATE_PRIVMSG:				
@@ -335,7 +331,7 @@ public class NativeConnectionHandler extends ConnectionHandler {
 					handleCommand(channel, message);
 					break;
 				default:
-					System.err.println("Received unknown MSG_TYPE: " + messageType);
+					logger.warning(connectionId + " received unknown MSG_TYPE: " + messageType);
 				}			
 			}
 			
@@ -412,7 +408,7 @@ public class NativeConnectionHandler extends ConnectionHandler {
 		} catch (Exception e) {
 			e.printStackTrace();
 			
-			System.err.println("Connection loop terminated, waiting...");
+			logger.warning("Connection loop terminated, waiting...");
 			
 			irc.doQuit("");
 			
@@ -424,8 +420,6 @@ public class NativeConnectionHandler extends ConnectionHandler {
 			
 			irc.close();
 		}
-		
-		System.out.println("Connection " + connectionId + " done.");
 	}
 	
 	public void setTopic(String channel, String nick, String topic) throws SQLException {
@@ -531,13 +525,11 @@ public class NativeConnectionHandler extends ConnectionHandler {
 		}
 
 		public void onError(String msg) {
-			System.out.println("ERROR: " + msg);
 			handler.pushMessage("---", "---", "Error: " + msg, Constants.MSGT_SYSTEM);
 		}
 
 		@Override
 		public void onError(int num, String msg) {
-			System.out.println("ERROR: " + num + " " + msg);
 			handler.pushMessage("---", "---", "Error [" + num + "] " + msg, Constants.MSGT_SYSTEM);
 			
 			if (num == 433) {
@@ -642,6 +634,11 @@ public class NativeConnectionHandler extends ConnectionHandler {
 				}
 			}
 			
+			Vector<String> isOn = handler.nicklist.isOn(user.getNick());
+			
+			if (!isOn.elements().hasMoreElements()) 
+				handler.extnickinfo.delete(user.getNick());
+			
 			handler.pushMessage("---", chan, "PART:" + user.getNick() + ":" + msg, Constants.MSGT_EVENT);		
 		}
 
@@ -652,8 +649,6 @@ public class NativeConnectionHandler extends ConnectionHandler {
 		}
 
 		public void onPrivmsg(String target, IRCUser user, String msg) {
-			//System.out.println(target + ":" + user.getNick() + ":" + msg);
-			
 			try {			
 				if (target.equals(handler.irc.getNick())) {
 					handler.checkChannel(user.getNick(), Constants.CT_PRIVATE);
@@ -674,11 +669,13 @@ public class NativeConnectionHandler extends ConnectionHandler {
 			}
 			
 			handler.nicklist.delNick(user.getNick());
+			handler.extnickinfo.delete(user.getNick());
 		}
 
 		public void onRegistered() {
 			
-			System.out.println("Connected to IRC");
+			handler.logger.info("Connected to IRC");
+			
 			handler.pushMessage("---", "---", "CONNECT", Constants.MSGT_EVENT);
 			
 			try {
@@ -717,7 +714,6 @@ public class NativeConnectionHandler extends ConnectionHandler {
 			}	
 			
 			if (num == RPL_NAMREPLY) {
-				System.out.println("NAMREPLY [" + value + "] ["+ msg + "]");
 				String[] params = value.split(" ");
 				String[] nicks = msg.split(" ");
 				
@@ -745,8 +741,6 @@ public class NativeConnectionHandler extends ConnectionHandler {
 				String server = params[4];
 				
 				handler.extnickinfo.update(nick, ident, host, server, realName);
-				
-				//System.out.println("WHOREPLY: " + nick + " " + ident + "@" + host + "[" + server + "]" + ", " + realName);				
 			}
 		}
 
@@ -764,7 +758,6 @@ public class NativeConnectionHandler extends ConnectionHandler {
 			// TODO Auto-generated method stub
 			
 		}		
-		
 	}
 
 	public void syncExtInfo(String jsonValue) throws SQLException {
