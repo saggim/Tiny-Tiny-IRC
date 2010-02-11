@@ -274,7 +274,17 @@ public class NativeConnectionHandler extends ConnectionHandler {
 			irc.send(command[1]);
 			return;
 		}
-		
+
+		if (command[0].equals("oper")) {
+			irc.send("OPER " + command[1]);
+			return;
+		}
+
+		if (command[0].equals("samode")) {
+			irc.send("SAMODE " + command[1]);
+			return;
+		}
+
 		if (command[0].equals("ping")) {
 			// TODO add ping()
 			//return;
@@ -287,7 +297,9 @@ public class NativeConnectionHandler extends ConnectionHandler {
 		}
 		
 		if (command[0].equals("notice")) {
-			// TODO add notice()
+			String[] msgparts = command[1].split(" ", 2);
+			irc.doNotice(msgparts[0], msgparts[1]);
+			return;		
 		}		
 		
 		if (command[0].equals("nick")) {
@@ -304,7 +316,12 @@ public class NativeConnectionHandler extends ConnectionHandler {
 			irc.doJoin(command[1]);
 			return;
 		}
-		
+
+		if (command[0].equals("topic")) {			
+			irc.doTopic(chan, command[1]);
+			return;
+		}
+
 		if (command[0].equals("part")) {
 			irc.doPart(command[1]);
 			return;
@@ -327,6 +344,26 @@ public class NativeConnectionHandler extends ConnectionHandler {
 			return;		
 		}
 		
+		if (command[0].equals("op")) {
+			irc.doMode(command[1], "+o");
+			return;
+		}
+
+		if (command[0].equals("deop")) {
+			irc.doMode(command[1], "-o");
+			return;
+		}
+
+		if (command[0].equals("voice")) {
+			irc.doMode(command[1], "+v");
+			return;
+		}
+
+		if (command[0].equals("devoice")) {
+			irc.doMode(command[1], "-v");
+			return;
+		}
+
 		pushMessage("---", "---", "UNKNOWN_CMD:" + command[0], Constants.MSGT_EVENT);
 	}
 	
