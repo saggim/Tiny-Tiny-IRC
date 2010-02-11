@@ -1580,7 +1580,7 @@ function hotkey_handler(e) {
 				var r = new RegExp(comp_str + "$");
 
 				for (var i = 0; i < nicks.length; i++) {
-					if (nicks[i].match("^" + comp_str)) {
+					if (nicks[i].toLowerCase().match("^" + comp_str.toLowerCase())) {
 
 						if (str == comp_str) {
 							str = str.replace(r, nicks[i] + ": ");
