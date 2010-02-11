@@ -492,6 +492,15 @@ public class NativeConnectionHandler extends ConnectionHandler {
 			
 			irc.close();
 		}
+		
+		try {
+			lock.release();
+			lockChannel.close();
+			logger.info("[" + connectionId + "] Lock released successfully.");
+		} catch (IOException e) {
+			logger.warning("[" + connectionId + "] Error while releasing connection lock: " + e.toString());
+			e.printStackTrace();
+		}
 	}
 	
 	public void setTopic(String channel, String nick, String topic) throws SQLException {
