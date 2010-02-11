@@ -11,4 +11,4 @@ classes: src/org/fox/ttirc/Master.java
 	javac -classpath ${LIBS} -d ${BINDIR} -sourcepath ${SRCDIR} ${^}
 
 backend.jar: classes
-	jar cmfv jar-manifest.mf ${JARFILE} -C ${BINDIR}/ .
+	jar cmfv manifest.mf ${JARFILE} -C ${BINDIR}/ .
