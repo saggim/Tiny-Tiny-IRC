@@ -9,7 +9,10 @@ import org.schwering.irc.lib.IRCUser;
 //import org.schwering.irc.lib.ssl.SSLIRCConnection;
 //import org.schwering.irc.lib.ssl.SSLTrustManager;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.nio.channels.*;
 import java.sql.*;
 import java.util.*;
 import java.util.logging.*;
@@ -27,19 +30,25 @@ public class NativeConnectionHandler extends ConnectionHandler {
 	
 	private IRCConnection irc;
 	private boolean active = true;
-	
+
+	private final String lockFileName = "handle.conn-%d.lock";
+	private String lockDir;
+	private FileLock lock;
+	private FileChannel lockChannel;
+
 	public NativeConnectionHandler(int connectionId, Master master) {
 		this.connectionId = connectionId;
 		this.master = master;
 		this.logger = master.getLogger();
+		this.lockDir = master.getLockDir();
 	}
 	
 	public IRCConnection getIRConnection() {
 		return irc;
 	}
 
-	public void requestUserhost(String nick) {
-		irc.doWho(nick);
+	public void requestUserhost(NickList.Nick nick) {
+		irc.doWho(nick.getNick());
 	}
 	
 	public Connection getConnection() {
@@ -205,10 +214,35 @@ public class NativeConnectionHandler extends ConnectionHandler {
 		irc.doQuit(getQuitMessage());
 	}
 	
+	private boolean lock() {
+		File f = new File(lockDir + File.separator + lockFileName.replace("%d", new Integer(connectionId).toString()));
+		
+		try {		
+			lockChannel = new RandomAccessFile(f, "rw").getChannel();			
+			lock = lockChannel.tryLock();
+			
+			if (lock != null) {			
+				logger.info("[" + connectionId + "] Lock acquired successfully (" + f.getName() + ").");
+			} else {
+				logger.severe("[" + connectionId + "] Couldn't acquire the lock: maybe the connection is already active?");
+				return false;
+			}
+			
+		} catch (Exception e) {
+			logger.severe("[" + connectionId + "] Couldn't make the lock: " + e.toString());
+			e.printStackTrace();
+			return false;
+		}
+		
+		return true;
+	}
+
+	
 	private String getQuitMessage() {
 		try {
-			PreparedStatement ps = getConnection().prepareStatement("SELECT quit_message FROM ttirc_connections "+
-				"WHERE id = ?");
+			PreparedStatement ps = getConnection().prepareStatement("SELECT quit_message FROM " +
+					"ttirc_users, ttirc_connections WHERE " +
+					"ttirc_users.id = owner_uid AND ttirc_connections.id = ?");
 		
 			ps.setInt(1, connectionId);
 			ps.execute();
@@ -391,6 +425,7 @@ public class NativeConnectionHandler extends ConnectionHandler {
 	public void run() {
 		try {
 			
+			if (!lock()) return;			
 			if (!connect()) return;
 		
 			while (active) {

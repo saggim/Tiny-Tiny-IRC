@@ -2,6 +2,7 @@ package org.fox.ttirc;
 
 import java.io.*;
 import java.lang.Thread.*;
+import java.nio.channels.*;
 import java.sql.*;
 import java.util.*;
 import java.util.logging.*;
@@ -17,6 +18,12 @@ public class Master {
 	protected int idleTimeout = 5000;
 	protected boolean useNativeCH = true;
 
+	private final int configVersion = 2;
+	private final String lockFileName = "master.lock";
+	private String lockDir;
+	private FileLock lock;
+	private FileChannel lockChannel;
+	
 	private Connection conn;
 	private String jdbcUrl;
 	private String dbUser;
@@ -36,6 +43,10 @@ public class Master {
 	
 	public Logger getLogger() {
 		return logger;
+	}
+	
+	public String getLockDir() {
+		return lockDir;
 	}
 	
 	public Connection getConnection() {
@@ -85,6 +96,29 @@ public class Master {
 		this.conn = DriverManager.getConnection(jdbcUrl, dbUser, dbPass);
 		
 		return conn;
+	}
+	
+	private boolean lock() {
+		File f = new File(lockDir + File.separator + lockFileName);
+		
+		try {		
+			lockChannel = new RandomAccessFile(f, "rw").getChannel();			
+			lock = lockChannel.tryLock();
+			
+			if (lock != null) {			
+				logger.info("Lock acquired successfully (" + f.getName() + ").");
+			} else {
+				logger.severe("Couldn't acquire the lock: maybe another daemon is already running?");
+				return false;
+			}
+			
+		} catch (Exception e) {
+			logger.severe("Couldn't make the lock: " + e.toString());
+			e.printStackTrace();
+			return false;
+		}
+		
+		return true;
 	}
 	
 	public Master(String args[]) {
@@ -142,10 +176,23 @@ public class Master {
 			System.exit(1);			
 		}
 
-		if (!prefs.getBoolean("CONFIGURED", false) || need_configure) {
+		if (prefs.getInt("CONFIG_VERSION", -1) != configVersion || need_configure) {
 			configure();
 		}
 		
+		String LOCK_DIR = prefs.get("LOCK_DIR", "/var/tmp");
+		
+		File f = new File(LOCK_DIR);
+		
+		if (!f.isDirectory() || !f.canWrite()) {
+			logger.severe("Lock directory [" + LOCK_DIR + "] must be a writable directory." );
+			System.exit(2);
+		}
+		
+		lockDir = LOCK_DIR;
+		
+		if (!lock()) System.exit(3);
+				
 		String DB_HOST = prefs.get("DB_HOST", "localhost");
 		String DB_USER = prefs.get("DB_USER", "user");
 		String DB_PASS = prefs.get("DB_PASS", "pass");
@@ -179,8 +226,8 @@ public class Master {
 	}
 	
 	public void configure() {
-		System.out.println("Database configuration");
-		System.out.println("======================");
+		System.out.println("Backend configuration");
+		System.out.println("=====================");
 		
 		InputStreamReader input = new InputStreamReader(System.in);
 		BufferedReader reader = new BufferedReader(input); 
@@ -190,13 +237,23 @@ public class Master {
 		try {
 		
 			while (!configured) {
-			
-				System.out.print("Database host: ");
+
+				System.out.print("Directory for lockfiles [/var/tmp]: ");
 				in = reader.readLine();
+				prefs.put("LOCK_DIR", in);
+
+				System.out.print("Database host [localhost]: ");
+				in = reader.readLine();
+				
+				if (in.length() == 0) in = "localhost";
+				
 				prefs.put("DB_HOST", in);
 
-				System.out.print("Database port: ");
+				System.out.print("Database port [5432]: ");
 				in = reader.readLine();
+				
+				if (in.length() == 0) in = "5432";
+				
 				prefs.put("DB_PORT", in);
 
 				System.out.print("Database name: ");
@@ -217,7 +274,7 @@ public class Master {
 				configured = in.equalsIgnoreCase("Y");				
 			}			
 	
-			prefs.putBoolean("CONFIGURED", true);
+			prefs.putInt("CONFIG_VERSION", configVersion);
 			
 			logger.info("Data saved. Please use -configure switch to change it later.");
 			
@@ -412,6 +469,9 @@ public class Master {
 	
 	public void finalize() throws Throwable {
 		cleanup();		
+
+		lock.release();
+		lockChannel.close();
 	}
 
 }

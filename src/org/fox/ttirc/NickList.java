@@ -14,10 +14,18 @@ public class NickList {
 			char c2 = o2.charAt(0);
 			
 			if (c1 == '@' && c2 != '@') {
+				return 0;
+			}
+
+			if (c1 != '@' && c2 == '@') {
 				return 1;
 			}
 
 			if (c1 == '+' && c2 != '+') {
+				return 0;
+			}
+
+			if (c1 != '+' && c2 == '+') {
 				return 1;
 			}
 
@@ -107,6 +115,11 @@ public class NickList {
 				v = true;
 			}			
 		}
+
+		/* returns nick without mode prefixes */		
+		public String getNick() {
+			return nick;
+		}
 	}
 
 	private Hashtable<String, Vector<Nick>> nicklist = new Hashtable<String, Vector<Nick>>();
@@ -131,7 +144,7 @@ public class NickList {
 			n = new Nick(nick);
 			nicklist.get(chan).add(n);
 			
-			handler.requestUserhost(nick);
+			handler.requestUserhost(n);
 			
 			//System.out.println("Added " + nick + " on " + chan);
 		}
