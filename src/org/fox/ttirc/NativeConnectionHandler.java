@@ -345,22 +345,22 @@ public class NativeConnectionHandler extends ConnectionHandler {
 		}
 		
 		if (command[0].equals("op")) {
-			irc.doMode(command[1], "+o");
+			irc.doMode(chan, "+o " + command[1]);
 			return;
 		}
 
 		if (command[0].equals("deop")) {
-			irc.doMode(command[1], "-o");
+			irc.doMode(chan, "-o " + command[1]);
 			return;
 		}
 
 		if (command[0].equals("voice")) {
-			irc.doMode(command[1], "+v");
+			irc.doMode(chan, "+v " + command[1]);
 			return;
 		}
 
 		if (command[0].equals("devoice")) {
-			irc.doMode(command[1], "-v");
+			irc.doMode(chan, "-v " + command[1]);
 			return;
 		}
 
