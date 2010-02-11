@@ -1208,6 +1208,10 @@ function handle_event(li_class, connection_id, line) {
 
 			push_message(connection_id, '---', line);
 			break;
+		case "UNKNOWN_CMD":
+			line.message = __("Unknown command: /%s.").replace("%s", params[1]);
+			push_message(connection_id, "---", line, MSGT_PRIVMSG);
+			break;
 		case "NICK":
 			var new_nick = params[1];
 
