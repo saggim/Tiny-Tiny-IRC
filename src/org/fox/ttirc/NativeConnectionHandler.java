@@ -693,9 +693,25 @@ public class NativeConnectionHandler extends ConnectionHandler {
 		}
 
 		@Override
-		public void onNotice(String arg0, IRCUser arg1, String arg2) {
-			// TODO Auto-generated method stub
-			
+		public void onNotice(String target, IRCUser user, String msg) {
+			// TODO handle replies to CTCP PING here
+			if (target.equals(irc.getNick())) {
+				
+				// server notice
+				if (user.getNick().equals(irc.getHost())) {
+					handler.pushMessage(user.getNick(), "---", "NOTICE:" + msg, Constants.MSGT_EVENT);					
+				} else {
+					try {
+						handler.checkChannel(user.getNick(), Constants.CT_PRIVATE);
+						handler.pushMessage(user.getNick(), user.getNick(), "NOTICE:" + msg, Constants.MSGT_EVENT);
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
+				}
+				
+			} else {
+				handler.pushMessage(user.getNick(), target, "NOTICE:" + msg, Constants.MSGT_EVENT);				
+			}			
 		}
 
 		public void onPart(String chan, IRCUser user, String msg) {
