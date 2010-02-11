@@ -126,14 +126,14 @@ public class Master {
 		this.active = true;
 		this.connections = new Hashtable<Integer, ConnectionHandler>(10,10);		
 
-		try {
+/*		try {
 			Handler fh = new FileHandler("%t/ttirc-backend.log");
 			fh.setFormatter(new SimpleFormatter()); 
 			logger.addHandler(fh);
 		} catch (IOException e) {
 			logger.warning(e.toString());
 			e.printStackTrace();
-		}
+		} */
 		
 		String prefs_node = "";
 		boolean need_configure = false;
