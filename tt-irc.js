@@ -1190,7 +1190,10 @@ function handle_event(li_class, connection_id, line) {
 			line.message = message;
 			line.message_type = MSGT_NOTICE;
 
-			push_message(connection_id, line.sender, line);
+			if (line.channel != "---")
+				push_message(connection_id, line.sender, line);
+			else
+				push_message(connection_id, line.channel, line);
 
 			break;
 
