@@ -219,7 +219,9 @@ public class NickList {
 	
 	public boolean setVoiced(String channel, String nick, boolean v) {
 		Nick n = findNick(channel, nick);
-			
+		
+		System.err.println("setVoiced " + channel + " " + nick + " = " + v + "; " + n);
+		
 		if (n != null) {
 			n.setVoiced(v);
 			Sync(channel);

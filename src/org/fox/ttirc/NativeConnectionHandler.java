@@ -659,12 +659,16 @@ public class NativeConnectionHandler extends ConnectionHandler {
 				char mode = modeParser.getModeAt(i+1);
 				char op = modeParser.getOperatorAt(i+1);
 				
+				String nick;
+				
 				switch (mode) {
 				case 'o':
-					handler.nicklist.setOp(chan, user.getNick(), op != '-');
+					nick = modeParser.getArgAt(i+1);
+					handler.nicklist.setOp(chan, nick, op != '-');
 					break;
 				case 'v':
-					handler.nicklist.setVoiced(chan, user.getNick(), op != '-');
+					nick = modeParser.getArgAt(i+1);
+					handler.nicklist.setVoiced(chan, nick, op != '-');
 					break;
 				}					
 			}			
