@@ -1594,7 +1594,7 @@ function hotkey_handler(e) {
 				}
 
 				for (var i = 0; i < commands.length; i++) {
-					if (commands[i].match("^" + comp_str)) {
+					if (commands[i].match("^" + comp_str.toLowerCase())) {
 
 						str = str.replace(r, commands[i] + " ");
 						elem.value = str;
