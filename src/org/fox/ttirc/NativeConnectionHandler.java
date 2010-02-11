@@ -448,11 +448,10 @@ public class NativeConnectionHandler extends ConnectionHandler {
 		ResultSet rs = ps.getResultSet();
 		
 		if (rs.next()) {
-			boolean enabled = rs.getBoolean("enabled");
-			
-			setConnected(enabled);
-			
+			boolean enabled = rs.getBoolean("enabled");			
+			setConnected(enabled);			
 		} else {
+			logger.info("[" + connectionId + "] Disconnecting due to user inactivity.");
 			setConnected(false);
 		}
 		
@@ -480,19 +479,19 @@ public class NativeConnectionHandler extends ConnectionHandler {
 		} catch (Exception e) {
 			e.printStackTrace();
 			
-			logger.warning("Connection loop terminated, waiting...");
-			
-			irc.doQuit("");
-			
-			try {
-				sleep(2000);
-			} catch (InterruptedException ie) {
-				ie.printStackTrace();
-			}
-			
-			irc.close();
+			logger.warning("[" + connectionId + "] Connection loop terminated, waiting...");
+		}
+
+		irc.doQuit("");
+		
+		try {
+			sleep(2000);
+		} catch (InterruptedException ie) {
+			ie.printStackTrace();
 		}
 		
+		irc.close();
+
 		try {
 			lock.release();
 			lockChannel.close();
