@@ -1,3 +1,0 @@
-Manifest-Version: 1.0
-Main-Class: org.fox.ttirc.Master
-Class-Path: lib/postgresql-8.4-701.jdbc4.jar lib/irclib.jar lib/json_simple-1.1.jar

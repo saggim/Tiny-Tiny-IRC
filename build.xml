@@ -1,14 +1,22 @@
 <?xml version="1.0"?>
 <project name="tt-irc" default="default">
 
-	<target name="default">
+	<target name="compile" depends="buildnumber">
+		<javac srcdir="src" destdir="bin" 
+			classpath="lib/postgresql-8.4-701.jdbc4.jar:lib/irclib.jar:lib/json_simple-1.1.jar"/>
+	</target>
+
+	<target name="default" depends="jar">
+	</target>
+
+	<target name="buildnumber">
 		<buildnumber file="build.number"/>
 		<tstamp>
 			<format property="TODAY" pattern="yyyy-MM-dd HH:mm:ss" />
 		</tstamp>
 	</target>
 
-	<target name="jar" depends="default">
+	<target name="jar" depends="compile">
 		<delete file="backend.jar"/>		
 		<delete file="ant-manifest.mf"/>
 		<property name="version.num" value="0.5.0"/>
