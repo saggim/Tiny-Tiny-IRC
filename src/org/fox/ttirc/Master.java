@@ -10,8 +10,6 @@ import java.util.prefs.Preferences;
 
 public class Master {
 
-	protected final String version = "0.5.0";
-	
 	protected Preferences prefs;
 	protected boolean active;
 	protected Hashtable<Integer, ConnectionHandler> connections;
@@ -140,7 +138,7 @@ public class Master {
 		boolean show_help = false;
 		boolean need_cleanup = false;
 	
-		logger.info("Master v" + version + " initializing...");
+		logger.info("Master " + Master.class.getPackage().getImplementationVersion() + " initializing...");
 		
 		for (int i = 0; i < args.length; i++) {
 			String arg = args[i];

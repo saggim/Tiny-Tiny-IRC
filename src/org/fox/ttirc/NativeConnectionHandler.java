@@ -479,11 +479,11 @@ public class NativeConnectionHandler extends ConnectionHandler {
 		} catch (Exception e) {
 			e.printStackTrace();
 			
-			logger.warning("[" + connectionId + "] Connection loop terminated, waiting...");
+			logger.warning("[" + connectionId + "] Connection loop exception: " + e.toString());
 		}
 
 		try {
-			irc.doQuit("");
+			irc.doQuit(getQuitMessage());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
