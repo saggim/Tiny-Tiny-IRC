@@ -221,6 +221,15 @@ public class Master {
 			e.printStackTrace();
 			System.exit(1);
 		}
+		
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+		    public void run() { try {
+				cleanup();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} }
+		});
+
 	}
 	
 	public String getVersion() {
