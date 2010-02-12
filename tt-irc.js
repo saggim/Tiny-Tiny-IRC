@@ -1709,6 +1709,12 @@ function is_highlight(connection_id, message) {
 	try {
 		message = message.toUpperCase();
 
+		if (message.message_type == MSGT_SYSTEM)
+			return false;
+
+		if (message.id <= last_old_id) 
+			return false;
+
 		if (typeof active_nicks[connection_id] == 'string' && 
 				message.match(active_nicks[connection_id].toUpperCase())) 
 			return true;
