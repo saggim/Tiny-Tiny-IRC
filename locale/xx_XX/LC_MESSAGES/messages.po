@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-01-27 19:26+0300\n"
+"POT-Creation-Date: 2010-02-12 14:10+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -31,20 +31,20 @@ msgstr "Üﻯēŗ ℅ŝ ãḻѓēâðÿ ĕχìﬆš"
 msgid "Reset password of user %s to <b>%s</b>."
 msgstr "Яėṡẻṫ ρąϟŝŵŏŗ∂ ѳḟ ûŝèŗ ℅š ţö <ﻅ>℅ś<⁄Ѣ>∙"
 
-#: backend.php:236
+#: backend.php:254
 msgid "[Untitled]"
 msgstr "[Ūתẗỉẗḻẻđ]"
 
-#: backend.php:313
+#: backend.php:343
 #, php-format
 msgid "Couldn't add server (%s:%d): Invalid syntax."
 msgstr "ҀỏưĺḏŊ‘ṫ ǡḏḑ şéřύęŗ ₍℅ş∶℅δ₎∶ Ì∩νåļϊď ṡỹńךäẋ·"
 
-#: backend.php:364 login_form.php:124
+#: backend.php:394 login_form.php:124
 msgid "Default profile"
 msgstr "Ḋėϝåúĺṫ ṗѓﻩﬁḻẻ"
 
-#: connection.php:653 tt-irc.js:780 tt-irc.js:784
+#: connection.php:761 tt-irc.js:876 tt-irc.js:880
 msgid "Tiny Tiny IRC"
 msgstr "Ţϊηý Ṫì∩ỷ ΊŘČ"
 
@@ -108,21 +108,26 @@ msgstr "ŠǪĹ ẻŝĉǎṗĭηḡ ẗêﬆ ϝāíľẽḑ، ςẖèćĸ ўôú�
 msgid "Backend connection daemon is not running."
 msgstr "Ḇâćĸėñδ ćŏήṅèҁṯìﻩŋ ðǣḿǒή ìŝ ṅ∅ť ŗųמŋīńﻕ∙"
 
-#: errors.php:35 tt-irc.js:117
+#: errors.php:35 tt-irc.js:134
 msgid "The application failed to initialize."
 msgstr "Ťĥë ǟṗρḻỉçâךǐôמ ϝâĩḻęδ ךσ ǐŉįţĩǡŀỉẑė·"
 
-#: functions.php:145
+#: functions.php:146
 msgid "Incorrect username or password"
 msgstr "Ỉ∩ćŏṟřěċŧ ùϟēṟ∩åṁė òṟ ṗảﻯﺉẃøṙḑ"
 
-#: functions.php:309
+#: functions.php:311
 msgid "Session failed to validate (incorrect IP)"
 msgstr "§ĕşϟỉ∅ṅ ḟâìḻẽđ ṯﻩ ϋăḻìđǡẗĕ ₍ĭŉĉøṙѓě¢ṯ ÌṖ₎"
 
-#: functions.php:893
+#: functions.php:908
 msgid "Default"
 msgstr "Ḋëϝảǔļŧ"
+
+#: index.php:66 index.php:69
+#, fuzzy
+msgid "Click to close"
+msgstr "℃ŀīćḵ ךő ėḑìť ūśëř"
 
 #: index.php:73
 msgid "Loading, please wait..."
@@ -139,23 +144,23 @@ msgstr ""
 msgid "Fatal Exception"
 msgstr "℉ăŧàľ Ẽẍçẽρŧīﻩη"
 
-#: index.php:97
-msgid "Close this window"
-msgstr "℃ḻòšē ẗḩĭš ẇïŉðõώ"
+#: index.php:99
+msgid "Try again"
+msgstr ""
 
-#: index.php:110
+#: index.php:112
 msgid "Hello,"
 msgstr "Ήěḻłò،"
 
-#: index.php:112 prefs.php:189
+#: index.php:114 prefs.php:220
 msgid "Preferences"
 msgstr "Ṗřëḟèŗèήċėś"
 
-#: index.php:115
+#: index.php:117
 msgid "Users"
 msgstr "Ǔﻱėѓş"
 
-#: index.php:119
+#: index.php:121
 msgid "Logout"
 msgstr "∟óģσúṯ"
 
@@ -183,120 +188,148 @@ msgstr "Ḻôḡ ìń"
 msgid "Create new account"
 msgstr "Çѓěą†ẻ ṅẻώ ą¢ςσùη†"
 
+#: prefs.php:7
+msgid "Customize Theme"
+msgstr ""
+
+#: prefs.php:11
+msgid "Custom CSS declarations"
+msgstr ""
+
+#: prefs.php:17
+#, php-format
+msgid ""
+"You can override colors, fonts and layout of your currently selected theme "
+"with custom CSS declarations here. <a target=\"_blank\" href=\"%s\">This "
+"file</a> can be used as a baseline."
+msgstr ""
+
 #: prefs.php:22
+msgid "Save & Reload"
+msgstr ""
+
+#: prefs.php:23 prefs.php:168
+msgid "Go back"
+msgstr "Ḡѳ ḇáҁǩ"
+
+#: prefs.php:52
 msgid "(connected)"
 msgstr "₍ćôņṅěςťėḏ₎"
 
-#: prefs.php:63
+#: prefs.php:93
 msgid "Edit Connection"
 msgstr "Ēḏϊך Ćﻩηṉẻćṯîò∩"
 
-#: prefs.php:67
+#: prefs.php:97
 msgid "Connection"
 msgstr "Ćőṉņëć†ϊŏή"
 
-#: prefs.php:75
+#: prefs.php:105
 msgid "Title:"
 msgstr "Ṯįŧłë∶"
 
-#: prefs.php:79 prefs.php:205
+#: prefs.php:109 prefs.php:236
 msgid "Nickname:"
 msgstr "№ςḵńǡṁë∶"
 
-#: prefs.php:83
+#: prefs.php:113
 msgid "Favorite channels:"
 msgstr "Ḟǎΰŏřǐťé ¢ḧäήŊēļﻱ∶"
 
-#: prefs.php:87
+#: prefs.php:117
 msgid "Connect command:"
 msgstr "℃óñŋĕčṯ ҁơḿḿǟמδ∶"
 
-#: prefs.php:91
+#: prefs.php:121
 msgid "Character set:"
 msgstr "ϚЋảѓàĉךẽѓ šę†∶"
 
-#: prefs.php:104
+#: prefs.php:134
 #, fuzzy
 msgid "Enable connection"
 msgstr "Ĉṟĕàŧè ςǒηŋèҁṫįﻩת"
 
-#: prefs.php:110
+#: prefs.php:140
 msgid "Automatically connect"
 msgstr "Åט†ﻩḿăţỉςǎḻļỷ ςơṅṉêćṫ"
 
-#: prefs.php:116
+#: prefs.php:146
 msgid "Stay connected permanently"
 msgstr "Ś†ªý ċôņñẽċṫě∂ ṗéṙṁäŉēήţĺỳ"
 
-#: prefs.php:126
+#: prefs.php:156
 msgid "Servers"
 msgstr "Ṡêřṽëṟﻯ"
 
-#: prefs.php:134
+#: prefs.php:164
 msgid "Add server"
 msgstr "Âḏḑ šẻṟѵëŗ"
 
-#: prefs.php:135 prefs.php:250 users.php:50
+#: prefs.php:165 prefs.php:289 users.php:50
 msgid "Delete"
 msgstr "Ðĕĺěŧê"
 
-#: prefs.php:137 prefs.php:253
+#: prefs.php:167 prefs.php:292
 msgid "Save"
 msgstr "Ŝǎϋę"
 
-#: prefs.php:138
-msgid "Go back"
-msgstr "Ḡѳ ḇáҁǩ"
-
-#: prefs.php:158
+#: prefs.php:188
 msgid "(active)"
 msgstr "₍åćŧĭύè₎"
 
-#: prefs.php:166
+#: prefs.php:196
 msgid "Click to edit connection"
 msgstr "Ĉļìčḵ ŧó éðíŧ ҁѳńŊêçťĭﻩŉ"
 
-#: prefs.php:198
+#: prefs.php:229
 msgid "Personal data"
 msgstr "Ṗẽṟšﻩṅâľ δäťª"
 
-#: prefs.php:201
+#: prefs.php:232
 msgid "Real name:"
 msgstr "Ʀęảĺ ήǟṁẽ∶"
 
-#: prefs.php:209
+#: prefs.php:240
 msgid "E-mail:"
 msgstr "ξ―ḿáīľ∶"
 
-#: prefs.php:213
+#: prefs.php:244
 msgid "Quit message:"
 msgstr "Ϙџĭך ḿéﻱşåǧè∶"
 
-#: prefs.php:217
+#: prefs.php:248
+msgid "Highlight on:"
+msgstr ""
+
+#: prefs.php:252
 msgid "Theme:"
 msgstr "Ţẖèṁė∶"
 
-#: prefs.php:224
+#: prefs.php:257
+msgid "Customize"
+msgstr ""
+
+#: prefs.php:263
 msgid "Authentication"
 msgstr "Ąùţḩëṉ†îćáẗī∅ŋ"
 
-#: prefs.php:227
+#: prefs.php:266
 msgid "New password:"
 msgstr "Ňéẃ ρàﻱšẅöѓ∂∶"
 
-#: prefs.php:231
+#: prefs.php:270
 msgid "Confirm:"
 msgstr "Ϛﻩמﬁřṁ∶"
 
-#: prefs.php:239
+#: prefs.php:278
 msgid "Connections"
 msgstr "ĈőňŊèҁŧîōŊﻱ"
 
-#: prefs.php:248
+#: prefs.php:287
 msgid "Create connection"
 msgstr "Ĉṟĕàŧè ςǒηŋèҁṫįﻩת"
 
-#: prefs.php:254 users.php:53
+#: prefs.php:293 users.php:53
 msgid "Close"
 msgstr "Ĉŀỏśė"
 
@@ -411,99 +444,113 @@ msgstr "Ṗḻēåﺉė ﻱëŀė¢ŧ ﻯöḿê ṡèѓύėṟş †σ δèłě
 msgid "Server:Port (e.g. irc.example.org:6667):"
 msgstr "∫ėṟϋèŗ∶Ṗõṙṫ ₍è∙ğ∙ įŗċ∙ęχâḿρĺè·öṟğ∶6667₎∶"
 
-#: tt-irc.js:63
+#: tt-irc.js:78
 msgid "Close this tab"
 msgstr "Ҁłőṡê ךḣϊṡ ẗáѢ"
 
-#: tt-irc.js:454
+#: tt-irc.js:469
 msgid "Connected to: "
 msgstr "Ҁ∅ńṅëčṯë∂ ṯŏ∶ "
 
-#: tt-irc.js:458 tt-irc.js:464
+#: tt-irc.js:473 tt-irc.js:479
 msgid "Disconnected."
 msgstr "ḎïﺉҁôמŊèҁ†ëδ·"
 
-#: tt-irc.js:476
+#: tt-irc.js:491
 msgid "Conversation with"
 msgstr "Çó∩ύẽṙϟªṫǐѳñ ẅǐťḣ"
 
-#: tt-irc.js:489
+#: tt-irc.js:521
 msgid "Connect"
 msgstr "ĈσņŊẻçך"
 
-#: tt-irc.js:494
+#: tt-irc.js:526
 msgid "Connecting..."
 msgstr "Ҁőηņĕĉţįṅğ∙∙∙"
 
-#: tt-irc.js:499
+#: tt-irc.js:531
 msgid "Disconnect"
 msgstr "Ðỉşċô∩ŉęċţ"
 
-#: tt-irc.js:767
+#: tt-irc.js:858
 msgid "Tiny Tiny IRC [%a @ %b / %c]"
 msgstr "Ṯïŋÿ Ţỉńÿ ÏṞĆ [℅à @ ℅ѣ ⁄ ℅¢]"
 
-#: tt-irc.js:883
+#: tt-irc.js:1000
 msgid "Close this tab?"
 msgstr "Ċŀōṡĕ †ḧîϟ ţäь؟"
 
-#: tt-irc.js:914
+#: tt-irc.js:1031
 msgid "Start conversation with %s?"
 msgstr "Śẗåṙ† ¢ѳņעėřϟàṯīσń ŵì†ḧ ℅ş؟"
 
-#: tt-irc.js:951
+#: tt-irc.js:1068
 msgid "%u has changed the topic to: %s"
 msgstr "℅û ħąﻯ ςẖäṅﻕĕď ṫĥè ẗﻩṕíč ẗø∶ ℅ϟ"
 
-#: tt-irc.js:965
+#: tt-irc.js:1082
 msgid "%u has changed mode [%m] on %s"
 msgstr "℅ų ḧáš ҁĥâŉǥęď ṁöðè [℅ṁ] öň ℅ϟ"
 
-#: tt-irc.js:975
+#: tt-irc.js:1092
 msgid "%u has changed mode [%m]"
 msgstr "℅ũ ḧãṡ čЋă∩ḡéđ ḿ∅ḑě [℅ḿ]"
 
-#: tt-irc.js:989
+#: tt-irc.js:1106
 msgid "%u has been kicked from %c by %n (%m)"
 msgstr "℅∪ ẖāﺉ Ъèëṉ ḱìҁǩěḋ ḟṟﻩḿ ℅ς Ъŷ ℅ŉ ₍℅ṁ₎"
 
-#: tt-irc.js:1003
+#: tt-irc.js:1120
 msgid "%u has left %c (%m)"
 msgstr "℅ű ĥǟϟ ĺėḟṯ ℅¢ ₍℅ṁ₎"
 
-#: tt-irc.js:1014
+#: tt-irc.js:1131
 msgid "%u (%h) has joined %c"
 msgstr "℅ũ ₍℅ḣ₎ Ћāﻱ ﺫѳïŉèð ℅ҁ"
 
-#: tt-irc.js:1025
+#: tt-irc.js:1142
 msgid "%u has quit IRC (%s)"
 msgstr "℅ũ ḣąś ۹∪ĩ† ÏṞČ ₍℅ŝ₎"
 
-#: tt-irc.js:1031
+#: tt-irc.js:1149
 msgid "Connection terminated."
 msgstr "Ĉѳŋņêċťïỏṅ ẗèřḿìṉǡṯẻδ∙"
 
-#: tt-irc.js:1036
+#: tt-irc.js:1154
 msgid "Requesting connection..."
 msgstr "Ṙé¶µėﬆĭṉǥ ¢ǒŋמëҁţìőη·∙·"
 
-#: tt-irc.js:1044
+#: tt-irc.js:1162
 msgid "Connecting to %s:%d..."
 msgstr "℃ﻩñמëĉţīηǥ ṫѳ ℅ϟ∶℅δ∙∙∙"
 
-#: tt-irc.js:1052
+#: tt-irc.js:1170
 msgid "Ping reply from %u: %d second(s)."
 msgstr "Ṗǐñģ ṟèρłγ ḟŗﻩḿ ℅ŭ∶ ℅δ ŝėċǒṅδ₍ṡ₎∙"
 
-#: tt-irc.js:1063
+#: tt-irc.js:1204
+#, fuzzy
+msgid "Received CTCP %c (%a) from %u"
+msgstr "Ʀė¢ẽĭΰéď ṗĭṅģ ₍℅ﻯ₎ ḟѓõṁ ℅ů"
+
+#: tt-irc.js:1216
+#, fuzzy
+msgid "CTCP %c reply from %u: %a"
+msgstr "Ṗǐñģ ṟèρłγ ḟŗﻩḿ ℅ŭ∶ ℅δ ŝėċǒṅδ₍ṡ₎∙"
+
+#: tt-irc.js:1228
 msgid "Received ping (%s) from %u"
 msgstr "Ʀė¢ẽĭΰéď ṗĭṅģ ₍℅ﻯ₎ ḟѓõṁ ℅ů"
 
-#: tt-irc.js:1070
+#: tt-irc.js:1235
 msgid "Connection established."
 msgstr "Čﻩṉṉẽ¢ŧǐŏń éﬆǟЫíşḩẽđ∙"
 
-#: tt-irc.js:1083
+#: tt-irc.js:1240
+msgid "Unknown command: /%s."
+msgstr ""
+
+#: tt-irc.js:1250
 msgid "%u is now known as %n"
 msgstr "℅ũ ǐﻱ ŋõẇ ĸמѳẘň ãś ℅ñ"
 
@@ -522,6 +569,9 @@ msgstr "Ṗłėǎšě šêĺẻĉ† şõḿè ùśêṙﻯ ṫō đéłėťė�
 #: users.js:109
 msgid "Please select one user to reset password."
 msgstr "Ṗĺěảﺉê śěłėčṫ ŏŊẻ űśěṟ ṫó ѓęﻯĕť ρâﻯṡωòŗ∂·"
+
+#~ msgid "Close this window"
+#~ msgstr "℃ḻòšē ẗḩĭš ẇïŉðõώ"
 
 #~ msgid "Start conversation"
 #~ msgstr "∫ţàřך ćöṉύēṙϟªţįôη"
