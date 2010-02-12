@@ -38,7 +38,8 @@ var colormap = [ "#00CCCC", "#000000", "#0000CC", "#CC00CC", "#606060",
 	"red", "#909090", "teal", "#CCCC00" ]
 
 var commands = [ "/join", "/part", "/nick", "/query", "/quote", "/msg", 
-	 "/op", "/deop", "/voice", "/devoice", "/ping", "/notice", "/away" ];
+	"/op", "/deop", "/voice", "/devoice", "/ping", "/notice", "/away",
+	"/ctcp" ];
 
 function create_tab_if_needed(chan, connection_id, tab_type) {
 	try {
