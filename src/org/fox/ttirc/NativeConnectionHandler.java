@@ -774,7 +774,7 @@ public class NativeConnectionHandler extends ConnectionHandler {
 				if (target.equals(irc.getNick())) {
 					
 					// server notice
-					if (user.getNick().equals(irc.getHost())) {
+					if (user.getNick().equals(user.getServername())) {
 						handler.pushMessage(user.getNick(), "---", "NOTICE:" + msg, Constants.MSGT_EVENT);					
 					} else {
 						try {
