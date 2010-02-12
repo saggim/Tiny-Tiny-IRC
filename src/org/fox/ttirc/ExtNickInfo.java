@@ -7,19 +7,22 @@ import org.json.simple.*;
 public class ExtNickInfo {
 	
 	public class ExtInfo {
-		public String ident;
-		public String host;
-		public String server;
-		public String realName;
+		private String ident;
+		private String host;
+		private String server;
+		private String realName;
 		
-		public String awayReason;
-		public boolean isAway;
+		private String awayReason;
+		private boolean isAway;
+		
+		private Date lastUpdated;
 		
 		public ExtInfo(String ident, String host, String server, String realName) {
 			this.ident = ident;
 			this.host = host;
 			this.server = server;
-			this.realName = realName;
+			this.realName = realName;			
+			this.lastUpdated = new Date();
 		}
 
 		@SuppressWarnings("unchecked")
@@ -30,10 +33,66 @@ public class ExtNickInfo {
 			tmp.add(host);
 			tmp.add(server);
 			tmp.add(realName);
-			tmp.add(awayReason);
 			tmp.add(isAway);
+			tmp.add(awayReason);
 			
 			return tmp;
+		}
+
+		public void setIdent(String ident) {
+			this.ident = ident;
+		}
+
+		public String getIdent() {
+			return ident;
+		}
+
+		public void setHost(String host) {
+			this.host = host;
+		}
+
+		public String getHost() {
+			return host;
+		}
+
+		public void setServer(String server) {
+			this.server = server;
+		}
+
+		public String getServer() {
+			return server;
+		}
+
+		public void setRealName(String realName) {
+			this.realName = realName;
+		}
+
+		public String getRealName() {
+			return realName;
+		}
+
+		public void setAwayReason(String awayReason) {
+			this.awayReason = awayReason;
+		}
+
+		public String getAwayReason() {
+			return awayReason;			
+		}
+
+		public void setAway(boolean isAway) {
+			this.isAway = isAway;
+		}
+
+		public boolean isAway() {
+			return isAway;
+		}
+
+		public void setUpdated() {
+			this.lastUpdated = new Date();
+		}
+		
+		public Date getLastUpdated() {
+			return lastUpdated;
 		}
 	}
 
@@ -48,10 +107,11 @@ public class ExtNickInfo {
 		ExtInfo xi = extinfo.get(nick);
 		
 		if (xi != null) {
-			xi.ident = ident;
-			xi.host = host;
-			xi.server = server;
-			xi.realName = realName;
+			xi.setIdent(ident);
+			xi.setHost(host);
+			xi.setServer(server);
+			xi.setRealName(realName);
+			xi.setUpdated();
 		} else {
 			xi = new ExtInfo(ident, host, server, realName);
 		}
@@ -83,5 +143,27 @@ public class ExtNickInfo {
 	public void delete(String nick) {
 		extinfo.remove(nick);
 		Sync();
+	}
+	
+	public void setAwayReason(String nick, String awayReason) {
+		ExtInfo xi = extinfo.get(nick);
+		
+		if (xi != null) {
+			xi.awayReason = awayReason;
+			xi.setUpdated();
+			Sync();
+		}
+	}
+	
+	public void setAway(String nick, boolean away) {
+		ExtInfo xi = extinfo.get(nick);
+		
+		if (xi != null) {
+			xi.isAway = away;			
+			if (!away) xi.setAwayReason("");
+			xi.setUpdated();
+
+			Sync();
+		}
 	}
 }

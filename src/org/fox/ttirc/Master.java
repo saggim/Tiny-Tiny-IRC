@@ -445,7 +445,7 @@ public class Master {
 		ps.execute();
 		ps.close();
 		
-		ps = getConnection().prepareStatement("UPDATE ttirc_channels SET nicklist = '' " +
+		ps = getConnection().prepareStatement("UPDATE ttirc_channels SET nicklist = '', topic = '' " +
 				"WHERE connection_id = ?");
 		
 		ps.setInt(1, connectionId);

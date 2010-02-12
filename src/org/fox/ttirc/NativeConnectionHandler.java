@@ -20,14 +20,13 @@ import java.util.logging.*;
 
 public class NativeConnectionHandler extends ConnectionHandler {
 	
-	protected int connectionId;
-	protected Master master;
+	private int connectionId;
+	private Master master;	
+	private int lastSentId = 0;
 	
-	protected int lastSentId = 0;
-	
-	protected NickList nicklist = new NickList(this);
-	protected ExtNickInfo extnickinfo = new ExtNickInfo(this);
-	protected Logger logger;
+	private NickList nicklist = new NickList(this);
+	private ExtNickInfo extnickinfo = new ExtNickInfo(this);
+	private Logger logger;
 	
 	private IRCConnection irc;
 	private boolean active = true;
@@ -212,7 +211,11 @@ public class NativeConnectionHandler extends ConnectionHandler {
 	}
 	
 	public void kill() {
-		irc.doQuit(getQuitMessage());
+		try {
+			setConnected(false);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	private boolean lock() {
@@ -268,6 +271,7 @@ public class NativeConnectionHandler extends ConnectionHandler {
 
 		if (command[0].equals("away")) {
 			irc.doAway(command[1]);
+			extnickinfo.setAwayReason(irc.getNick(), command[1]);
 			return;
 		}
 		
@@ -490,6 +494,8 @@ public class NativeConnectionHandler extends ConnectionHandler {
 			logger.warning("[" + connectionId + "] Connection loop exception: " + e.toString());
 		}
 
+		logger.info("[" + connectionId + "] Connection loop terminating.");
+		
 		try {
 			irc.doQuit(getQuitMessage());
 		} catch (Exception e) {
@@ -497,7 +503,7 @@ public class NativeConnectionHandler extends ConnectionHandler {
 		}
 		
 		try {
-			sleep(2000);
+			sleep(1000);
 		} catch (InterruptedException ie) {
 			ie.printStackTrace();
 		}
@@ -891,7 +897,7 @@ public class NativeConnectionHandler extends ConnectionHandler {
 		@Override
 		public void onRegistered() {
 			
-			handler.logger.info("Connected to IRC");
+			handler.logger.info("[" + connectionId + "] Connected to IRC.");
 			
 			handler.pushMessage("---", "---", "CONNECT", Constants.MSGT_EVENT);
 			
@@ -931,6 +937,36 @@ public class NativeConnectionHandler extends ConnectionHandler {
 				}
 			}	
 			
+			if (num == RPL_TOPICINFO) {
+				System.out.println("[TOPICINFO]" + value + "/" + msg);
+			}
+			
+			if (num == RPL_UNAWAY) {
+				String nick = value;
+				handler.extnickinfo.setAway(nick, false);
+				
+				if (nick.equals(irc.getNick())) {
+					handler.pushMessage("---", "---", msg, Constants.MSGT_SYSTEM);
+				}
+			}
+
+			if (num == RPL_NOWAWAY) {
+				String nick = value;
+				handler.extnickinfo.setAway(nick, true);
+				
+				if (nick.equals(irc.getNick())) {
+					handler.pushMessage("---", "---", msg, Constants.MSGT_SYSTEM);
+				}
+			}
+
+			if (num == 301) { /* AWAYREASON */
+				//System.out.println("[AWAYREASON] " + value + "/" + msg);
+				String[] nicks = value.split(" ");
+				if (nicks.length == 2) {
+					handler.extnickinfo.setAwayReason(nicks[1], msg);
+				}
+			}
+
 			if (num == RPL_NAMREPLY) {
 				String[] params = value.split(" ");
 				String[] nicks = msg.split(" ");
@@ -988,6 +1024,10 @@ public class NativeConnectionHandler extends ConnectionHandler {
 		ps.execute();
 		ps.close();
 		
+	}
+
+	public int getConnectionId() {
+		return connectionId;
 	}
 
 }

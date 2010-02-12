@@ -284,7 +284,7 @@ public class NickList {
 			
 			ps.setString(1, nicks.toJSONString());
 			ps.setString(2, channel);
-			ps.setInt(3, handler.connectionId);
+			ps.setInt(3, handler.getConnectionId());
 			ps.execute();
 			ps.close();
 			
