@@ -521,10 +521,12 @@ public class NativeConnectionHandler extends ConnectionHandler {
 	public void setTopic(String channel, String nick, String topic) throws SQLException {
 		
 		PreparedStatement ps = getConnection().prepareStatement("UPDATE ttirc_channels SET " +
-				"topic = ?, topic_owner = ?, topic_set = NOW()");
+				"topic = ?, topic_owner = ?, topic_set = NOW() WHERE channel = ? AND connection_id = ?");
 	
 		ps.setString(1, topic);
 		ps.setString(2, nick);
+		ps.setString(3, channel);
+		ps.setInt(4, connectionId);
 		
 		ps.execute();
 		ps.close();
