@@ -15,7 +15,6 @@ import java.io.RandomAccessFile;
 import java.nio.channels.*;
 import java.sql.*;
 import java.util.*;
-import java.util.Date;
 import java.util.logging.*;
 
 public class NativeConnectionHandler extends ConnectionHandler {
@@ -291,8 +290,7 @@ public class NativeConnectionHandler extends ConnectionHandler {
 		}
 
 		if (command[0].equals("ping")) {
-			Date d = new Date();			
-			irc.doPrivmsg(command[1], '\001' + "PING " + d.getTime());
+			irc.doPrivmsg(command[1], '\001' + "PING " + System.currentTimeMillis());
 			return;
 		}
 		
@@ -524,19 +522,47 @@ public class NativeConnectionHandler extends ConnectionHandler {
 		}
 	}
 	
-	public void setTopic(String channel, String nick, String topic) throws SQLException {
+	public void syncTopic(String channel, String owner, String topic, long topicSet) throws SQLException {
 		
 		PreparedStatement ps = getConnection().prepareStatement("UPDATE ttirc_channels SET " +
-				"topic = ?, topic_owner = ?, topic_set = NOW() WHERE channel = ? AND connection_id = ?");
+				"topic = ?, topic_owner = ?, topic_set = ? WHERE channel = ? AND connection_id = ?");
 	
 		ps.setString(1, topic);
-		ps.setString(2, nick);
-		ps.setString(3, channel);
-		ps.setInt(4, connectionId);
+		ps.setString(2, owner);
+		ps.setTimestamp(3, new java.sql.Timestamp(topicSet * 1000));		
+		ps.setString(4, channel);
+		ps.setInt(5, connectionId);
 		
 		ps.execute();
 		ps.close();
 		
+	}
+	
+	public void syncTopic(String channel, String topic) throws SQLException {
+		
+		PreparedStatement ps = getConnection().prepareStatement("UPDATE ttirc_channels SET " +
+			"topic = ? WHERE channel = ? AND connection_id = ?");
+
+		ps.setString(1, topic);
+		ps.setString(2, channel);
+		ps.setInt(3, connectionId);
+		
+		ps.execute();
+		ps.close();		
+	}
+	
+	public void syncTopic(String channel, String owner, long topicSet) throws SQLException {
+		
+		PreparedStatement ps = getConnection().prepareStatement("UPDATE ttirc_channels SET " +
+			"topic_owner = ?, topic_set = ? WHERE channel = ? AND connection_id = ?");
+		
+		ps.setString(1, owner);
+		ps.setTimestamp(2, new java.sql.Timestamp(topicSet * 1000));
+		ps.setString(3, channel);
+		ps.setInt(4, connectionId);
+		
+		ps.execute();
+		ps.close();	
 	}
 	
 	public void checkChannel(String channel, int chanType) throws SQLException {	
@@ -795,9 +821,7 @@ public class NativeConnectionHandler extends ConnectionHandler {
 			System.out.println("CTCP reply target: " + target + " CMD: [" + command + "] MSG: " + msg);
 			
 			if (command.equals("PING")) {
-				Date d = new Date();
-
-				float pingInterval = (float)(d.getTime() - Long.parseLong(msg)) / 1000;
+				float pingInterval = (float)(System.currentTimeMillis() - Long.parseLong(msg)) / 1000;
 				
 				handler.pushMessage(user.getNick(), target, String.format("PING_REPLY:%.2f", pingInterval), Constants.MSGT_EVENT);
 				return;
@@ -933,14 +957,20 @@ public class NativeConnectionHandler extends ConnectionHandler {
 				String[] params = value.split(" ");
 								
 				try {
-					handler.setTopic(params[1], params[0], msg);					
+					handler.syncTopic(params[1], msg);					
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
 			}	
 			
 			if (num == RPL_TOPICINFO) {
-				System.out.println("[TOPICINFO]" + value + "/" + msg);
+				String[] params = value.split(" ");
+				
+				try {
+					handler.syncTopic(params[1], params[2], Integer.parseInt(msg));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 			
 			if (num == RPL_UNAWAY) {
@@ -1003,7 +1033,9 @@ public class NativeConnectionHandler extends ConnectionHandler {
 		@Override
 		public void onTopic(String chan, IRCUser user, String topic) {
 			try {
-				handler.setTopic(chan, user.getNick(), topic);
+				int timestamp = (int) System.currentTimeMillis() / 1000; 
+				
+				handler.syncTopic(chan, user.getNick(), topic, timestamp);
 				handler.pushMessage(user.getNick(), chan, "TOPIC:" + topic, Constants.MSGT_EVENT);
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -1027,6 +1059,7 @@ public class NativeConnectionHandler extends ConnectionHandler {
 		ps.close();
 		
 	}
+
 
 	public int getConnectionId() {
 		return connectionId;
