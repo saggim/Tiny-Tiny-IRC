@@ -1197,6 +1197,31 @@ function handle_event(li_class, connection_id, line) {
 
 			break;
 
+		case "CTCP":
+			var command = params[1];
+			var args = params[2];
+			
+			line.message = __("Received CTCP %c (%a) from %u").replace("%c", command);
+			line.message = line.message.replace("%a", args);
+			line.message = line.message.replace("%u", line.sender);
+			line.message_type = MSGT_SYSTEM;
+
+			push_message(connection_id, '---', line);
+			break;
+
+		case "CTCP_REPLY":
+			var command = params[1];
+			var args = params[2];
+			
+			line.message = __("CTCP %c reply from %u: %a").replace("%c", command);
+			line.message = line.message.replace("%a", args);
+			line.message = line.message.replace("%u", line.sender);
+			line.message_type = MSGT_SYSTEM;
+
+			push_message(connection_id, line.channel, line);
+			break;
+
+
 		case "PING":
 			var args = params[1];
 
