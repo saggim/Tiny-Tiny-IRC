@@ -138,7 +138,7 @@ public class Master {
 		boolean show_help = false;
 		boolean need_cleanup = false;
 	
-		logger.info("Master " + Master.class.getPackage().getImplementationVersion() + " initializing...");
+		logger.info("Master " + getVersion() + " initializing...");
 		
 		for (int i = 0; i < args.length; i++) {
 			String arg = args[i];
@@ -223,6 +223,15 @@ public class Master {
 		}
 	}
 	
+	public String getVersion() {
+		String version = Master.class.getPackage().getImplementationVersion();
+		
+		if (version != null)		
+			return version;
+		else
+			return "0.0.0 (0)";
+	}
+
 	public void configure() {
 		System.out.println("Backend configuration");
 		System.out.println("=====================");

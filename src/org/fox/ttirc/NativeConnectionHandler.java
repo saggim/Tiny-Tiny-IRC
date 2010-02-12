@@ -15,6 +15,7 @@ import java.io.RandomAccessFile;
 import java.nio.channels.*;
 import java.sql.*;
 import java.util.*;
+import java.util.Date;
 import java.util.logging.*;
 
 public class NativeConnectionHandler extends ConnectionHandler {
@@ -168,7 +169,7 @@ public class NativeConnectionHandler extends ConnectionHandler {
 			irc.setEncoding(encoding);
 			irc.setPong(true);
 			irc.setDaemon(false);
-			irc.setColors(false);
+			irc.setColors(true);
 			
 			try {
 				irc.connect();
@@ -286,8 +287,9 @@ public class NativeConnectionHandler extends ConnectionHandler {
 		}
 
 		if (command[0].equals("ping")) {
-			// TODO add ping()
-			//return;
+			Date d = new Date();			
+			irc.doPrivmsg(command[1], '\001' + "PING " + d.getTime());
+			return;
 		}
 		
 		if (command[0].equals("msg")) {
@@ -295,7 +297,13 @@ public class NativeConnectionHandler extends ConnectionHandler {
 			irc.doPrivmsg(msgparts[0], msgparts[1]);
 			return;
 		}
-		
+
+		if (command[0].equals("ctcp")) {
+			String[] msgparts = command[1].split(" ", 2);
+			irc.doPrivmsg(msgparts[0], '\001' + msgparts[1] + '\001');
+			return;
+		}
+
 		if (command[0].equals("notice")) {
 			String[] msgparts = command[1].split(" ", 2);
 			irc.doNotice(msgparts[0], msgparts[1]);
@@ -604,6 +612,7 @@ public class NativeConnectionHandler extends ConnectionHandler {
 			this.autojoin = autojoin;
 		}
 		
+		@Override
 		public void onDisconnected() {			
 			try {
 				handler.setConnected(false);
@@ -612,6 +621,7 @@ public class NativeConnectionHandler extends ConnectionHandler {
 			}
 		}
 
+		@Override
 		public void onError(String msg) {
 			handler.pushMessage("---", "---", "Error: " + msg, Constants.MSGT_SYSTEM);
 		}
@@ -626,10 +636,13 @@ public class NativeConnectionHandler extends ConnectionHandler {
 		}
 
 		@Override
-		public void onInvite(String arg0, IRCUser arg1, String arg2) {
-			// TODO Auto-generated method stub			
+		public void onInvite(String chan, IRCUser user, String passiveNick) {
+			handler.pushMessage(user.getNick(), "---", 
+					"INVITE:" + chan, Constants.MSGT_EVENT);
+			
 		}
 
+		@Override
 		public void onJoin(String chan, IRCUser user) {
 			handler.pushMessage(user.getNick(), chan, 
 					"JOIN:" + user.getNick() + ":" + user.getUsername() + "@" + user.getHost(), 
@@ -666,6 +679,7 @@ public class NativeConnectionHandler extends ConnectionHandler {
 			}			
 		}
 
+		@Override
 		public void onMode(String chan, IRCUser user, IRCModeParser modeParser) {
 			handler.pushMessage(user.getNick(), chan, 
 					"MODE:" + modeParser.getLine().trim() + ":" + chan, 
@@ -710,26 +724,40 @@ public class NativeConnectionHandler extends ConnectionHandler {
 
 		@Override
 		public void onNotice(String target, IRCUser user, String msg) {
-			// TODO handle replies to CTCP PING here
-			if (target.equals(irc.getNick())) {
+			
+			// CTCP
+			if (msg.indexOf('\001') == 0) {
+				msg = msg.substring(1, msg.length()-1);
 				
-				// server notice
-				if (user.getNick().equals(irc.getHost())) {
-					handler.pushMessage(user.getNick(), "---", "NOTICE:" + msg, Constants.MSGT_EVENT);					
-				} else {
-					try {
-						handler.checkChannel(user.getNick(), Constants.CT_PRIVATE);
-						handler.pushMessage(user.getNick(), user.getNick(), "NOTICE:" + msg, Constants.MSGT_EVENT);
-					} catch (SQLException e) {
-						e.printStackTrace();
+				String[] ctcpParts = msg.split(" ", 2);
+				
+				if (ctcpParts.length == 2)
+					onCtcpReply(target, user, ctcpParts[0].toUpperCase(), ctcpParts[1]);
+				else
+					onCtcpReply(target, user, ctcpParts[0].toUpperCase(), "");
+				
+			} else {			
+				if (target.equals(irc.getNick())) {
+					
+					// server notice
+					if (user.getNick().equals(irc.getHost())) {
+						handler.pushMessage(user.getNick(), "---", "NOTICE:" + msg, Constants.MSGT_EVENT);					
+					} else {
+						try {
+							handler.checkChannel(user.getNick(), Constants.CT_PRIVATE);
+							handler.pushMessage(user.getNick(), user.getNick(), "NOTICE:" + msg, Constants.MSGT_EVENT);
+						} catch (SQLException e) {
+							e.printStackTrace();
+						}
 					}
+					
+				} else {
+					handler.pushMessage(user.getNick(), target, "NOTICE:" + msg, Constants.MSGT_EVENT);				
 				}
-				
-			} else {
-				handler.pushMessage(user.getNick(), target, "NOTICE:" + msg, Constants.MSGT_EVENT);				
-			}			
+			}
 		}
 
+		@Override
 		public void onPart(String chan, IRCUser user, String msg) {
 			handler.nicklist.delNick(chan, user.getNick());
 			
@@ -752,23 +780,103 @@ public class NativeConnectionHandler extends ConnectionHandler {
 
 		@Override
 		public void onPing(String arg0) {
-			// TODO Auto-generated method stub
-			
+			// TODO Auto-generated method stub			
 		}
 
-		public void onPrivmsg(String target, IRCUser user, String msg) {
-			try {			
-				if (target.equals(handler.irc.getNick())) {
+		public void onCtcpReply(String target, IRCUser user, String command, String msg) {
+			System.out.println("CTCP reply target: " + target + " CMD: [" + command + "] MSG: " + msg);
+			
+			if (command.equals("PING")) {
+				Date d = new Date();
+
+				float pingInterval = (float)(d.getTime() - Long.parseLong(msg)) / 1000;
+				
+				handler.pushMessage(user.getNick(), target, String.format("PING_REPLY:%.2f", pingInterval), Constants.MSGT_EVENT);
+				return;
+			}
+			
+			if (target.equals(irc.getNick())) {
+				
+				try {
 					handler.checkChannel(user.getNick(), Constants.CT_PRIVATE);
-					handler.pushMessage(user.getNick(), user.getNick(), msg, Constants.MSGT_PRIVATE_PRIVMSG);
-				} else {
-					handler.pushMessage(user.getNick(), target, msg, Constants.MSGT_PRIVMSG);				
+					handler.pushMessage(user.getNick(), user.getNick(), "CTCP_REPLY:" + command + ":" + msg, Constants.MSGT_EVENT);
+				} catch (SQLException e) {
+					e.printStackTrace();
 				}
-			} catch (SQLException e) {
-				e.printStackTrace();
+				
+			} else {
+				handler.pushMessage(user.getNick(), target, "CTCP_REPLY:" + command + " " + msg, Constants.MSGT_EVENT);				
+			}
+
+		}
+		
+		public void onCtcp(String target, IRCUser user, String command, String msg) {
+			System.out.println("CTCP target: " + target + " CMD: [" + command + "] MSG: " + msg);
+						
+			if (command.equals("ACTION")) {
+				if (target.equals(handler.irc.getNick())) {
+					try {
+						handler.checkChannel(user.getNick(), Constants.CT_PRIVATE);
+						handler.pushMessage(user.getNick(), user.getNick(), msg, Constants.MSGT_ACTION);					
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
+				} else {
+					handler.pushMessage(user.getNick(), target, msg, Constants.MSGT_ACTION);				
+				}
+				return;
+			}
+			
+			if (command.equals("PING")) {
+				irc.doNotice(user.getNick(), '\001' + command + ' ' + msg + '\001');
+			}
+			
+			if (command.equals("VERSION")) {
+				String version = handler.master.getVersion();
+				String osName= System.getProperty("os.name");
+				String osArch = System.getProperty("os.arch");
+				
+				String versionReply = "Tiny Tiny IRC/" + version + " " + osName + " " + osArch;
+				
+				irc.doNotice(user.getNick(), '\001' + command + ' ' + versionReply + '\001');				
+			}
+			
+			if (target.equals(handler.irc.getNick())) {
+				handler.pushMessage(user.getNick(), "---", "CTCP:" + command + ":" + msg, Constants.MSGT_EVENT);
+			} else {
+				handler.pushMessage(user.getNick(), target, "CTCP:" + command + ":" + msg, Constants.MSGT_EVENT);
+			}
+		}
+		
+		@Override
+		public void onPrivmsg(String target, IRCUser user, String msg) {
+			
+			// CTCP
+			if (msg.indexOf('\001') == 0) {
+				msg = msg.substring(1, msg.length()-1);
+				
+				String[] ctcpParts = msg.split(" ", 2);
+				
+				if (ctcpParts.length == 2)
+					onCtcp(target, user, ctcpParts[0].toUpperCase(), ctcpParts[1]);
+				else
+					onCtcp(target, user, ctcpParts[0].toUpperCase(), "");
+				
+			} else {			
+				try {			
+					if (target.equals(handler.irc.getNick())) {
+						handler.checkChannel(user.getNick(), Constants.CT_PRIVATE);
+						handler.pushMessage(user.getNick(), user.getNick(), msg, Constants.MSGT_PRIVATE_PRIVMSG);
+					} else {
+						handler.pushMessage(user.getNick(), target, msg, Constants.MSGT_PRIVMSG);				
+					}
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 
+		@Override
 		public void onQuit(IRCUser user, String message) {
 			Vector<String> chans = handler.nicklist.isOn(user.getNick());
 			
@@ -780,6 +888,7 @@ public class NativeConnectionHandler extends ConnectionHandler {
 			handler.extnickinfo.delete(user.getNick());
 		}
 
+		@Override
 		public void onRegistered() {
 			
 			handler.logger.info("Connected to IRC");
@@ -810,6 +919,7 @@ public class NativeConnectionHandler extends ConnectionHandler {
 			
 		}
 
+		@Override
 		public void onReply(int num, String value, String msg) {
 			if (num == RPL_TOPIC) {
 				String[] params = value.split(" ");
@@ -852,6 +962,7 @@ public class NativeConnectionHandler extends ConnectionHandler {
 			}
 		}
 
+		@Override
 		public void onTopic(String chan, IRCUser user, String topic) {
 			try {
 				handler.setTopic(chan, user.getNick(), topic);
