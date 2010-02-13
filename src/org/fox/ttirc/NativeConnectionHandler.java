@@ -34,6 +34,7 @@ public class NativeConnectionHandler extends ConnectionHandler {
 	private String lockDir;
 	private FileLock lock;
 	private FileChannel lockChannel;
+	private Connection conn;
 
 	public NativeConnectionHandler(int connectionId, Master master) {
 		this.connectionId = connectionId;
@@ -50,8 +51,13 @@ public class NativeConnectionHandler extends ConnectionHandler {
 		irc.doWho(nick.getNick());
 	}
 	
-	public Connection getConnection() {
-		return master.getConnection();
+	public synchronized Connection getConnection() {
+		return conn;
+	}
+	
+	public void initConnection() throws SQLException {
+		logger.info("[" + connectionId + "] Establishing database connection...");		
+		this.conn = master.createConnection();
 	}
 	
 	public void setConnected(boolean connected) throws SQLException {
@@ -470,6 +476,7 @@ public class NativeConnectionHandler extends ConnectionHandler {
 	
 	public void run() {
 		try {
+			initConnection();			
 			
 			if (!lock()) return;			
 			if (!connect()) return;
@@ -518,6 +525,13 @@ public class NativeConnectionHandler extends ConnectionHandler {
 			logger.info("[" + connectionId + "] Lock released successfully.");
 		} catch (IOException e) {
 			logger.warning("[" + connectionId + "] Error while releasing connection lock: " + e.toString());
+			e.printStackTrace();
+		}
+		
+		try {
+			logger.info("[" + connectionId + "] Closing database connection...");
+			conn.close();
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}

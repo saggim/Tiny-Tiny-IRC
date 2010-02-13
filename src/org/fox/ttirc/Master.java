@@ -11,6 +11,8 @@ import java.util.prefs.Preferences;
 public class Master {
 	
 	private final String version = "0.5.0";
+	private final int configVersion = 3;
+	private final String lockFileName = "master.lock";
 	
 	protected Preferences prefs;
 	protected boolean active;
@@ -18,8 +20,6 @@ public class Master {
 	protected int idleTimeout = 5000;
 	protected boolean useNativeCH = true;
 
-	private final int configVersion = 2;
-	private final String lockFileName = "master.lock";
 	private String lockDir;
 	private FileLock lock;
 	private FileChannel lockChannel;
@@ -30,6 +30,7 @@ public class Master {
 	private String dbPass;
 	
 	private Logger logger = Logger.getLogger("org.fox.ttirc");
+	private PurgeThread purgeThread;
 	
 	/**
 	 * @param args
@@ -49,7 +50,7 @@ public class Master {
 		return lockDir;
 	}
 	
-	public Connection getConnection() {
+	public synchronized Connection getConnection() {
 	
 		return conn;
 		
@@ -88,12 +89,11 @@ public class Master {
 		return conn; */
 	}
 	
-	private Connection initConnection() throws SQLException {
+	public Connection createConnection() throws SQLException {
 		
-		logger.info("JDBC URL: " + jdbcUrl);
-		logger.info("Establishing database connection...");
+		//logger.info("JDBC URL: " + jdbcUrl);
 		
-		this.conn = DriverManager.getConnection(jdbcUrl, dbUser, dbPass);
+		Connection conn = DriverManager.getConnection(jdbcUrl, dbUser, dbPass);
 		
 		return conn;
 	}
@@ -213,7 +213,8 @@ public class Master {
 		this.dbPass = DB_PASS;
 		
 		try {
-			initConnection();
+			logger.info("Establishing database connection...");
+			this.conn = createConnection();
 		} catch (SQLException e) {
 			logger.severe("error: Couldn't connect to database.");
 			e.printStackTrace();
@@ -232,12 +233,17 @@ public class Master {
 		
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 		    public void run() { try {
-				cleanup();
-			} catch (SQLException e) {
+				cleanup();				
+				purgeThread.kill();
+				lock.release();
+				lockChannel.close();
+			} catch (Exception e) {
 				e.printStackTrace();
 			} }
 		});
 
+		purgeThread = new PurgeThread(this);
+		purgeThread.start();
 	}
 	
 	public String getVersion() {
@@ -295,6 +301,13 @@ public class Master {
 				in = reader.readLine();
 				prefs.put("DB_PASS", in);
 
+				System.out.print("Purge messages older than this amount of hours [12]: ");
+				in = reader.readLine();
+				
+				if (in.length() == 0) in = "12";
+
+				prefs.put("PURGE_HOURS", in);
+
 				System.out.print("Done? [Y/N] ");
 				in = reader.readLine();
 				
@@ -336,6 +349,19 @@ public class Master {
 		st.close();
 	}
 
+	public void purgeOldMessages() throws SQLException {
+		int purgeHours = prefs.getInt("PURGE_HOURS", 12);
+		
+		logger.info("Purging old messages (purge_hours = " + purgeHours + ")");
+		
+		PreparedStatement ps = getConnection().prepareStatement("DELETE FROM ttirc_messages WHERE " +
+				"ts < NOW() - CAST(? AS INTERVAL)");
+		
+		ps.setString(1, purgeHours + " hours");
+		ps.execute();
+		ps.close();
+	}
+	
 	public void checkHandlers() throws SQLException {
 		Statement st = getConnection().createStatement();
 
@@ -355,9 +381,11 @@ public class Master {
     		ResultSet rs = ps.getResultSet();
     		
     		if (!rs.next()) {
-    			logger.info("Connection " + connectionId + " needs termination.");
     			try {
-    				ch.kill();
+    				if (ch.getState() != State.TERMINATED) {
+    	    			logger.info("Connection " + connectionId + " needs termination.");
+    					ch.kill();
+    				}
     			} catch (Exception ee) {
     				logger.warning(ee.toString());
     				ee.printStackTrace();
@@ -473,7 +501,7 @@ public class Master {
 			
 			try {	
 				updateHeartbeat();
-				checkHandlers();				
+				checkHandlers();		
 				
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -497,8 +525,43 @@ public class Master {
 	public void finalize() throws Throwable {
 		cleanup();		
 
+		purgeThread.kill();
 		lock.release();
 		lockChannel.close();
 	}
 
+	public class PurgeThread extends Thread {
+		Master master;
+		private boolean enabled = true;
+		
+		public PurgeThread(Master master) {
+			this.master = master;
+		}
+		
+		public void kill() {
+			enabled = false;
+		}
+
+		public void run() {
+			master.getLogger().info("PurgeThread initialized.");
+			
+			while (enabled) {
+				
+				try {
+					master.purgeOldMessages();
+				} catch (SQLException e) {
+					logger.info("PurgeThread exception: " + e.toString());
+					e.printStackTrace();
+				}
+								
+				try {
+					sleep(1000*600);
+				} catch (InterruptedException e) {
+					//
+				}				
+			}
+			
+			master.getLogger().info("PurgeThread terminated.");
+		}
+	}
 }
