@@ -6,11 +6,6 @@
 
 	define('SINGLE_USER_MODE', false);
 
-	if (defined('MEMCACHE_SERVER') && MEMCACHE_SERVER) {
-		$memcache = new Memcache;
-		$memcache->connect(MEMCACHE_SERVER, 11211);
-	}
-
 	$url_regex = "((((new|(ht|f)tp)s?://)?([a-zA-Z+0-9_-]+:[a-zA-Z+0-9_-]+\\@)?((www|ftp|[a-zA-Z+0-9]+(-\\+[a-zA-Z+0-9])*)\\.)?)([a-zA-Z+0-9]+(\\-+[a-zA-Z+0-9]+)*\\.)+[a-zA-Z+]{2,7}(:\\d+)?(/~[a-zA-Z+0-9_%\\-]+)?(/[a-zA-Z+0-9_%.-]+(?=/))*(/[a-zA-Z+0-9_%-]+(\\.[a-zA-Z+0-9]+)?(\\#[a-zA-Z+0-9_.]+)?)*(\\?([a-zA-Z+0-9_.%-]+)=[a-zA-Z+0-9_.%/-]*)?(&([a-zA-Z+0-9_.%-]+)=[a-zA-Z+0-9_.%/-]*)*/?)";
 
 
@@ -570,8 +565,6 @@
 	function push_message($link, $connection_id, $channel, $message, 
 		$incoming = false, $message_type = MSGT_PRIVMSG, $from_nick = false) {
 
-		global $memcache;
-
 		$incoming = bool_to_sql_bool($incoming);
 
 		if ($channel != "---") {
@@ -587,14 +580,7 @@
 		$result = db_query($link, "INSERT INTO ttirc_messages 
 			(incoming, connection_id, channel, sender, message, message_type) VALUES
 			($incoming, $connection_id, '$channel', '$my_nick', '$message', 
-			'$message_type') RETURNING id");
-
-		$id = db_fetch_result($result, 0, "id");
-
-		if ($id && $memcache) {
-			$obj_id = md5("TTIRC:LAST_SENT_ID:$connection_id:" . $_SESSION["uid"]);
-			$memcache->set($obj_id, $last_sent_id);
-		}
+			'$message_type')");
 	}
 
 	function num_new_lines($link, $last_id) {

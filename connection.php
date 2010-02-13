@@ -12,7 +12,6 @@ class Connection extends Yapircl {
 	var $last_sent_id = false;
 	var $connection_id = false;
 	var $encoding = false;
-	var $memcache = false;
 	var $owner_uid = false;
 	var $userhosts = false;
 
@@ -31,16 +30,6 @@ class Connection extends Yapircl {
 			WHERE id = '$connection_id'");
 
 		$this->owner_uid = db_fetch_result($result, 0, "owner_uid");
-
-		if (defined('MEMCACHE_SERVER')) {
-			$this->memcache = new Memcache;
-			$this->memcache->connect(MEMCACHE_SERVER, 11211);
-
-			if ($this->memcache) {
-				$obj_id = md5("TTIRC:LAST_SENT_ID:$connection_id:" . $this->owner_uid);
-				$this->memcache->set($obj_id, 0);
-			}
-		}
 	}
 
 	function handle_command($command, $arguments, $channel) {
@@ -134,15 +123,6 @@ class Connection extends Yapircl {
 
 		if ($ts != $this->checkpoint) {
 			$this->checkpoint = $ts;
-
-			$obj_id = md5("TTIRC:LAST_SENT_ID:" . $this->connection_id . 
-				":" . $this->owner_uid); 
-
-			if ($this->memcache && $cached_sent_id = $this->memcache->get($obj_id)) {
-				if ($cached_sent_id == $this->last_sent_id) {
-					return false;
-				}
-			}
 
 			$result = db_query($this->link, "SELECT * FROM ttirc_messages
 				WHERE incoming = false AND

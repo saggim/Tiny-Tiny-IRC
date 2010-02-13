@@ -42,9 +42,6 @@
 	// Should be less than maximum script lifetime configured in your HTTPD
 	// 0 disables the functionality.
 
-	define('MEMCACHE_SERVER', '');
-	// Use memcached to limit DB server load
-
 	define('CONFIG_VERSION', 1);
 
 	// vim:ft=php
