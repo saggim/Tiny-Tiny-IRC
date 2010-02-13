@@ -9,7 +9,9 @@ import java.util.logging.*;
 import java.util.prefs.Preferences;
 
 public class Master {
-
+	
+	private final String version = "0.5.0";
+	
 	protected Preferences prefs;
 	protected boolean active;
 	protected Hashtable<Integer, ConnectionHandler> connections;
@@ -124,33 +126,26 @@ public class Master {
 		this.active = true;
 		this.connections = new Hashtable<Integer, ConnectionHandler>(10,10);		
 
-/*		try {
-			Handler fh = new FileHandler("%t/ttirc-backend.log");
-			fh.setFormatter(new SimpleFormatter()); 
-			logger.addHandler(fh);
-		} catch (IOException e) {
-			logger.warning(e.toString());
-			e.printStackTrace();
-		} */
-		
-		String prefs_node = "";
-		boolean need_configure = false;
-		boolean show_help = false;
-		boolean need_cleanup = false;
+		String prefsNode = null;
+		boolean needConfigure = false;
+		boolean showHelp = false;
+		boolean needCleanup = false;
+		String logFileName = null;
 	
 		logger.info("Master " + getVersion() + " initializing...");
 		
 		for (int i = 0; i < args.length; i++) {
 			String arg = args[i];
 			
-			if (arg.equals("-help")) show_help = true;
-			if (arg.equals("-node")) prefs_node = args[i+1]; 
-			if (arg.equals("-configure")) need_configure = true;
-			if (arg.equals("-cleanup")) need_cleanup = true;
+			if (arg.equals("-help")) showHelp = true;
+			if (arg.equals("-node")) prefsNode = args[i+1]; 
+			if (arg.equals("-configure")) needConfigure = true;
+			if (arg.equals("-cleanup")) needCleanup = true;
 			if (arg.equals("-native")) useNativeCH = args[i+1].equals("true");
+			if (arg.equals("-log")) logFileName = args[i+1];
 		}
 		
-		if (show_help) {
+		if (showHelp) {
 			System.out.println("Available options:");
 			System.out.println("==================");
 			System.out.println(" -help              - Show this help");
@@ -158,12 +153,25 @@ public class Master {
 			System.out.println(" -configure         - Force change configuration");
 			System.out.println(" -cleanup           - Cleanup data and exit");
 			System.out.println(" -native true/false - Use native (Java-based) connection handler");
+			System.out.println(" -log file          - Enable logging to specified file");
 			System.exit(0);
 		}
-		
-		if (prefs_node.length() > 0) {
-			logger.info("Using custom preferences node: " + prefs_node);
-			prefs = prefs.node(prefs_node);
+
+		if (logFileName != null) {
+			try {
+				logger.info("Enabling logging to: " + logFileName);
+				Handler fh = new FileHandler(logFileName);
+				fh.setFormatter(new SimpleFormatter()); 
+				logger.addHandler(fh);
+			} catch (IOException e) {
+				logger.warning(e.toString());
+				e.printStackTrace();
+			}
+		}
+			
+		if (prefsNode != null) {
+			logger.info("Using custom preferences node: " + prefsNode);
+			prefs = prefs.node(prefsNode);
 		}
 		
 		try {
@@ -174,7 +182,7 @@ public class Master {
 			System.exit(1);			
 		}
 
-		if (prefs.getInt("CONFIG_VERSION", -1) != configVersion || need_configure) {
+		if (prefs.getInt("CONFIG_VERSION", -1) != configVersion || needConfigure) {
 			configure();
 		}
 		
@@ -216,7 +224,7 @@ public class Master {
 
 		try {
 			cleanup();
-			if (need_cleanup) System.exit(0);
+			if (needCleanup) System.exit(0);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			System.exit(1);
@@ -233,17 +241,17 @@ public class Master {
 	}
 	
 	public String getVersion() {
-		String version = Master.class.getPackage().getImplementationVersion();
+		String build = Master.class.getPackage().getImplementationVersion();
 		
-		if (version != null)		
-			return version;
+		if (build != null)		
+			return version + "(" + build + ")";
 		else
-			return "0.0.0 (0)";
+			return version;
 	}
 
 	public void configure() {
-		System.out.println("Backend configuration");
-		System.out.println("=====================");
+		System.out.println("Tiny Tiny IRC backend configuration");
+		System.out.println("===================================");
 		
 		InputStreamReader input = new InputStreamReader(System.in);
 		BufferedReader reader = new BufferedReader(input); 
@@ -253,10 +261,13 @@ public class Master {
 		try {
 		
 			while (!configured) {
-
+						
 				System.out.print("Directory for lockfiles [/var/tmp]: ");
 				in = reader.readLine();
-				prefs.put("LOCK_DIR", in);
+				
+				File f = new File(in);
+				
+				prefs.put("LOCK_DIR", f.getAbsolutePath());
 
 				System.out.print("Database host [localhost]: ");
 				in = reader.readLine();
@@ -292,7 +303,7 @@ public class Master {
 	
 			prefs.putInt("CONFIG_VERSION", configVersion);
 			
-			logger.info("Data saved. Please use -configure switch to change it later.");
+			System.out.println("Data saved. Please use -configure to change it later.");
 			
 		} catch (IOException e) {
 			e.printStackTrace();

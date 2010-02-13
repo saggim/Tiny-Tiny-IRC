@@ -3,7 +3,6 @@
 
 	<property name="src" location="src"/>
 	<property name="bin" location="bin"/>
-	<property name="version.num" value="0.5.0"/>
 
 	<path id="project.libpath">
 		<fileset dir="lib/">
@@ -46,7 +45,7 @@
 			<attribute name="Built-By" value="${user.name}"/>
 			<attribute name="Main-Class" value="org.fox.ttirc.Master"/>
 			<attribute name="Implementation-Version"
-				value="${version.num} (${build.number})"/>
+				value="${build.number}"/>
 			<attribute name="Built-Date" value="${TODAY}"/>
 			<attribute name="Class-Path" value="${manifest.classpath}"/>
 		</manifest>
