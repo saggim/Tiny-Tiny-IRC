@@ -250,7 +250,7 @@ public class Master {
 		String build = Master.class.getPackage().getImplementationVersion();
 		
 		if (build != null)		
-			return version + "(" + build + ")";
+			return version + " (" + build + ")";
 		else
 			return version;
 	}

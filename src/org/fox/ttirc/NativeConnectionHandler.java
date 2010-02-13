@@ -411,8 +411,12 @@ public class NativeConnectionHandler extends ConnectionHandler {
 				
 				switch (messageType) {
 				case Constants.MSGT_PRIVMSG:			
-				case Constants.MSGT_PRIVATE_PRIVMSG:				
-					irc.doPrivmsg(channel, message);				
+				case Constants.MSGT_PRIVATE_PRIVMSG:
+					String[] lines = splitByLength(message, 250);
+					
+					for (String line : lines)					
+						irc.doPrivmsg(channel, line);
+					
 					break;
 				case Constants.MSGT_COMMAND:
 					handleCommand(channel, message);
@@ -634,7 +638,8 @@ public class NativeConnectionHandler extends ConnectionHandler {
 	
 	public void syncNick() {
 		try {
-			PreparedStatement ps = getConnection().prepareStatement("UPDATE ttirc_connections SET active_nick = ?" +
+			PreparedStatement ps = getConnection().prepareStatement("UPDATE ttirc_connections " +
+				"SET active_nick = ? " +
 				"WHERE id = ?");
 		
 			ps.setString(1, irc.getNick());
@@ -1071,9 +1076,28 @@ public class NativeConnectionHandler extends ConnectionHandler {
 		ps.setInt(2, connectionId);
 		ps.execute();
 		ps.close();
-		
 	}
 
+	public String[] splitByLength(String str, int length) {
+		int arrSize = (int) Math.ceil(str.length() / (double) length);		
+				
+		String[] lines = new String[arrSize];
+		
+		if (str.length() > length) {
+			int i = 0;
+			while (str.length() > length) {
+				lines[i] = str.substring(0, length);
+				str = str.substring(length);				
+				++i;
+			}
+			
+			if (str.length() > 0) lines[i] = str;
+		} else {
+			lines[0] = str;
+		}
+		
+		return lines;
+	}
 
 	public int getConnectionId() {
 		return connectionId;
