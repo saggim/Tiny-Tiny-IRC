@@ -189,7 +189,7 @@ public class NativeConnectionHandler extends ConnectionHandler {
 				irc.connect();
 				
 				return true;
-			} catch (Exception e) {
+			} catch (IOException e) {
 				pushMessage("---", "---", "CONNECTION_ERROR:" + server[0] + ":" + server[1], 
 						Constants.MSGT_EVENT);
 				return false;

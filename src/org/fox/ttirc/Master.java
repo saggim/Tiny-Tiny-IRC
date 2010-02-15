@@ -255,63 +255,50 @@ public class Master {
 			return version;
 	}
 
+	public void readOption(BufferedReader reader, Preferences prefs, 
+			String prefName, String caption, String defaultValue) throws IOException {
+		
+		String def = prefs.get(prefName, defaultValue);
+		
+		System.out.print(String.format("%s [%s]: ", caption, def));
+		String in = reader.readLine();
+		
+		if (in.length() == 0) in = def;
+		
+		if (prefName.equals("LOCK_DIR")) {
+			File f = new File(in);		
+			in = f.getAbsolutePath();			
+		}
+		
+		prefs.put(prefName, in);
+		
+	}
+	
 	public void configure() {
 		System.out.println("Tiny Tiny IRC backend configuration");
 		System.out.println("===================================");
 		
 		InputStreamReader input = new InputStreamReader(System.in);
 		BufferedReader reader = new BufferedReader(input); 
-		String in;
 		boolean configured = false;
 
 		try {
 		
 			while (!configured) {
-						
-				System.out.print("Directory for lockfiles [/var/tmp]: ");
-				in = reader.readLine();
-				
-				File f = new File(in);
-				
-				prefs.put("LOCK_DIR", f.getAbsolutePath());
 
-				System.out.print("Database host [localhost]: ");
-				in = reader.readLine();
-				
-				if (in.length() == 0) in = "localhost";
-				
-				prefs.put("DB_HOST", in);
-
-				System.out.print("Database port [5432]: ");
-				in = reader.readLine();
-				
-				if (in.length() == 0) in = "5432";
-				
-				prefs.put("DB_PORT", in);
-
-				System.out.print("Database name: ");
-				in = reader.readLine();
-				prefs.put("DB_NAME", in);
-
-				System.out.print("Database user: ");
-				in = reader.readLine();
-				prefs.put("DB_USER", in);
-
-				System.out.print("Database password: ");
-				in = reader.readLine();
-				prefs.put("DB_PASS", in);
-
-				System.out.print("Purge messages older than this amount of hours [12]: ");
-				in = reader.readLine();
-				
-				if (in.length() == 0) in = "12";
-
-				prefs.put("PURGE_HOURS", in);
+				readOption(reader, prefs, "LOCK_DIR", "Directory for lock files", "/var/tmp");
+				readOption(reader, prefs, "DB_HOST", "Database host", "localhost");
+				readOption(reader, prefs, "DB_PORT", "Database port", "5432");
+				readOption(reader, prefs, "DB_NAME", "Database name", "ttirc_db");
+				readOption(reader, prefs, "DB_USER", "Database user", "ttirc_user");
+				readOption(reader, prefs, "DB_PASS", "Database password", "ttirc_pwd");
+				readOption(reader, prefs, "PURGE_HOURS", 
+						"Purge messages older than this amount of hours", "12");
 
 				System.out.print("Done? [Y/N] ");
-				in = reader.readLine();
+				String done = reader.readLine();
 				
-				configured = in.equalsIgnoreCase("Y");				
+				configured = done.equalsIgnoreCase("Y");				
 			}			
 	
 			prefs.putInt("CONFIG_VERSION", configVersion);
