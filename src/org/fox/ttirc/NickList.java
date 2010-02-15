@@ -161,6 +161,9 @@ public class NickList {
 		
 		nicklist.get(chan).remove(n);
 		
+		if (numChans(nick) == 0)
+			handler.removeUserhost(nick);
+		
 		Sync(chan);
 	}
 
@@ -173,10 +176,28 @@ public class NickList {
 		while (chans.hasMoreElements()) {
 			String chan = chans.nextElement();
 			
-			nicklist.get(chan).remove(n);
+			nicklist.get(chan).remove(n);		
 		}
-		
+
+		handler.removeUserhost(nick);
+
 		Sync();
+	}
+	
+	public int numChans(String nick) {
+		Enumeration<String> chans = nicklist.keys();
+		int rv = 0;
+		Nick n = new Nick(nick);
+		
+		while (chans.hasMoreElements()) {
+			String chan = chans.nextElement();
+			if (nicklist.get(chan).contains(n)) {
+				++rv;
+			}
+		}
+	
+		return rv;
+		
 	}
 	
 	public Vector<String> isOn(String nick) {
@@ -254,6 +275,7 @@ public class NickList {
 			
 				if (nick.equals(oldNick)) {				
 					nick.renameTo(newNick);		
+					handler.renameUserhost(oldNick, newNick);
 					handler.pushMessage(oldNick, chan, "NICK:" + newNick, Constants.MSGT_EVENT);
 				}
 			}		
@@ -294,7 +316,20 @@ public class NickList {
 		
 	}
 
-	public void removeChannel(String chan) {		
+	public Vector<Nick> getNicks(String chan) {
+		return nicklist.get(chan);
+	}
+	
+	public void removeChannel(String chan) {
+		Enumeration<Nick> en = nicklist.get(chan).elements();
+		
+		while (en.hasMoreElements()) {
+			Nick n = en.nextElement();
+			
+			if (numChans(n.getNick()) == 1)
+				handler.removeUserhost(n.getNick());
+		}
+		
 		nicklist.remove(chan);		
 	}
 }

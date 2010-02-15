@@ -17,6 +17,10 @@ public class ExtNickInfo {
 		
 		private Date lastUpdated;
 		
+		public ExtInfo() {
+			this.lastUpdated = new Date();
+		}
+		
 		public ExtInfo(String ident, String host, String server, String realName) {
 			this.ident = ident;
 			this.host = host;
@@ -103,6 +107,31 @@ public class ExtNickInfo {
 		this.handler = handler;
 	}
 	
+	public void update(String nick) {
+		ExtInfo xi = extinfo.get(nick);
+		
+		if (xi == null) {
+			xi = new ExtInfo();
+			extinfo.put(nick, xi);
+		}
+		
+		/* There is no need to sync, since this is a placeholder entry to keep until we
+		 * have received actual WHO reply
+		 */
+		
+	}
+	
+	public void renameNick(String oldNick, String newNick) {
+		ExtInfo xi = extinfo.get(oldNick);
+		
+		if (xi != null) {
+			extinfo.remove(oldNick);
+			extinfo.put(newNick, xi);
+
+			Sync();
+		}
+	}
+	
 	public void update(String nick, String ident, String host, String server, String realName) {
 		ExtInfo xi = extinfo.get(nick);
 		
@@ -166,4 +195,9 @@ public class ExtNickInfo {
 			Sync();
 		}
 	}
+
+	public boolean hasNick(String nick) {
+		return extinfo.containsKey(nick);
+	}
+
 }

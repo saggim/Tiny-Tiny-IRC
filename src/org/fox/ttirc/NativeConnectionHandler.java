@@ -48,7 +48,19 @@ public class NativeConnectionHandler extends ConnectionHandler {
 	}
 
 	public void requestUserhost(NickList.Nick nick) {
-		irc.doWho(nick.getNick());
+		if (!extnickinfo.hasNick(nick.getNick())) {
+			//System.out.println("requestUserhost [N] " + nick.getNick());
+			irc.doWho(nick.getNick());
+			extnickinfo.update(nick.getNick());
+		}
+	}
+
+	public void removeUserhost(String nick) {
+		extnickinfo.delete(nick);
+	}
+	
+	public void renameUserhost(String oldNick, String newNick) {
+		extnickinfo.renameNick(oldNick, newNick);
 	}
 	
 	public synchronized Connection getConnection() {
@@ -272,7 +284,7 @@ public class NativeConnectionHandler extends ConnectionHandler {
 	public void handleCommand(String chan, String message) {
 		String[] command = message.split(":", 2);
 		
-		logger.info("COMMAND " + command[0] + "/" + command[1] + " on " + chan);
+		//logger.info("COMMAND " + command[0] + "/" + command[1] + " on " + chan);
 
 		if (command[0].equals("away")) {
 			irc.doAway(command[1]);
@@ -676,12 +688,12 @@ public class NativeConnectionHandler extends ConnectionHandler {
 
 		@Override
 		public void onError(String msg) {
-			handler.pushMessage("---", "---", "Error: " + msg, Constants.MSGT_SYSTEM);
+			handler.pushMessage("---", "---", "ERROR:" + msg, Constants.MSGT_EVENT);
 		}
 
 		@Override
 		public void onError(int num, String msg) {
-			handler.pushMessage("---", "---", "Error [" + num + "] " + msg, Constants.MSGT_SYSTEM);
+			handler.pushMessage("---", "---", "ERROR:" + num + ":" + msg, Constants.MSGT_EVENT);
 			
 			if (num == 433) {
 				handler.irc.doNick(handler.irc.getNick() + "-");
@@ -815,18 +827,13 @@ public class NativeConnectionHandler extends ConnectionHandler {
 			handler.nicklist.delNick(chan, user.getNick());
 			
 			if (user.getNick().equals(irc.getNick())) {
-				try {
+				try {					
 					handler.removeChannel(chan);
 					handler.nicklist.removeChannel(chan);
 				} catch (SQLException e) {
 					e.printStackTrace();					
-				}
+				}				
 			}
-			
-			Vector<String> isOn = handler.nicklist.isOn(user.getNick());
-			
-			if (!isOn.elements().hasMoreElements()) 
-				handler.extnickinfo.delete(user.getNick());
 			
 			handler.pushMessage("---", chan, "PART:" + user.getNick() + ":" + msg, Constants.MSGT_EVENT);		
 		}
@@ -980,6 +987,8 @@ public class NativeConnectionHandler extends ConnectionHandler {
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
+				
+				return;
 			}	
 			
 			if (num == RPL_TOPICINFO) {
@@ -990,6 +999,8 @@ public class NativeConnectionHandler extends ConnectionHandler {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
+				
+				return;
 			}
 			
 			if (num == RPL_UNAWAY) {
@@ -999,6 +1010,8 @@ public class NativeConnectionHandler extends ConnectionHandler {
 				if (nick.equals(irc.getNick())) {
 					handler.pushMessage("---", "---", msg, Constants.MSGT_SYSTEM);
 				}
+				
+				return;
 			}
 
 			if (num == RPL_NOWAWAY) {
@@ -1008,6 +1021,8 @@ public class NativeConnectionHandler extends ConnectionHandler {
 				if (nick.equals(irc.getNick())) {
 					handler.pushMessage("---", "---", msg, Constants.MSGT_SYSTEM);
 				}
+				
+				return;
 			}
 
 			if (num == 301) { /* AWAYREASON */
@@ -1016,6 +1031,8 @@ public class NativeConnectionHandler extends ConnectionHandler {
 				if (nicks.length == 2) {
 					handler.extnickinfo.setAwayReason(nicks[1], msg);
 				}
+				
+				return;
 			}
 
 			if (num == RPL_NAMREPLY) {
@@ -1025,6 +1042,8 @@ public class NativeConnectionHandler extends ConnectionHandler {
 				for (String nick : nicks) {
 					nicklist.addNick(params[2], nick);
 				}
+				
+				return;
 			}
 			
 			if (num == RPL_ENDOFNAMES) {
@@ -1034,6 +1053,7 @@ public class NativeConnectionHandler extends ConnectionHandler {
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
+				return;
 			}
 			
 			if (num == RPL_WHOREPLY) {
@@ -1046,7 +1066,15 @@ public class NativeConnectionHandler extends ConnectionHandler {
 				String server = params[4];
 				
 				handler.extnickinfo.update(nick, ident, host, server, realName);
+				
+				return;
 			}
+			
+			if (num == RPL_ENDOFWHO) {
+				return;
+			}
+			
+			handler.pushMessage(irc.getHost(), "---", num + " " + value + " " + msg, Constants.MSGT_SYSTEM);
 		}
 
 		@Override
@@ -1062,9 +1090,9 @@ public class NativeConnectionHandler extends ConnectionHandler {
 		}
 
 		@Override
-		public void unknown(String arg0, String arg1, String arg2, String arg3) {
-			// TODO Auto-generated method stub
-			
+		public void unknown(String prefix, String command, String middle, String trailing) {
+			handler.pushMessage("---", "---", prefix + " " + command + " " + middle + " " + trailing, 
+				Constants.MSGT_SYSTEM);			
 		}		
 	}
 
