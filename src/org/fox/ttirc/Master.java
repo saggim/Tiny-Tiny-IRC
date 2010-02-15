@@ -326,12 +326,16 @@ public class Master {
 	public void cleanup() throws SQLException {
 		
 		logger.info("Cleaning up...");
+
+		PreparedStatement ps = getConnection().prepareStatement("UPDATE ttirc_connections SET status = ?" +
+				", userhosts = '', active_server = ''");
+		
+		ps.setInt(1, Constants.CS_DISCONNECTED);
+		ps.execute();
+		ps.close();
 		
 		Statement st = getConnection().createStatement();
 		
-		st.execute("UPDATE ttirc_connections SET status = " +
-				String.valueOf(Constants.CS_DISCONNECTED) + ", userhosts = ''");
-
       	st.execute("UPDATE ttirc_channels SET nicklist = ''");
 
       	st.execute("UPDATE ttirc_system SET value = 'false' WHERE " +
@@ -476,7 +480,8 @@ public class Master {
 	}
 	
 	public void cleanup(int connectionId) throws SQLException {
-		PreparedStatement ps = getConnection().prepareStatement("UPDATE ttirc_connections SET status = ? " + 
+		PreparedStatement ps = getConnection().prepareStatement("UPDATE ttirc_connections " +
+				"SET status = ?, active_server = '' " + 
 				"WHERE id = ?");
 		
 		ps.setInt(1, Constants.CS_DISCONNECTED);

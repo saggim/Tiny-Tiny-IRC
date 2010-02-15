@@ -169,7 +169,7 @@ public class ExtNickInfo {
 		}
 	}
 
-	public void delete(String nick) {
+	public void remove(String nick) {
 		extinfo.remove(nick);
 		Sync();
 	}

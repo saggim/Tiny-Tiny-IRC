@@ -56,7 +56,7 @@ public class NativeConnectionHandler extends ConnectionHandler {
 	}
 
 	public void removeUserhost(String nick) {
-		extnickinfo.delete(nick);
+		extnickinfo.remove(nick);
 	}
 	
 	public void renameUserhost(String oldNick, String newNick) {
@@ -72,24 +72,22 @@ public class NativeConnectionHandler extends ConnectionHandler {
 		this.conn = master.createConnection();
 	}
 	
-	public void setConnected(boolean connected) throws SQLException {
+	public void setActive(boolean active) throws SQLException {
+		this.active = active;
+	}
+
+	public void setEnabled(boolean enabled) throws SQLException {
 		PreparedStatement ps = getConnection().prepareStatement("UPDATE ttirc_connections SET " +
-				"status = ?, active_server = ? WHERE id = ?");
-		
-		if (connected)
-			ps.setInt(1, Constants.CS_CONNECTED);
-		else {
-			ps.setInt(1, Constants.CS_DISCONNECTED);
-			active = false;
-		}
-		
-		ps.setString(2, irc.getHost() + ":" + irc.getPort());
-		ps.setInt(3, connectionId);
+				"enabled = ? WHERE id = ?");
+
+		ps.setBoolean(1, enabled);
+		ps.setInt(2, connectionId);
 		
 		ps.execute();
 		ps.close();
 	}
 
+	
 	public String[] getRandomServer() throws SQLException {
 		PreparedStatement ps = getConnection().prepareStatement("SELECT server,port FROM ttirc_servers " +
 				"WHERE connection_id = ? ORDER BY RANDOM()");
@@ -188,10 +186,10 @@ public class NativeConnectionHandler extends ConnectionHandler {
 			irc.setColors(true);
 			
 			try {
-				irc.connect();
+				//irc.connect();
 				
-				return true;
-			} catch (IOException e) {
+				return false;
+			} catch (Exception e) {
 				pushMessage("---", "---", "CONNECTION_ERROR:" + server[0] + ":" + server[1], 
 						Constants.MSGT_EVENT);
 				return false;
@@ -229,7 +227,7 @@ public class NativeConnectionHandler extends ConnectionHandler {
 	
 	public void kill() {
 		try {
-			setConnected(false);
+			setActive(false);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -297,6 +295,16 @@ public class NativeConnectionHandler extends ConnectionHandler {
 			return;
 		}
 
+		if (command[0].equals("discon") || command[0].equals("disconnect")) {
+			try {
+				irc.doQuit(getQuitMessage());
+				setEnabled(false);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			return;
+		}
+		
 		if (command[0].equals("oper")) {
 			irc.send("OPER " + command[1]);
 			return;
@@ -408,7 +416,7 @@ public class NativeConnectionHandler extends ConnectionHandler {
 					"id > ? ORDER BY id");
 			
 			ps.setInt(1, connectionId);
-			ps.setInt(2, this.lastSentId);		
+			ps.setInt(2, lastSentId);		
 			ps.execute();
 			
 			ResultSet rs = ps.getResultSet();
@@ -448,8 +456,8 @@ public class NativeConnectionHandler extends ConnectionHandler {
 		}		
 	}
 	
-	private void syncLastSentId(int tmpLastSentId) {
-		this.lastSentId = tmpLastSentId;
+	private void syncLastSentId(int lastSentId) {
+		this.lastSentId = lastSentId;
 		
 		try {
 			PreparedStatement ps;
@@ -481,10 +489,10 @@ public class NativeConnectionHandler extends ConnectionHandler {
 		
 		if (rs.next()) {
 			boolean enabled = rs.getBoolean("enabled");			
-			setConnected(enabled);			
+			setActive(enabled);			
 		} else {
 			logger.info("[" + connectionId + "] Disconnecting due to user inactivity.");
-			setConnected(false);
+			setActive(false);
 		}
 		
 		ps.close();
@@ -493,9 +501,10 @@ public class NativeConnectionHandler extends ConnectionHandler {
 	public void run() {
 		try {
 			initConnection();			
-			
-			if (!lock()) return;			
-			if (!connect()) return;
+
+			if (!lock() || !connect()) {
+				active = false;
+			}
 		
 			while (active) {
 				disconnectIfDisabled();
@@ -515,6 +524,10 @@ public class NativeConnectionHandler extends ConnectionHandler {
 			logger.warning("[" + connectionId + "] Connection loop exception: " + e.toString());
 		}
 
+		cleanup();
+	}
+	
+	public void cleanup() {
 		logger.info("[" + connectionId + "] Connection loop terminating.");
 		
 		try {
@@ -680,7 +693,7 @@ public class NativeConnectionHandler extends ConnectionHandler {
 		@Override
 		public void onDisconnected() {			
 			try {
-				handler.setConnected(false);
+				handler.setActive(false);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -741,6 +754,8 @@ public class NativeConnectionHandler extends ConnectionHandler {
 			} else {			
 				handler.pushMessage(user.getNick(), chan, "KICK:" + passiveNick + ":" + msg,
 					Constants.MSGT_EVENT);
+				
+				handler.nicklist.removeNick(chan, passiveNick);
 			}			
 		}
 
@@ -824,7 +839,7 @@ public class NativeConnectionHandler extends ConnectionHandler {
 
 		@Override
 		public void onPart(String chan, IRCUser user, String msg) {
-			handler.nicklist.delNick(chan, user.getNick());
+			handler.nicklist.removeNick(chan, user.getNick());
 			
 			if (user.getNick().equals(irc.getNick())) {
 				try {					
@@ -869,7 +884,7 @@ public class NativeConnectionHandler extends ConnectionHandler {
 		}
 		
 		public void onCtcp(String target, IRCUser user, String command, String msg) {
-			System.out.println("CTCP target: " + target + " CMD: [" + command + "] MSG: " + msg);
+			//System.out.println("CTCP target: " + target + " CMD: [" + command + "] MSG: " + msg);
 						
 			if (command.equals("ACTION")) {
 				if (target.equals(handler.irc.getNick())) {
@@ -942,8 +957,8 @@ public class NativeConnectionHandler extends ConnectionHandler {
 				handler.pushMessage(user.getNick(), chan, "QUIT:" + message, Constants.MSGT_EVENT);
 			}
 			
-			handler.nicklist.delNick(user.getNick());
-			handler.extnickinfo.delete(user.getNick());
+			handler.nicklist.removeNick(user.getNick());
+			handler.extnickinfo.remove(user.getNick());
 		}
 
 		@Override
@@ -954,7 +969,7 @@ public class NativeConnectionHandler extends ConnectionHandler {
 			handler.pushMessage("---", "---", "CONNECT", Constants.MSGT_EVENT);
 			
 			try {
-				handler.setConnected(true);
+				handler.setActive(true);
 				handler.syncNick();
 			} catch (SQLException e) {
 				e.printStackTrace();

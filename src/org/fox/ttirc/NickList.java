@@ -152,7 +152,7 @@ public class NickList {
 		Sync(chan);
 	}
 	
-	public void delNick(String chan, String nick) {
+	public void removeNick(String chan, String nick) {
 		if (!nicklist.containsKey(chan)) 
 			nicklist.put(chan, new Vector<Nick>());
 
@@ -167,7 +167,7 @@ public class NickList {
 		Sync(chan);
 	}
 
-	public void delNick(String nick) {
+	public void removeNick(String nick) {
 
 		Enumeration<String> chans = nicklist.keys();
 		
