@@ -186,9 +186,9 @@ public class NativeConnectionHandler extends ConnectionHandler {
 			irc.setColors(true);
 			
 			try {
-				//irc.connect();
+				irc.connect();
 				
-				return false;
+				return true;
 			} catch (Exception e) {
 				pushMessage("---", "---", "CONNECTION_ERROR:" + server[0] + ":" + server[1], 
 						Constants.MSGT_EVENT);
