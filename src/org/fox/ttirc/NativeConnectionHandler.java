@@ -690,6 +690,17 @@ public class NativeConnectionHandler extends ConnectionHandler {
 		}
 		
 	}
+
+	public void syncServer() throws SQLException {
+		PreparedStatement ps = getConnection().prepareStatement("UPDATE ttirc_connections " +
+			"SET active_server = ? " +
+			"WHERE id = ?");
+				
+		ps.setString(1, irc.getHost() + ":" + irc.getPort());
+		ps.setInt(2, connectionId);
+		ps.execute();
+		ps.close();
+	}
 	
 	public class Listener implements IRCEventListener {
 
@@ -982,6 +993,7 @@ public class NativeConnectionHandler extends ConnectionHandler {
 			try {
 				handler.setStatus(Constants.CS_CONNECTED);				
 				handler.syncNick();
+				handler.syncServer();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
