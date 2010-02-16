@@ -1652,6 +1652,8 @@ function push_cache(line) {
 	try {
 //		line = line.trim();
 
+		input_cache_offset = 0;
+
 		if (line.length == 0) return;
 
 		for (var i = 0; i < input_cache.length; i++) {
@@ -1662,8 +1664,6 @@ function push_cache(line) {
 
 		while (input_cache.length > 100) 
 			input_cache.shift();
-
-		input_cache_offset = 0;
 
 	} catch (e) {
 		exception_error("push_cache", e);
