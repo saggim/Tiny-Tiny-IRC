@@ -433,11 +433,19 @@ public class NativeConnectionHandler extends ConnectionHandler {
 				
 				String channel = rs.getString("channel");
 				String message = rs.getString("message");
+				String[] lines;
 				
 				switch (messageType) {
+				case Constants.MSGT_NOTICE:
+					lines = splitByLength(message, 250);
+					
+					for (String line : lines)					
+						irc.doNotice(channel, line);
+					
+					break;					
 				case Constants.MSGT_PRIVMSG:			
 				case Constants.MSGT_PRIVATE_PRIVMSG:
-					String[] lines = splitByLength(message, 250);
+					lines = splitByLength(message, 250);
 					
 					for (String line : lines)					
 						irc.doPrivmsg(channel, line);
@@ -825,19 +833,19 @@ public class NativeConnectionHandler extends ConnectionHandler {
 				if (target.equals(irc.getNick())) {
 					
 					// server notice
-					if (user.getNick().equals(user.getServername())) {
-						handler.pushMessage(user.getNick(), "---", "NOTICE:" + msg, Constants.MSGT_EVENT);					
+					if (user.getNick().equals(irc.getHost())) {
+						handler.pushMessage(user.getNick(), "---", msg, Constants.MSGT_NOTICE);					
 					} else {
 						try {
 							handler.checkChannel(user.getNick(), Constants.CT_PRIVATE);
-							handler.pushMessage(user.getNick(), user.getNick(), "NOTICE:" + msg, Constants.MSGT_EVENT);
+							handler.pushMessage(user.getNick(), user.getNick(), msg, Constants.MSGT_NOTICE);
 						} catch (SQLException e) {
 							e.printStackTrace();
 						}
 					}
 					
 				} else {
-					handler.pushMessage(user.getNick(), target, "NOTICE:" + msg, Constants.MSGT_EVENT);				
+					handler.pushMessage(user.getNick(), target, msg, Constants.MSGT_NOTICE);				
 				}
 			}
 		}
@@ -864,7 +872,7 @@ public class NativeConnectionHandler extends ConnectionHandler {
 		}
 
 		public void onCtcpReply(String target, IRCUser user, String command, String msg) {
-			System.out.println("CTCP reply target: " + target + " CMD: [" + command + "] MSG: " + msg);
+			//System.out.println("CTCP reply target: " + target + " CMD: [" + command + "] MSG: " + msg);
 			
 			if (command.equals("PING")) {
 				float pingInterval = (float)(System.currentTimeMillis() - Long.parseLong(msg)) / 1000;
