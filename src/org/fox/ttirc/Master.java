@@ -131,9 +131,8 @@ public class Master {
 		boolean showHelp = false;
 		boolean needCleanup = false;
 		String logFileName = null;
+		boolean needVersion = false;
 	
-		logger.info("Master " + getVersion() + " initializing...");
-		
 		for (int i = 0; i < args.length; i++) {
 			String arg = args[i];
 			
@@ -143,6 +142,13 @@ public class Master {
 			if (arg.equals("-cleanup")) needCleanup = true;
 			if (arg.equals("-native")) useNativeCH = args[i+1].equals("true");
 			if (arg.equals("-log")) logFileName = args[i+1];
+			if (arg.equals("-version")) needVersion = true;
+		}
+		
+		if (needVersion) {
+			System.out.println("Tiny Tiny IRC " + getVersion());
+			System.out.println("Copyright (C) 2010 Andrew Dolgov <cthulhoo(at)gmail.com>");
+			System.exit(0);
 		}
 		
 		if (showHelp) {
@@ -150,10 +156,11 @@ public class Master {
 			System.out.println("==================");
 			System.out.println(" -help              - Show this help");
 			System.out.println(" -node node         - Use custom preferences node");
-			System.out.println(" -configure         - Force change configuration");
+			System.out.println(" -configure         - Display configuration dialog");
 			System.out.println(" -cleanup           - Cleanup data and exit");
-			System.out.println(" -native true/false - Use native (Java-based) connection handler");
+			System.out.println(" -native true/false - Use native (Java-based) connection handler (default: true)");
 			System.out.println(" -log file          - Enable logging to specified file");
+			System.out.println(" -version           - Display version information and exit");
 			System.exit(0);
 		}
 
@@ -168,7 +175,9 @@ public class Master {
 				e.printStackTrace();
 			}
 		}
-			
+
+		logger.info("Master " + getVersion() + " starting up...");
+		
 		if (prefsNode != null) {
 			logger.info("Using custom preferences node: " + prefsNode);
 			prefs = prefs.node(prefsNode);
@@ -195,22 +204,22 @@ public class Master {
 			System.exit(2);
 		}
 		
-		lockDir = LOCK_DIR;
+		this.lockDir = LOCK_DIR;
 		
 		if (!lock()) System.exit(3);
 				
-		String DB_HOST = prefs.get("DB_HOST", "localhost");
-		String DB_USER = prefs.get("DB_USER", "user");
-		String DB_PASS = prefs.get("DB_PASS", "pass");
-		String DB_NAME = prefs.get("DB_NAME", "user");
-		String DB_PORT = prefs.get("DB_PORT", "5432");
+		String dbHost = prefs.get("DB_HOST", "localhost");
+		String dbUser = prefs.get("DB_USER", "user");
+		String dbPass = prefs.get("DB_PASS", "pass");
+		String dbName = prefs.get("DB_NAME", "user");
+		String dbPort = prefs.get("DB_PORT", "5432");
 		
-		String jdbcUrl = "jdbc:postgresql://" + DB_HOST + ":" + DB_PORT + 
-			"/" + DB_NAME;
+		String jdbcUrl = "jdbc:postgresql://" + dbHost + ":" + dbPort + 
+			"/" + dbName;
 		
 		this.jdbcUrl = jdbcUrl;
-		this.dbUser = DB_USER;
-		this.dbPass = DB_PASS;
+		this.dbUser = dbUser;
+		this.dbPass = dbPass;
 		
 		try {
 			logger.info("Establishing database connection...");

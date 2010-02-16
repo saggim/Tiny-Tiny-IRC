@@ -45,7 +45,7 @@
 			<attribute name="Built-By" value="${user.name}"/>
 			<attribute name="Main-Class" value="org.fox.ttirc.Master"/>
 			<attribute name="Implementation-Version"
-				value="${build.number}"/>
+				value="Build ${build.number}; ${TODAY}"/>
 			<attribute name="Built-Date" value="${TODAY}"/>
 			<attribute name="Class-Path" value="${manifest.classpath}"/>
 		</manifest>

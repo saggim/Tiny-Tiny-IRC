@@ -76,6 +76,17 @@ public class NativeConnectionHandler extends ConnectionHandler {
 		this.active = active;
 	}
 
+	public void setStatus(int status) throws SQLException {
+		PreparedStatement ps = getConnection().prepareStatement("UPDATE ttirc_connections SET " +
+		"status = ?, userhosts = '' WHERE id = ?");
+
+		ps.setInt(1, status);
+		ps.setInt(2, connectionId);
+		ps.execute();
+		ps.close();
+
+	}
+	
 	public void setEnabled(boolean enabled) throws SQLException {
 		PreparedStatement ps = getConnection().prepareStatement("UPDATE ttirc_connections SET " +
 				"enabled = ? WHERE id = ?");
@@ -160,14 +171,8 @@ public class NativeConnectionHandler extends ConnectionHandler {
 			int port = Integer.valueOf(server[1]);
 
 			pushMessage("---", "---", "CONNECTING:" + server[0] + ":" + server[1], Constants.MSGT_EVENT);
-			
-			ps = getConnection().prepareStatement("UPDATE ttirc_connections SET " +
-					"status = ?, userhosts = '' WHERE id = ?");
 
-			ps.setInt(1, Constants.CS_CONNECTING);
-			ps.setInt(2, connectionId);
-			ps.execute();
-			ps.close();
+			setStatus(Constants.CS_CONNECTING);
 			
 			ps = getConnection().prepareStatement("UPDATE ttirc_channels SET " +
 					"nicklist = '' WHERE connection_id = ?");
@@ -966,15 +971,15 @@ public class NativeConnectionHandler extends ConnectionHandler {
 			
 			handler.logger.info("[" + connectionId + "] Connected to IRC.");
 			
-			handler.pushMessage("---", "---", "CONNECT", Constants.MSGT_EVENT);
-			
 			try {
-				handler.setActive(true);
+				handler.setStatus(Constants.CS_CONNECTED);				
 				handler.syncNick();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			
+
+			handler.pushMessage("---", "---", "CONNECT", Constants.MSGT_EVENT);
+
 			/* Autojoin channels */
 			for (String chan : this.autojoin) {
 				handler.irc.doJoin(chan);				
