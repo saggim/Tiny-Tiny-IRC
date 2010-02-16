@@ -287,6 +287,11 @@ public class NativeConnectionHandler extends ConnectionHandler {
 	public void handleCommand(String chan, String message) {
 		String[] command = message.split(":", 2);
 		
+		if (command.length != 2) {
+			logger.info("[" + connectionId + "] Incorrect command syntax: " + message);
+			return;
+		}
+		
 		//logger.info("COMMAND " + command[0] + "/" + command[1] + " on " + chan);
 
 		if (command[0].equals("away")) {
@@ -985,6 +990,13 @@ public class NativeConnectionHandler extends ConnectionHandler {
 			handler.extnickinfo.remove(user.getNick());
 		}
 
+		// TODO: better implementation
+		public String parseCommand(String rawCmd) {
+			rawCmd = rawCmd.substring(1);
+			rawCmd = rawCmd.replace(' ', ':');
+			return rawCmd;			
+		}
+		
 		@Override
 		public void onRegistered() {
 			
@@ -1008,13 +1020,19 @@ public class NativeConnectionHandler extends ConnectionHandler {
 			try {
 				Vector<String> activeChans = handler.getChannels();
 			
-				for (String chan : activeChans) {
+				for (String chan : activeChans)
 					handler.irc.doJoin(chan);
-				}
+				
+				String[] connectCmd = handler.getConnectCmd();
+				
+				for (String cmd : connectCmd)
+					if (cmd.length() > 0)
+							handleCommand("", parseCommand(cmd));
+
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			
+		
 		}
 
 		@Override
@@ -1144,6 +1162,26 @@ public class NativeConnectionHandler extends ConnectionHandler {
 		ps.setInt(2, connectionId);
 		ps.execute();
 		ps.close();
+	}
+
+	public String[] getConnectCmd() throws SQLException {
+		PreparedStatement ps = getConnection().prepareStatement("SELECT connect_cmd FROM ttirc_connections " +
+				"WHERE id = ?");
+
+		ps.setInt(1, connectionId);
+		ps.execute();
+		
+		ResultSet rs = ps.getResultSet();
+
+		String[] rv = null;
+		
+		if (rs.next()) {
+			rv = rs.getString("connect_cmd").split(";");			
+		}
+		
+		ps.close();
+		
+		return rv;
 	}
 
 	public String[] splitByLength(String str, int length) {
