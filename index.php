@@ -65,7 +65,7 @@
 <div id="image-tooltip" onclick="Element.hide(this)" 
 	title="<?php echo __("Click to close") ?>" style="display : none"></div>
 
-<div id="preview-shadow" style="zdisplay : none"  onclick="Element.hide(this)">
+<div id="preview-shadow" style="display : none"  onclick="Element.hide(this)">
 <div id="image-preview" 
 	title="<?php echo __("Click to close") ?>"></div></div>
 
