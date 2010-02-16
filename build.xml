@@ -35,6 +35,7 @@
 		<buildnumber file="build.number"/>
 		<tstamp>
 			<format property="TODAY" pattern="yyyy-MM-dd HH:mm:ss" />
+			<format property="TODAY_SHORT" pattern="yyyy-MM-dd" />
 		</tstamp>
 	</target>
 
@@ -45,7 +46,7 @@
 			<attribute name="Built-By" value="${user.name}"/>
 			<attribute name="Main-Class" value="org.fox.ttirc.Master"/>
 			<attribute name="Implementation-Version"
-				value="Build ${build.number}; ${TODAY}"/>
+				value="Build ${build.number}; ${TODAY_SHORT}"/>
 			<attribute name="Built-Date" value="${TODAY}"/>
 			<attribute name="Class-Path" value="${manifest.classpath}"/>
 		</manifest>
