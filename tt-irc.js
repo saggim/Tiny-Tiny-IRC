@@ -1398,16 +1398,16 @@ function show_preview(img) {
 			img.height = max_height;
 		}
 
-		var dp = $("image-preview").getDimensions();
+		var dp = $("preview-shadow").getDimensions();
 
-		$("image-preview").style.left = (vp.width/2 - dp.width/2) + "px";
-		$("image-preview").style.top = (vp.height/2 - dp.height/2) + "px";
-		$("image-preview").style.width = dp.width;
-		$("image-preview").style.height = dp.height;
+		$("preview-shadow").style.left = (vp.width/2 - dp.width/2) + "px";
+		$("preview-shadow").style.top = (vp.height/2 - dp.height/2) + "px";
+		$("preview-shadow").style.width = dp.width;
+		$("preview-shadow").style.height = dp.height;
 
 		//Effect.Appear("image-preview");
 
-		Element.show("image-preview");
+		Element.show("preview-shadow");
 
 	} catch (e) {
 		exception_error("show_preview", e);

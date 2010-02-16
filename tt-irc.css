@@ -434,8 +434,8 @@ html>body #infoBox, html>body #errorBox {
 	margin : 0;
 }
 
-#infoBoxShadow:before, #infoBoxShadow:after, 
-#errorBoxShadow:before, #errorBoxShadow:after {
+#infoBoxShadow:before, #infoBoxShadow:after, #preview-shadow:before, 
+#errorBoxShadow:before, #errorBoxShadow:after, #preview-shadow:after {
 	content : " ";
 	display : block;
 	background : inherit;
@@ -443,7 +443,7 @@ html>body #infoBox, html>body #errorBox {
 	height : 10px;
 }
 
-#infoBoxShadow:before, #errorBoxShadow:before {
+#infoBoxShadow:before, #errorBoxShadow:before, #preview-shadow:before {
 	position : absolute;
 	top : 0;
 	right : 0;
@@ -451,9 +451,16 @@ html>body #infoBox, html>body #errorBox {
 	background-position : right top;
 }
 
-#infoBoxShadow:after, #errorBoxShadow:after {
+#infoBoxShadow:after, #errorBoxShadow:after, #preview-shadow:after {
 	margin : -10px 0 0 -10px;
 	background-position : left bottom;
+}
+
+#preview-shadow {
+	background-image : url("images/shadow.png");
+	background-position : bottom right;
+	position : absolute;
+	z-index : 4;
 }
 
 #infoBoxShadow, #errorBoxShadow {
@@ -697,13 +704,22 @@ div.error {
 }
 
 div#image-preview {
-	background-color : #fff7d5;
+	background-color : #fff7d5; 
 	border-width : 1px;
 	padding : 5px;
 	border-style : solid;
 	border-color : #e7d796;
 	font-size : 8px;
 	color : #9a8c59;
+
+	position: relative;
+	overflow : hidden;
+	left : -10px;
+	top : -10px;
+
+}
+
+div#preview-shadow {
 	position : absolute;
 	z-index : 4;
 }
