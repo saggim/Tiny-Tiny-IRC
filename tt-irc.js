@@ -1333,7 +1333,7 @@ var _tooltip_elem;
 
 function show_thumbnail(img) {
 	try {
-		if (_tooltip_elem && !Element.visible("image-preview")) {
+		if (_tooltip_elem && !Element.visible("preview-shadow")) {
 
 			hide_spinner();
 
@@ -1439,7 +1439,7 @@ function m_i(elem) {
 	try {	
 
 		if (!elem.href.toLowerCase().match("(jpg|gif|png|bmp)$") || 
-				Element.visible("image-preview"))
+				Element.visible("preview-shadow"))
 			return;
 
 		var timeout = window.setTimeout(function() {
