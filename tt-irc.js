@@ -865,6 +865,18 @@ function update_title() {
 				} else {
 					title = "["+new_messages+"] " + title;
 				}
+
+				if (window.fluid) {
+					if (new_highlights) {
+						window.fluid.dockBadge = "* " + new_messages;
+					} else {
+						window.fluid.dockBadge = new_messages;
+					}
+				}
+			} else {
+				if (window.fluid) {
+					window.fluid.dockBadge = "";
+				}
 			}
 
 
