@@ -822,11 +822,6 @@ public class NativeConnectionHandler extends ConnectionHandler {
 
 		@Override
 		public void onNick(IRCUser user, String nick) {
-			Vector<String> chans = handler.nicklist.isOn(user.getNick());
-			
-			for (String chan : chans) {
-				handler.pushMessage(user.getNick(), chan, "NICK:" + nick, Constants.MSGT_EVENT);
-			}
 			handler.nicklist.renameNick(user.getNick(), nick);
 			handler.syncNick();
 		}
