@@ -565,6 +565,8 @@
 	function push_message($link, $connection_id, $channel, $message, 
 		$incoming = false, $message_type = MSGT_PRIVMSG, $from_nick = false) {
 
+		if (!$message) return false;
+
 		$incoming = bool_to_sql_bool($incoming);
 
 		if ($channel != "---") {

@@ -151,11 +151,16 @@
 				handle_command($link, $connection_id, $chan, $message);
 			} else {
 
-				if ($tab_type == "P")
-					push_message($link, $connection_id, $chan, $message, false, 
-						MSGT_PRIVATE_PRIVMSG);
-				else
-					push_message($link, $connection_id, $chan, $message);
+				$lines = explode("\n", $message);
+
+				if ($tab_type == "P") {
+					foreach ($lines as $line)
+						push_message($link, $connection_id, $chan, $line, false, 
+							MSGT_PRIVATE_PRIVMSG);
+				} else {
+					foreach ($lines as $line)
+						push_message($link, $connection_id, $chan, $line);
+				}
 
 /*				$lines = explode("\n", wordwrap($message, 200, "\n"));
 
