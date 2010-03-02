@@ -172,8 +172,7 @@
 	<div id="nick" onclick="change_nick()"></div>
 
 	<div id="input"><div class="wrapper">
-		<textarea disabled="true" rows="1" id="input-prompt" onkeypress="send(this, event)">
-		</textarea>
+		<input disabled="true" rows="1" id="input-prompt" onkeypress="send(this, event)"/>
 		<div class="autocomplete" id="input-suggest" style="display:none"></div>
 	</div></div>
 </div>

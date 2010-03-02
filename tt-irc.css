@@ -139,7 +139,7 @@ table.loginForm2 .innerLoginCell {
 	border : 1px solid #88b0f0;
 }
 
-#input textarea {
+#input input, #input textarea {
 	border-width : 0px;
 	padding : 0px;
 	width : 100%;
