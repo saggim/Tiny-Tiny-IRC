@@ -1749,7 +1749,7 @@ function highlight_tab_if_needed(connection_id, channel, message) {
 
 		debug("highlight_tab_if_needed " + connection_id + " " + channel);
 
-		if (message.id <= last_old_id) return;
+		//if (message.id <= last_old_id) return;
 
 		if (tab && tab != get_selected_tab()) {
 
