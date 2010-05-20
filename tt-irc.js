@@ -837,6 +837,25 @@ function handle_chan_data(chandata) {
 					create_tab_if_needed(chan, connection_id, tab_type);
 
 					nicklists[connection_id][chan] = chandata[connection_id][chan]["users"];
+
+					if (!topics[connection_id][chan] && 
+							chandata[connection_id][chan]["topic"] && tab_type == "C") {
+
+						var line = new Object();
+
+						line.message = __("Topic for %c is: %s").replace("%c", chan);
+						line.message = line.message.replace("%s", 
+								rewrite_urls(chandata[connection_id][chan]["topic"][0]));
+						line.message_type = MSGT_SYSTEM;
+						line.ts = make_timestamp();
+						line.id = last_id + 1;
+
+						push_message(connection_id, chan, line, MSGT_PRIVMSG);
+
+						update_buffer();
+
+					}
+
 					topics[connection_id][chan] = chandata[connection_id][chan]["topic"];
 				}
 			}
@@ -1800,4 +1819,5 @@ function find_tab(connection_id, channel) {
 		exception_error("find_tab", e);
 	}
 }
+
 

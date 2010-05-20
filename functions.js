@@ -120,9 +120,7 @@ function debug(msg) {
 			c.removeChild(c.lastChild);
 		}
 	
-		var d = new Date();
-		var ts = leading_zero(d.getHours()) + ":" + leading_zero(d.getMinutes()) +
-			":" + leading_zero(d.getSeconds());
+		var ts = make_timestamp();
 		c.innerHTML = "<li class=\"" + debug_last_class + "\"><span class=\"debugTS\">[" + ts + "]</span> " + 
 			msg + "</li>" + c.innerHTML;
 	}
@@ -387,4 +385,20 @@ function get_cookie(name) {
 	return unescape(dc.substring(begin + prefix.length, end));
 }
 
+function make_timestamp() {
+	var d = new Date();
 
+  	return leading_zero(d.getHours()) + ":" + leading_zero(d.getMinutes()) +
+			":" + leading_zero(d.getSeconds());
+}
+
+function rewrite_urls(s) {
+	try {
+
+		return s.replace(/(([a-z]+):\/\/[^ ]+)/ig,
+			"<a target=\"_blank\" onclick=\"return m_c(this)\" onmouseover=\"m_i(this)\" onmouseout=\"m_o(this)\" href=\"$1\">$1</a>");
+
+	} catch (e) {
+		exception_error("rewrite_urls", e);
+	}
+}
