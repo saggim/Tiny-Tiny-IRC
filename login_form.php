@@ -142,7 +142,7 @@ Event.observe(window, 'load', function() {
 	</td>
 </tr><tr>
 	<td align="center" class="loginBottom">
-		<a href="http://tt-rss.org/">Tiny Tiny IRC</a> &copy; 2010 <a href="http://bah.org.ru/">Andrew Dolgov</a>
+		<a href="http://tt-rss.org/">Tiny Tiny IRC</a> &copy; 2010 <a href="http://fakecake.org/">Andrew Dolgov</a>
 	</td>
 </tr>
 
