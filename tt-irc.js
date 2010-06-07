@@ -1530,6 +1530,7 @@ function hotkey_handler(e) {
 
 		if (keycode == 27) { // escape
 			close_infobox();
+			Element.hide("preview-shadow");
 		} 
 
 		if (!hotkeys_enabled) {
