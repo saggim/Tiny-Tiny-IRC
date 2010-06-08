@@ -86,7 +86,7 @@ function reset_user() {
 		var rows = get_selected_rows($("users-list"));
 
 		if (rows.length == 1) {
-			if (confirm(__("Delete selected users?"))) {
+			if (confirm(__("Reset password of selected user?"))) {
 
 				var id = rows[0].getAttribute("user_id");
 
