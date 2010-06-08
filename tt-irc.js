@@ -838,8 +838,9 @@ function handle_chan_data(chandata) {
 
 					nicklists[connection_id][chan] = chandata[connection_id][chan]["users"];
 
-					if (!topics[connection_id][chan] && 
-							chandata[connection_id][chan]["topic"] && tab_type == "C") {
+					if ((!topics[connection_id][chan] ||
+							!topics[connection_id][chan][0]) && 
+							chandata[connection_id][chan]["topic"][0] && tab_type == "C") {
 
 						var line = new Object();
 
