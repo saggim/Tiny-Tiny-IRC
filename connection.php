@@ -126,7 +126,7 @@ class Connection extends Yapircl {
 
 			$result = db_query($this->link, "SELECT * FROM ttirc_messages
 				WHERE incoming = false AND
-					ts > NOW() - INTERVAL '1 year' AND
+					ts > ".get_interval_years(1)." AND
 					connection_id = '".($this->connection_id)."' AND 
 					id > ".($this->last_sent_id) . "  ORDER BY id");
 
@@ -202,7 +202,7 @@ class Connection extends Yapircl {
 				"SELECT enabled 
 				FROM ttirc_connections, ttirc_users
 				WHERE owner_uid = ttirc_users.id AND 
-				(heartbeat > NOW() - INTERVAL '10 minutes' OR permanent = true) AND
+				(heartbeat > ".get_interval_minutes(15)." OR permanent = true) AND
 				ttirc_connections.id = " . $this->connection_id);
 	
 			if (db_num_rows($result) != 1) {

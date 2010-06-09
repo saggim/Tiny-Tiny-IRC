@@ -1,7 +1,7 @@
 <?php
 	require_once "functions.php";
 
-	define('SCHEMA_VERSION', 1);
+	define('SCHEMA_VERSION', 2);
 	define('EXPECTED_CONFIG_VERSION', 1);
 
 	$err_msg = ""; 
@@ -16,6 +16,10 @@
 
 	if (CONFIG_VERSION != EXPECTED_CONFIG_VERSION) {
 		$err_msg = "config: your config file version is incorrect. See config.php-dist.\n";
+	}
+
+	if (DATABASE_BACKED_SESSIONS && DB_TYPE == "mysql") {
+		$err_msg = "config: DATABASE_BACKED_SESSIONS are currently broken with MySQL";
 	}
 
 	if (!is_dir(LOCK_DIRECTORY)) {

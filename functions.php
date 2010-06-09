@@ -591,7 +591,7 @@
 			FROM ttirc_messages, ttirc_connections WHERE
 			connection_id = ttirc_connections.id AND
 			message_type != ".MSGT_COMMAND." AND
-			ts > NOW() - INTERVAL '15 minutes' AND
+			ts > ".get_interval_minutes(15)." AND
 			ttirc_messages.id > '$last_id' AND 
 			owner_uid = ".$_SESSION["uid"]);
 
@@ -606,9 +606,9 @@
 			FROM ttirc_messages, ttirc_connections WHERE
 			connection_id = ttirc_connections.id AND
 			message_type != ".MSGT_COMMAND." AND
-			((ts > NOW() - INTERVAL '15 minutes' AND 
+			((ts > ".get_interval_minutes(15)." AND 
 				message_type != ".MSGT_PRIVATE_PRIVMSG.") OR
-			(ts > NOW() - INTERVAL '5 hours' AND 
+			(ts > ".get_interval_hours(5)."  AND 
 				message_type = ".MSGT_PRIVATE_PRIVMSG.")) AND
 			ttirc_messages.id > '$last_id' AND 
 			owner_uid = ".$_SESSION["uid"]." ORDER BY ttirc_messages.id LIMIT 50");
@@ -728,13 +728,15 @@
 
 		error_reporting (DEFAULT_ERROR_LEVEL);
 
-		$result = db_query($link, "SELECT value FROM ttirc_system WHERE
-			key = 'MASTER_RUNNING'");
+		if (!$error_code) {
+			$result = db_query($link, "SELECT value FROM ttirc_system WHERE
+				param = 'MASTER_RUNNING'");
 
-		$master_running = db_fetch_result($result, 0, "value") == "true";
+			$master_running = db_fetch_result($result, 0, "value") == "true";
 
-		if (!$master_running) {
-			$error_code = 13;
+			if (!$master_running) {
+				$error_code = 13;
+			}
 		}
 
 		if ($error_code != 0) {
@@ -779,7 +781,7 @@
 
 	function purge_old_lines($link) {
 		db_query($link, "DELETE FROM ttirc_messages WHERE
-			ts < NOW() - INTERVAL '3 hours'");
+			ts < " . get_interval_hours(3));
 	}
 
 	function update_heartbeat($link) {
@@ -925,5 +927,37 @@
 		$rv = array("highlight_on" => explode(",", get_pref($link, "HIGHLIGHT_ON")));
 
 		return $rv;
+	}
+
+	function get_interval_years($interval) {
+		if (DB_TYPE == "pgsql") {
+			return "NOW() - INTERVAL '$interval years'";
+		} else if (DB_TYPE == "mysql") {
+			return "DATE_SUB(NOW(), INTERVAL $interval YEAR)";
+		}
+	}
+
+	function get_interval_months($interval) {
+		if (DB_TYPE == "pgsql") {
+			return "NOW() - INTERVAL '$interval months'";
+		} else if (DB_TYPE == "mysql") {
+			return "DATE_SUB(NOW(), INTERVAL $interval MONTH)";
+		}
+	}
+
+	function get_interval_hours($interval) {
+		if (DB_TYPE == "pgsql") {
+			return "NOW() - INTERVAL '$interval hours'";
+		} else if (DB_TYPE == "mysql") {
+			return "DATE_SUB(NOW(), INTERVAL $interval HOURS)";
+		}
+	}
+
+	function get_interval_minutes($interval) {
+		if (DB_TYPE == "pgsql") {
+			return "NOW() - INTERVAL '$interval minutes'";
+		} else if (DB_TYPE == "mysql") {
+			return "DATE_SUB(NOW(), INTERVAL $interval MINUTE)";
+		}
 	}
 ?>
