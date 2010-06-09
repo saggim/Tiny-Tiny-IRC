@@ -88,9 +88,9 @@ function confirmOP() {
 				" " . SCHEMA_VERSION . __(", found: ") . $latest_version . "</p>";
 
 		} else {
-			print "<p>".__("Tiny Tiny RSS database is up to date.")."</p>";
+			print "<p>".__("Tiny Tiny IRC database is up to date.")."</p>";
 			print "<form method=\"GET\" action=\"index.php\">
-				<input type=\"submit\" value=\"".__("Return to Tiny Tiny RSS")."\">
+				<input type=\"submit\" value=\"".__("Return to Tiny Tiny IRC")."\">
 				</form>";
 		}
 
