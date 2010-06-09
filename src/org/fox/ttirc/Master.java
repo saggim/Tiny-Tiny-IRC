@@ -10,8 +10,8 @@ import java.util.prefs.Preferences;
 
 public class Master {
 	
-	private final String version = "0.6.0";
-	private final int configVersion = 4;
+	private final String version = "0.5.1";
+	private final int configVersion = 3;
 	private final String lockFileName = "master.lock";
 	
 	protected Preferences prefs;
@@ -28,11 +28,10 @@ public class Master {
 	private String jdbcUrl;
 	private String dbUser;
 	private String dbPass;
-	private int dbType;
 	
 	private Logger logger = Logger.getLogger("org.fox.ttirc");
 	private PurgeThread purgeThread;
-		
+	
 	/**
 	 * @param args
 	 */
@@ -42,10 +41,6 @@ public class Master {
 
 		m.Run();				
 	}	
-	
-	public int getDbType() {
-		return dbType;
-	}
 	
 	public Logger getLogger() {
 		return logger;
@@ -190,7 +185,6 @@ public class Master {
 		
 		try {
 			Class.forName("org.postgresql.Driver");
-			Class.forName("com.mysql.jdbc.Driver");
 		} catch (ClassNotFoundException e) {
 			logger.severe("error: JDBC driver for PostgreSQL not found.");
 			e.printStackTrace();
@@ -220,22 +214,8 @@ public class Master {
 		String dbName = prefs.get("DB_NAME", "user");
 		String dbPort = prefs.get("DB_PORT", "5432");
 		
-		dbType = prefs.getInt("DB_TYPE", Constants.DB_PGSQL);
-		
-		if (dbType != Constants.DB_PGSQL && dbType != Constants.DB_MYSQL) {
-			logger.severe("error: Unknown database type: " + dbType);
-			System.exit(4);
-		}
-		
-		String jdbcUrl;
-		
-		if (dbType == Constants.DB_PGSQL) {		
-			jdbcUrl = "jdbc:postgresql://" + dbHost + ":" + dbPort + 
-				"/" + dbName;
-		} else {
-			jdbcUrl = "jdbc:mysql://" + dbHost + ":" + dbPort + 
-				"/" + dbName + "?useUnicode=yes&characterEncoding=UTF-8&characterSetResults=UTF-8";
-		}
+		String jdbcUrl = "jdbc:postgresql://" + dbHost + ":" + dbPort + 
+			"/" + dbName;
 		
 		this.jdbcUrl = jdbcUrl;
 		this.dbUser = dbUser;
@@ -315,15 +295,14 @@ public class Master {
 		
 			while (!configured) {
 
-				readOption(reader, prefs, "DB_TYPE", "Database type (0 = PostgreSQL; 1 = MySQL)", "0");
 				readOption(reader, prefs, "LOCK_DIR", "Directory for lock files", "/var/tmp");
 				readOption(reader, prefs, "DB_HOST", "Database host", "localhost");
-				readOption(reader, prefs, "DB_PORT", "Database port (5432 = PostgreSQL, 3306 = MySQL)", "5432");
+				readOption(reader, prefs, "DB_PORT", "Database port", "5432");
 				readOption(reader, prefs, "DB_NAME", "Database name", "ttirc_db");
 				readOption(reader, prefs, "DB_USER", "Database user", "ttirc_user");
 				readOption(reader, prefs, "DB_PASS", "Database password", "ttirc_pwd");
 				readOption(reader, prefs, "PURGE_HOURS", 
-						"Purge messages older than this number of hours", "12");
+						"Purge messages older than this amount of hours", "12");
 
 				System.out.print("Done? [Y/N] ");
 				String done = reader.readLine();
@@ -356,7 +335,7 @@ public class Master {
       	st.execute("UPDATE ttirc_channels SET nicklist = ''");
 
       	st.execute("UPDATE ttirc_system SET value = 'false' WHERE " +
-      		"param = 'MASTER_RUNNING'");
+      		"key = 'MASTER_RUNNING'");
 	
       	st.close();
 	}
@@ -364,8 +343,8 @@ public class Master {
 	public void updateHeartbeat() throws SQLException {
 		Statement st = getConnection().createStatement();
 		
-		st.execute("UPDATE ttirc_system SET value = 'true' WHERE param = 'MASTER_RUNNING'");
-		st.execute("UPDATE ttirc_system SET value = NOW() WHERE param = 'MASTER_HEARTBEAT'");
+		st.execute("UPDATE ttirc_system SET value = 'true' WHERE key = 'MASTER_RUNNING'");
+		st.execute("UPDATE ttirc_system SET value = NOW() WHERE key = 'MASTER_HEARTBEAT'");
 		
 		st.close();
 	}
@@ -375,21 +354,10 @@ public class Master {
 		
 		logger.info("Purging old messages (purge_hours = " + purgeHours + ")");
 		
-		PreparedStatement ps;
-		
-		if (getDbType() == Constants.DB_PGSQL) {		
-			ps = getConnection().prepareStatement("DELETE FROM ttirc_messages WHERE " +
+		PreparedStatement ps = getConnection().prepareStatement("DELETE FROM ttirc_messages WHERE " +
 				"ts < NOW() - CAST(? AS INTERVAL)");
-			
-			ps.setString(1, purgeHours + " hours");
-		} else {			
-			ps = getConnection().prepareStatement("DELETE FROM ttirc_messages WHERE " +
-				"ts < DATE_SUB(NOW(), INTERVAL ? HOUR)");
-			
-			ps.setInt(1, purgeHours);
-
-		}
 		
+		ps.setString(1, purgeHours + " hours");
 		ps.execute();
 		ps.close();
 	}
@@ -430,12 +398,12 @@ public class Master {
     			cleanup(connectionId);
     		}			
 		}
-				
+		
 	    st.execute("SELECT ttirc_connections.id " +
 	    		"FROM ttirc_connections, ttirc_users " +
 	    		"WHERE owner_uid = ttirc_users.id AND " +
 	    		"visible = true AND " +
-	    		"(heartbeat > " + getIntervalMinutes(5) + " OR "+
+	    		"(heartbeat > NOW() - INTERVAL '5 minutes' OR " +
 	    		"permanent = true) AND " +
 	    		"enabled = true");
 	
@@ -463,24 +431,6 @@ public class Master {
 	    }
 	}
 	
-	public String getIntervalMinutes(int i) {
-		if (getDbType() == Constants.DB_PGSQL) {
-			return "NOW() - INTERVAL '"+i+" minutes'";
-		} else {
-			return "DATE_SUB(NOW(), INTERVAL "+i+" MINUTE)";
-		}
-		
-	}
-
-	public String getIntervalYears(int i) {
-		if (getDbType() == Constants.DB_PGSQL) {
-			return "NOW() - INTERVAL '"+i+" years'";
-		} else {
-			return "DATE_SUB(NOW(), INTERVAL "+i+" YEAR)";
-		}
-		
-	}
-
 	public String getNick(int connectionId) throws SQLException {
 		PreparedStatement ps = getConnection().prepareStatement("SELECT active_nick FROM " +
 				"ttirc_connections WHERE id = ?");
@@ -613,14 +563,6 @@ public class Master {
 			}
 			
 			master.getLogger().info("PurgeThread terminated.");
-		}
-	}
-
-	public String getRandomFunction() {
-		if (getDbType() == Constants.DB_PGSQL) {
-			return "RANDOM()";			
-		} else {
-			return "RAND()";
 		}
 	}
 }

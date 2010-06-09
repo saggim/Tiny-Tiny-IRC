@@ -1,11 +1,6 @@
 package org.fox.ttirc;
 
 public class Constants {
-
-	/* DB types */
-	
-	public static final int DB_PGSQL = 0;
-	public static final int DB_MYSQL = 1;
 	
 	/* Message types */
 	
@@ -28,6 +23,5 @@ public class Constants {
 	/* Channel types */
 	
 	public static final int CT_CHANNEL = 0;
-	public static final int CT_PRIVATE = 1;
-
+	public static final int CT_PRIVATE = 1;	
 }
