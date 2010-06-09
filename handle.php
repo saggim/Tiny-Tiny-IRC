@@ -20,7 +20,7 @@
 			die("error: Can't create lockfile [$lock_file_name]. ".
 				"Maybe another daemon is already running.\n");
 		}
-	print "PASS: " . DB_PASS; die;
+	}
 
 	$link = db_reconnect($link, DB_HOST, DB_USER, DB_PASS, DB_NAME);
 

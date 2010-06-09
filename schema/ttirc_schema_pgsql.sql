@@ -14,7 +14,7 @@ drop table ttirc_system;
 drop function SUBSTRING_FOR_DATE(timestamp, int, int);
 
 create table ttirc_system(id serial not null primary key,
-	param varchar(120) not null,
+	key varchar(120) not null,
 	value text);
 
 insert into ttirc_system (key, value) values ('MASTER_RUNNING', '');
@@ -129,5 +129,5 @@ create function SUBSTRING_FOR_DATE(timestamp, int, int) RETURNS text AS 'SELECT 
 
 create table ttirc_version (schema_version int not null);
 
-insert into ttirc_version values (2);
+insert into ttirc_version values (1);
 

@@ -99,7 +99,7 @@
 		db_query($link, "UPDATE ttirc_channels SET nicklist = ''");
 
 		db_query($link, "UPDATE ttirc_system SET value = 'false' WHERE
-			param = 'MASTER_RUNNING'");
+			key = 'MASTER_RUNNING'");
 
 		db_close($link);
 	}
@@ -190,10 +190,10 @@
 			init_connection($link);
 
 			db_query($link, "UPDATE ttirc_system SET value = 'true' WHERE
-				param = 'MASTER_RUNNING'");
+				key = 'MASTER_RUNNING'");
 	
 			db_query($link, "UPDATE ttirc_system SET value = NOW() WHERE
-				param = 'MASTER_HEARTBEAT'");
+				key = 'MASTER_HEARTBEAT'");
 	
 			check_children($link);
 
@@ -201,7 +201,7 @@
 				FROM ttirc_connections, ttirc_users 
 				WHERE owner_uid = ttirc_users.id AND
 				visible = true AND
-				(heartbeat > ".get_interval_minutes(5)." OR permanent = true) AND
+				(heartbeat > NOW() - INTERVAL '5 minutes' OR permanent = true) AND
 				enabled = true");
 
 			$ids_to_launch = array();
