@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-02-12 14:10+0300\n"
+"POT-Creation-Date: 2010-06-09 15:40+0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -31,20 +31,20 @@ msgstr "Üﻯēŗ ℅ŝ ãḻѓēâðÿ ĕχìﬆš"
 msgid "Reset password of user %s to <b>%s</b>."
 msgstr "Яėṡẻṫ ρąϟŝŵŏŗ∂ ѳḟ ûŝèŗ ℅š ţö <ﻅ>℅ś<⁄Ѣ>∙"
 
-#: backend.php:254
+#: backend.php:259
 msgid "[Untitled]"
 msgstr "[Ūתẗỉẗḻẻđ]"
 
-#: backend.php:343
+#: backend.php:348
 #, php-format
 msgid "Couldn't add server (%s:%d): Invalid syntax."
 msgstr "ҀỏưĺḏŊ‘ṫ ǡḏḑ şéřύęŗ ₍℅ş∶℅δ₎∶ Ì∩νåļϊď ṡỹńךäẋ·"
 
-#: backend.php:394 login_form.php:124
+#: backend.php:399 login_form.php:124
 msgid "Default profile"
 msgstr "Ḋėϝåúĺṫ ṗѓﻩﬁḻẻ"
 
-#: connection.php:761 tt-irc.js:876 tt-irc.js:880
+#: connection.php:741 tt-irc.js:909 tt-irc.js:913
 msgid "Tiny Tiny IRC"
 msgstr "Ţϊηý Ṫì∩ỷ ΊŘČ"
 
@@ -108,59 +108,59 @@ msgstr "ŠǪĹ ẻŝĉǎṗĭηḡ ẗêﬆ ϝāíľẽḑ، ςẖèćĸ ўôú�
 msgid "Backend connection daemon is not running."
 msgstr "Ḇâćĸėñδ ćŏήṅèҁṯìﻩŋ ðǣḿǒή ìŝ ṅ∅ť ŗųמŋīńﻕ∙"
 
-#: errors.php:35 tt-irc.js:134
+#: errors.php:35 tt-irc.js:135
 msgid "The application failed to initialize."
 msgstr "Ťĥë ǟṗρḻỉçâךǐôמ ϝâĩḻęδ ךσ ǐŉįţĩǡŀỉẑė·"
 
-#: functions.php:146
+#: functions.php:141
 msgid "Incorrect username or password"
 msgstr "Ỉ∩ćŏṟřěċŧ ùϟēṟ∩åṁė òṟ ṗảﻯﺉẃøṙḑ"
 
-#: functions.php:311
+#: functions.php:306
 msgid "Session failed to validate (incorrect IP)"
 msgstr "§ĕşϟỉ∅ṅ ḟâìḻẽđ ṯﻩ ϋăḻìđǡẗĕ ₍ĭŉĉøṙѓě¢ṯ ÌṖ₎"
 
-#: functions.php:908
+#: functions.php:896
 msgid "Default"
 msgstr "Ḋëϝảǔļŧ"
 
-#: index.php:66 index.php:69
+#: index.php:66 index.php:70
 #, fuzzy
 msgid "Click to close"
 msgstr "℃ŀīćḵ ךő ėḑìť ūśëř"
 
-#: index.php:73
+#: index.php:74
 msgid "Loading, please wait..."
 msgstr "Ļőªďíתǧ˛ ρŀẽãśẻ ώåī†·∙·"
 
-#: index.php:80
+#: index.php:81
 msgid ""
 "Your browser doesn't support Javascript, which is required\n"
 "\t\tfor this application to function properly. Please check your\n"
 "\t\tbrowser settings."
 msgstr ""
 
-#: index.php:95
+#: index.php:96
 msgid "Fatal Exception"
 msgstr "℉ăŧàľ Ẽẍçẽρŧīﻩη"
 
-#: index.php:99
+#: index.php:100
 msgid "Try again"
 msgstr ""
 
-#: index.php:112
+#: index.php:113
 msgid "Hello,"
 msgstr "Ήěḻłò،"
 
-#: index.php:114 prefs.php:220
+#: index.php:115 prefs.php:220
 msgid "Preferences"
 msgstr "Ṗřëḟèŗèήċėś"
 
-#: index.php:117
+#: index.php:118
 msgid "Users"
 msgstr "Ǔﻱėѓş"
 
-#: index.php:121
+#: index.php:122
 msgid "Logout"
 msgstr "∟óģσúṯ"
 
@@ -354,11 +354,13 @@ msgid ", found: "
 msgstr "، ḟøüŉḏ∶ "
 
 #: update.php:91
-msgid "Tiny Tiny RSS database is up to date."
+#, fuzzy
+msgid "Tiny Tiny IRC database is up to date."
 msgstr "Ṫỉηγ Ṯîńẙ Ŗ∬ ḋàťáьàﻱĕ īﺉ űρ ṫö δąṯé∙"
 
-#: update.php:93 update.php:161
-msgid "Return to Tiny Tiny RSS"
+#: update.php:93
+#, fuzzy
+msgid "Return to Tiny Tiny IRC"
 msgstr "Ŗēṯŭṟŋ ṫ∅ Ţỉńÿ Ţĩήý Я∬"
 
 #: update.php:101
@@ -404,6 +406,10 @@ msgid ""
 "\t\t\tversion <b>%d</b>."
 msgstr ""
 
+#: update.php:161
+msgid "Return to Tiny Tiny RSS"
+msgstr "Ŗēṯŭṟŋ ṫ∅ Ţỉńÿ Ţĩήý Я∬"
+
 #: users.php:20
 msgid "Click to edit user"
 msgstr "℃ŀīćḵ ךő ėḑìť ūśëř"
@@ -444,113 +450,117 @@ msgstr "Ṗḻēåﺉė ﻱëŀė¢ŧ ﻯöḿê ṡèѓύėṟş †σ δèłě
 msgid "Server:Port (e.g. irc.example.org:6667):"
 msgstr "∫ėṟϋèŗ∶Ṗõṙṫ ₍è∙ğ∙ įŗċ∙ęχâḿρĺè·öṟğ∶6667₎∶"
 
-#: tt-irc.js:78
+#: tt-irc.js:79
 msgid "Close this tab"
 msgstr "Ҁłőṡê ךḣϊṡ ẗáѢ"
 
-#: tt-irc.js:469
+#: tt-irc.js:470
 msgid "Connected to: "
 msgstr "Ҁ∅ńṅëčṯë∂ ṯŏ∶ "
 
-#: tt-irc.js:473 tt-irc.js:479
+#: tt-irc.js:474 tt-irc.js:480
 msgid "Disconnected."
 msgstr "ḎïﺉҁôמŊèҁ†ëδ·"
 
-#: tt-irc.js:491
+#: tt-irc.js:492
 msgid "Conversation with"
 msgstr "Çó∩ύẽṙϟªṫǐѳñ ẅǐťḣ"
 
-#: tt-irc.js:521
+#: tt-irc.js:522
 msgid "Connect"
 msgstr "ĈσņŊẻçך"
 
-#: tt-irc.js:526
+#: tt-irc.js:527
 msgid "Connecting..."
 msgstr "Ҁőηņĕĉţįṅğ∙∙∙"
 
-#: tt-irc.js:531
+#: tt-irc.js:532
 msgid "Disconnect"
 msgstr "Ðỉşċô∩ŉęċţ"
 
-#: tt-irc.js:858
+#: tt-irc.js:847
+msgid "Topic for %c is: %s"
+msgstr ""
+
+#: tt-irc.js:879
 msgid "Tiny Tiny IRC [%a @ %b / %c]"
 msgstr "Ṯïŋÿ Ţỉńÿ ÏṞĆ [℅à @ ℅ѣ ⁄ ℅¢]"
 
-#: tt-irc.js:1000
+#: tt-irc.js:1033
 msgid "Close this tab?"
 msgstr "Ċŀōṡĕ †ḧîϟ ţäь؟"
 
-#: tt-irc.js:1031
+#: tt-irc.js:1064
 msgid "Start conversation with %s?"
 msgstr "Śẗåṙ† ¢ѳņעėřϟàṯīσń ŵì†ḧ ℅ş؟"
 
-#: tt-irc.js:1068
+#: tt-irc.js:1101
 msgid "%u has changed the topic to: %s"
 msgstr "℅û ħąﻯ ςẖäṅﻕĕď ṫĥè ẗﻩṕíč ẗø∶ ℅ϟ"
 
-#: tt-irc.js:1082
+#: tt-irc.js:1115
 msgid "%u has changed mode [%m] on %s"
 msgstr "℅ų ḧáš ҁĥâŉǥęď ṁöðè [℅ṁ] öň ℅ϟ"
 
-#: tt-irc.js:1092
+#: tt-irc.js:1125
 msgid "%u has changed mode [%m]"
 msgstr "℅ũ ḧãṡ čЋă∩ḡéđ ḿ∅ḑě [℅ḿ]"
 
-#: tt-irc.js:1106
+#: tt-irc.js:1139
 msgid "%u has been kicked from %c by %n (%m)"
 msgstr "℅∪ ẖāﺉ Ъèëṉ ḱìҁǩěḋ ḟṟﻩḿ ℅ς Ъŷ ℅ŉ ₍℅ṁ₎"
 
-#: tt-irc.js:1120
+#: tt-irc.js:1153
 msgid "%u has left %c (%m)"
 msgstr "℅ű ĥǟϟ ĺėḟṯ ℅¢ ₍℅ṁ₎"
 
-#: tt-irc.js:1131
+#: tt-irc.js:1164
 msgid "%u (%h) has joined %c"
 msgstr "℅ũ ₍℅ḣ₎ Ћāﻱ ﺫѳïŉèð ℅ҁ"
 
-#: tt-irc.js:1142
+#: tt-irc.js:1175
 msgid "%u has quit IRC (%s)"
 msgstr "℅ũ ḣąś ۹∪ĩ† ÏṞČ ₍℅ŝ₎"
 
-#: tt-irc.js:1149
+#: tt-irc.js:1182
 msgid "Connection terminated."
 msgstr "Ĉѳŋņêċťïỏṅ ẗèřḿìṉǡṯẻδ∙"
 
-#: tt-irc.js:1154
+#: tt-irc.js:1187
 msgid "Requesting connection..."
 msgstr "Ṙé¶µėﬆĭṉǥ ¢ǒŋמëҁţìőη·∙·"
 
-#: tt-irc.js:1162
+#: tt-irc.js:1195
 msgid "Connecting to %s:%d..."
 msgstr "℃ﻩñמëĉţīηǥ ṫѳ ℅ϟ∶℅δ∙∙∙"
 
-#: tt-irc.js:1170
+#: tt-irc.js:1203
 msgid "Ping reply from %u: %d second(s)."
 msgstr "Ṗǐñģ ṟèρłγ ḟŗﻩḿ ℅ŭ∶ ℅δ ŝėċǒṅδ₍ṡ₎∙"
 
-#: tt-irc.js:1204
+#: tt-irc.js:1237
 #, fuzzy
 msgid "Received CTCP %c (%a) from %u"
 msgstr "Ʀė¢ẽĭΰéď ṗĭṅģ ₍℅ﻯ₎ ḟѓõṁ ℅ů"
 
-#: tt-irc.js:1216
+#: tt-irc.js:1249
 #, fuzzy
 msgid "CTCP %c reply from %u: %a"
 msgstr "Ṗǐñģ ṟèρłγ ḟŗﻩḿ ℅ŭ∶ ℅δ ŝėċǒṅδ₍ṡ₎∙"
 
-#: tt-irc.js:1228
+#: tt-irc.js:1261
 msgid "Received ping (%s) from %u"
 msgstr "Ʀė¢ẽĭΰéď ṗĭṅģ ₍℅ﻯ₎ ḟѓõṁ ℅ů"
 
-#: tt-irc.js:1235
+#: tt-irc.js:1268
 msgid "Connection established."
 msgstr "Čﻩṉṉẽ¢ŧǐŏń éﬆǟЫíşḩẽđ∙"
 
-#: tt-irc.js:1240
+#: tt-irc.js:1273
 msgid "Unknown command: /%s."
 msgstr ""
 
-#: tt-irc.js:1250
+#: tt-irc.js:1283
 msgid "%u is now known as %n"
 msgstr "℅ũ ǐﻱ ŋõẇ ĸמѳẘň ãś ℅ñ"
 
@@ -558,13 +568,18 @@ msgstr "℅ũ ǐﻱ ŋõẇ ĸמѳẘň ãś ℅ñ"
 msgid "Login for a new user:"
 msgstr "Ľóǵìń ḟơř ǟ ήêẘ ūşéѓ∶"
 
-#: users.js:52 users.js:89
+#: users.js:52
 msgid "Delete selected users?"
 msgstr "Ďëļè†ě ṡéļęç†ėđ ûśēřś؟"
 
 #: users.js:75
 msgid "Please select some users to delete."
 msgstr "Ṗłėǎšě šêĺẻĉ† şõḿè ùśêṙﻯ ṫō đéłėťė∙"
+
+#: users.js:89
+#, fuzzy
+msgid "Reset password of selected user?"
+msgstr "Ďëļè†ě ṡéļęç†ėđ ûśēřś؟"
 
 #: users.js:109
 msgid "Please select one user to reset password."
