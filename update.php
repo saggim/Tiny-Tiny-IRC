@@ -89,7 +89,7 @@ function confirmOP() {
 
 		} else {
 			print "<p>".__("Tiny Tiny RSS database is up to date.")."</p>";
-			print "<form method=\"GET\" action=\"tt-rss.php\">
+			print "<form method=\"GET\" action=\"index.php\">
 				<input type=\"submit\" value=\"".__("Return to Tiny Tiny RSS")."\">
 				</form>";
 		}
