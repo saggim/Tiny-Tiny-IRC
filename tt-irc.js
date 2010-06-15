@@ -1095,7 +1095,6 @@ function handle_event(li_class, connection_id, line) {
 
 		switch (params[0]) {
 		case "TOPIC":
-			var params_topic = line.message.split(":", 2);
 			var topic = line.message.replace("TOPIC:", "");
 
 			line.message = __("%u has changed the topic to: %s").replace("%u", line.sender);
@@ -1170,7 +1169,7 @@ function handle_event(li_class, connection_id, line) {
 
 			break;
 		case "QUIT":
-			var quit_msg = params[1];
+			var quit_msg = line.message.replace("QUIT:", "");
 
 			line.message = __("%u has quit IRC (%s)").replace("%u", line.sender);
 			line.message = line.message.replace("%s", quit_msg);
