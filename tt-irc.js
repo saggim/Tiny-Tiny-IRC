@@ -374,9 +374,12 @@ function update_buffer() {
 
 					for (var i = 0; i < buffer.length; i++) {
 						var tmp_id = parseInt(buffer[i][0]);
-						if (tmp_id > line_id) {
+						var force_display = buffer[i][2];
+
+						if (tmp_id > line_id || force_display != undefined) {
 							tmp += buffer[i][1];
 							line_id = tmp_id;
+							buffer[i][2] = undefined;
 						}
 					}
 
@@ -849,7 +852,8 @@ function handle_chan_data(chandata) {
 								rewrite_urls(chandata[connection_id][chan]["topic"][0]));
 						line.message_type = MSGT_SYSTEM;
 						line.ts = make_timestamp();
-						line.id = last_id + 1;
+						line.id = last_id;
+						line.force_display = 1;
 
 						push_message(connection_id, chan, line, MSGT_PRIVMSG);
 
@@ -1317,6 +1321,8 @@ function push_message(connection_id, channel, message, message_type) {
 
 			var tmp_html = format_message(li_classes[channel], message, connection_id);
 
+			tmp_html.push(message.force_display);
+
 			buffers[connection_id][channel].push(tmp_html);
 
 			highlight_tab_if_needed(connection_id, channel, message);
@@ -1331,6 +1337,9 @@ function push_message(connection_id, channel, message, message_type) {
 				if (tabs[i].getAttribute("tab_type") == "C") {
 					toggle_li_class(chan);
 					var tmp_html = format_message(li_classes[chan], message, connection_id);
+
+					tmp_html.push(message.force_display);
+
 					buffers[connection_id][chan].push(tmp_html);
 
 //					highlight_tab_if_needed(connection_id, 
