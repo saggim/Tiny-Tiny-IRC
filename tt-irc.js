@@ -434,6 +434,18 @@ function update_buffer() {
 					if (userhosts && userhosts[nick]) {
 						nick_ext_info = userhosts[nick][0] + '@' + 
 							userhosts[nick][1] + " <" + userhosts[nick][3] + ">";
+
+						if (userhosts[nick][6] != null) {
+							var d = new Date();
+							var ts = d.getTime()/1000;
+
+							var delta = parseInt(ts - parseInt(userhosts[nick][6]));
+
+							if (delta > 0) {
+								nick_ext_info += "\n" + 
+									__("Last message: %d seconds ago.").replace("%d", delta);
+							}
+						}
 					}					
 
 /*					if (nick == active_nicks[connection_id]) {
