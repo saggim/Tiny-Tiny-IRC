@@ -16,6 +16,7 @@ public class ExtNickInfo {
 		private boolean isAway;
 		
 		private Date lastUpdated;
+		private Date lastMessage;
 		
 		public ExtInfo() {
 			this.lastUpdated = new Date();
@@ -39,6 +40,11 @@ public class ExtNickInfo {
 			tmp.add(realName);
 			tmp.add(isAway);
 			tmp.add(awayReason);
+			
+			if (lastMessage != null)
+				tmp.add(lastMessage.getTime() / 1000);
+			else
+				tmp.add(null);
 			
 			return tmp;
 		}
@@ -98,6 +104,14 @@ public class ExtNickInfo {
 		public Date getLastUpdated() {
 			return lastUpdated;
 		}
+
+		public void updateLastMessage() {
+			this.lastMessage = new java.util.Date();
+		}
+
+		public Date getLastMessage() {
+			return lastMessage;
+		}
 	}
 
 	private Hashtable<String, ExtInfo> extinfo = new Hashtable<String, ExtInfo>(); 
@@ -119,6 +133,15 @@ public class ExtNickInfo {
 		 * have received actual WHO reply
 		 */
 		
+	}
+	
+	public void updateLastMessage(String nick) {
+		ExtInfo xi = extinfo.get(nick);
+		
+		if (xi != null) {
+			xi.updateLastMessage();
+			Sync();
+		}
 	}
 	
 	public void renameNick(String oldNick, String newNick) {

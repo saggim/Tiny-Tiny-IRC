@@ -224,6 +224,10 @@ public class NativeConnectionHandler extends ConnectionHandler {
 			
 			ps.execute();
 			ps.close();
+			
+			/* Update extnickinfo for specified sender */
+			
+			extnickinfo.updateLastMessage(sender);
 
 		} catch (SQLException e) {
 			e.printStackTrace();
