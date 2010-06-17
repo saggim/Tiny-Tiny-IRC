@@ -14,6 +14,8 @@ public class Master {
 	private final int configVersion = 3;
 	private final String lockFileName = "master.lock";
 	
+	private final int schemaVersion = 1;
+	
 	protected Preferences prefs;
 	protected boolean active;
 	protected Hashtable<Integer, ConnectionHandler> connections;
@@ -41,6 +43,28 @@ public class Master {
 
 		m.Run();				
 	}	
+	
+	public boolean checkSchema() {
+		
+		try {		
+			Statement st = conn.createStatement();
+			
+			st.execute("SELECT schema_version FROM ttirc_version");
+			
+			ResultSet rs = st.getResultSet();
+			
+			if (rs.next()) {			
+				int testSchemaVersion = rs.getInt(1);
+			
+				return testSchemaVersion == schemaVersion;
+			}
+		
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return false;
+	}
 	
 	public Logger getLogger() {
 		return logger;
@@ -238,6 +262,11 @@ public class Master {
 		} catch (SQLException e) {
 			e.printStackTrace();
 			System.exit(1);
+		}
+		
+		if (!checkSchema()) {
+			logger.severe("error: Incorrect schema version.");
+			System.exit(5);
 		}
 		
 		Runtime.getRuntime().addShutdownHook(new Thread() {
