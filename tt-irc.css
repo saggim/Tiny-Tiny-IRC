@@ -243,6 +243,7 @@ ul.sub-tabs {
 	left : 155px;
 	position : absolute;
 	bottom : 5px;
+	word-wrap : break-word;
 }
 
 #topic {
