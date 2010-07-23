@@ -19,7 +19,7 @@ public class Master {
 	protected Preferences prefs;
 	protected boolean active;
 	protected Hashtable<Integer, ConnectionHandler> connections;
-	protected int idleTimeout = 5000;
+	protected int idleTimeout = 5*1000;
 	protected boolean useNativeCH = true;
 
 	private String lockDir;
@@ -456,6 +456,14 @@ public class Master {
 	    	   	connections.put(connectionId, ch);
 	    	   	
 	    	   	ch.start();
+
+					// We don't want to flood IRC servers
+					
+					try {
+						Thread.sleep(2000);
+					} catch (InterruptedException ie) {
+						//
+					}
 	    	}
 	    }
 	}
