@@ -459,6 +459,8 @@ public class Master {
 
 					// We don't want to flood IRC servers
 					
+					logger.info("Sleeping to prevent flood...");
+
 					try {
 						Thread.sleep(2000);
 					} catch (InterruptedException ie) {
