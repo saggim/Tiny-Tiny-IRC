@@ -239,6 +239,8 @@
 			$rv["images"][$img] = theme_image($link, "images/$img");
 		}
 
+		$rv["update_delay_max"] = UPDATE_DELAY_MAX;
+
 		print json_encode($rv);
 
 		break;

@@ -15,6 +15,7 @@ var input_cache = [];
 var input_cache_offset = 0;
 var highlight_on = [];
 var theme_images = [];
+var update_delay_max = 0;
 
 var MSGT_PRIVMSG = 0;
 var MSGT_COMMAND = 1;
@@ -140,6 +141,8 @@ function init_second_stage(transport) {
 
 		theme_images = params.images;
 
+		update_delay_max = params.update_delay_max;
+
 		Element.hide("overlay");
 
 		$("input-prompt").value = "";
@@ -263,6 +266,16 @@ function handle_update(transport) {
 	return true;
 }
 
+function timeout() {
+	try {
+		debug("update timeout detected, retrying...");
+		window.setTimeout("update()", delay);
+
+	} catch (e) {
+		exception_error("timeout", e);
+	}
+}
+
 function update(init) {
 	try {
 		var query = "?op=update&last_id=" + last_id;
@@ -271,9 +284,13 @@ function update(init) {
 
 		debug("request update..." + query + " last: " + last_update);
 
+		var timeoutId = window.setTimeout("timeout()", 
+			(update_delay_max * 1000) + 5000);
+
 		new Ajax.Request("backend.php", {
 		parameters: query,
 		onComplete: function (transport) {
+			window.clearTimeout(timeoutId);
 			if (!handle_update(transport)) return;
 			debug("update done.");
 			window.setTimeout("update()", delay);
