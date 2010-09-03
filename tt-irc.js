@@ -263,6 +263,12 @@ function handle_update(transport) {
 	
 		update_buffer();
 
+		if (prev_last_id == last_id && update_delay_max == 0) {
+			if (delay < 3000) delay += 500;
+		} else {
+			delay = 1500;
+		}
+
 	} catch (e) {
 		exception_error("handle_update", e);
 	}
@@ -299,7 +305,9 @@ function update(init) {
 			window.clearTimeout(timeout_id);
 			window.clearTimeout(update_id);
 			if (!handle_update(transport)) return;
-			debug("update done.");
+
+			debug("update done, next update in " + delay + " ms");
+
 			update_id = window.setTimeout("update()", delay);
 		} });
 
