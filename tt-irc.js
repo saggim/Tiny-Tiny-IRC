@@ -100,7 +100,7 @@ function create_tab_if_needed(chan, connection_id, tab_type) {
 			
 			var tab = $(tab_id);
 
-			if (tab && tab_type =="C") change_tab(tab);
+			if (tab && tab_type == "C") change_tab(tab);
 		}
 
 		return tab_id;
@@ -247,7 +247,7 @@ function handle_update(transport) {
 					if (!window_active) ++new_messages;
 				}
 
-				if (buffers[connection_id][chan]) {
+				if (buffers[connection_id] && buffers[connection_id][chan]) {
 					while (buffers[connection_id][chan].length > 100) {
 						buffers[connection_id][chan].shift();
 					}
@@ -256,7 +256,7 @@ function handle_update(transport) {
 
 			last_id = lines[i].id;
 		}
-	
+
 		if (!get_selected_tab()) {
 			change_tab(get_all_tabs()[0]);
 		}
@@ -763,7 +763,22 @@ function format_message(row_class, param, connection_id) {
 				userhosts[param.sender][1] + " <" + userhosts[param.sender][3] + ">";
 		}					
 
-		if (is_hl) ++new_highlights;
+		if (is_hl) { 
+			++new_highlights;
+			if (param.channel != "---" && param.id > last_old_id) {
+				var tab = get_selected_tab();
+
+				if (tab && tab.getAttribute("channel") != param.channel) {
+					var msg = __("Received highlight on %c by %n: %s");
+				
+					msg = msg.replace("%c", param.channel);
+					msg = msg.replace("%n", param.sender);
+					msg = msg.replace("%s", param.message);
+
+					notify(msg);
+				}
+			}
+		}
 
 		if (param.message_type == MSGT_ACTION) {
 
@@ -1228,6 +1243,8 @@ function handle_event(li_class, connection_id, line) {
 		case "DISCONNECT":
 			line.message = __("Connection terminated.");
 
+			if (last_id > last_old_id) notify("Disconnected from server.");
+
 			push_message(connection_id, '---', line);
 			break;
 		case "REQUEST_CONNECTION":
@@ -1314,6 +1331,8 @@ function handle_event(li_class, connection_id, line) {
 		case "CONNECT":
 			line.message = __("Connection established.");
 
+			if (last_id > last_old_id) notify("Connected to server.");
+
 			push_message(connection_id, '---', line);
 			break;
 		case "UNKNOWN_CMD":
@@ -1369,7 +1388,22 @@ function push_message(connection_id, channel, message, message_type) {
 
 			buffers[connection_id][channel].push(tmp_html);
 
+			var tab = find_tab(connection_id, channel);
+
+			if (tab && get_selected_tab() != tab) {
+				if (tab.getAttribute("tab_type") == "P" && message.id > last_old_id) {
+					var msg = __("Received new private message from %n: %s");
+					
+					msg = msg.replace("%n", message.sender);
+					msg = msg.replace("%s", message.message);
+
+					notify(msg);
+
+				}				
+			}
+
 			highlight_tab_if_needed(connection_id, channel, message);
+
 		} else {
 			var tabs = get_all_tabs(connection_id);
 

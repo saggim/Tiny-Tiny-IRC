@@ -40,6 +40,7 @@ function show_prefs() {
 		parameters: "?op=prefs",
 		onComplete: function (transport) {
 			infobox_callback2(transport);
+			prefs_init_notify();
 			hide_spinner();
 		} });
 
@@ -315,3 +316,12 @@ function save_css(callback) {
 	}
 }
 
+function prefs_init_notify() {
+	try {
+		if (window.webkitNotifications) {
+			$("notify_enable_btn").disabled = 0;
+		}
+	} catch (e) {
+		exception_error("prefs_init_notify", e);
+	}
+}

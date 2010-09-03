@@ -1,5 +1,6 @@
 var hotkeys_enabled = false;
 var spinner_refs = 0;
+var notifications = [];
 
 /* add method to remove element from array */
 
@@ -400,5 +401,46 @@ function rewrite_urls(s) {
 
 	} catch (e) {
 		exception_error("rewrite_urls", e);
+	}
+}
+
+function notify_enable() {
+	try {
+		if (window.webkitNotifications) {
+			if (window.webkitNotifications.checkPermission() != 0) {
+				window.webkitNotifications.requestPermission();
+			} else {
+				mini_error("Desktop notifications are already enabled.");
+			}
+		}
+
+	} catch (e) {
+		exception_error("notify_enable", e);
+
+	}
+}
+
+
+function notify(msg) {
+	try {
+		if (window.webkitNotifications && 
+				window.webkitNotifications.checkPermission() == 0) {
+
+			var notification = webkitNotifications.createNotification(
+				'images/favicon.png',
+				'Tiny Tiny IRC',
+				msg);
+
+			notifications.push(notification);
+
+			notification.show();
+
+			if (notifications.length > 3) {
+				var notification = notifications.shift();
+				notification.cancel();
+			}
+		}
+	} catch (e) {
+		exception_error("notify", e);
 	}
 }

@@ -271,7 +271,13 @@
 			<input name="confirm_password" type="password" size="30" value="">
 		</div>
 
-		<button type="submit" style="display : none" onclick="save_prefs()"></button>
+		<div class="dlgSec"><?php echo __('Desktop notifications:') ?></div>
+
+		<div class="dlgSecCont">
+			<label class="fixed">&nbsp;</label>
+			<button id="notify_enable_btn" disabled="1" onclick="notify_enable()"><?php echo __('Enable notifications') ?></button>
+			<button type="submit" style="display : none" onclick="save_prefs()"></button>
+		</div>
 
 		</form>
 
