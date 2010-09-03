@@ -3,7 +3,8 @@ var last_id = 0;
 var last_old_id = 0;
 var new_messages = 0;
 var new_highlights = 0;
-var delay = 1000;
+var delay = 1500;
+var timeout_delay = 3000;
 var buffers = [];
 var nicklists = [];
 var li_classes = [];
@@ -16,6 +17,9 @@ var input_cache_offset = 0;
 var highlight_on = [];
 var theme_images = [];
 var update_delay_max = 0;
+
+var timeout_id = false;
+var update_id = false;
 
 var MSGT_PRIVMSG = 0;
 var MSGT_COMMAND = 1;
@@ -269,7 +273,9 @@ function handle_update(transport) {
 function timeout() {
 	try {
 		debug("update timeout detected, retrying...");
-		window.setTimeout("update()", delay);
+
+		window.clearTimeout(update_id);
+		update_id = window.setTimeout("update()", timeout_delay);
 
 	} catch (e) {
 		exception_error("timeout", e);
@@ -284,16 +290,17 @@ function update(init) {
 
 		debug("request update..." + query + " last: " + last_update);
 
-		var timeoutId = window.setTimeout("timeout()", 
-			(update_delay_max * 1000) + 5000);
+		timeout_id = window.setTimeout("timeout()", 
+			(update_delay_max * 1000) + 10000);
 
 		new Ajax.Request("backend.php", {
 		parameters: query,
 		onComplete: function (transport) {
-			window.clearTimeout(timeoutId);
+			window.clearTimeout(timeout_id);
+			window.clearTimeout(update_id);
 			if (!handle_update(transport)) return;
 			debug("update done.");
-			window.setTimeout("update()", delay);
+			update_id = window.setTimeout("update()", delay);
 		} });
 
 	} catch (e) {
