@@ -427,8 +427,8 @@ function notify(msg) {
 				window.webkitNotifications.checkPermission() == 0) {
 
 			var notification = webkitNotifications.createNotification(
-				'images/favicon.png',
-				'Tiny Tiny IRC',
+				'images/icon32.png',
+				__('Tiny Tiny IRC'),
 				msg);
 
 			notifications.push(notification);
