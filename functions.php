@@ -922,7 +922,19 @@
 	}
 
 	function get_misc_params($link) {
-		$rv = array("highlight_on" => explode(",", get_pref($link, "HIGHLIGHT_ON")));
+		$notify_on = json_decode(get_pref($link, "NOTIFY_ON"));
+
+		if (!is_array($notify_on)) $notify_on = array();
+
+		$notify_events = array();
+
+		foreach ($notify_on as $no) {
+			$notify_events[$no] = true;
+		}
+
+		$rv = array(
+			"highlight_on" => explode(",", get_pref($link, "HIGHLIGHT_ON")),
+			"notify_events" => $notify_events);
 
 		return $rv;
 	}

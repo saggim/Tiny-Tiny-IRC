@@ -40,7 +40,6 @@ function show_prefs() {
 		parameters: "?op=prefs",
 		onComplete: function (transport) {
 			infobox_callback2(transport);
-			prefs_init_notify();
 			hide_spinner();
 		} });
 
@@ -316,12 +315,51 @@ function save_css(callback) {
 	}
 }
 
-function prefs_init_notify() {
+function configure_notifications() {
 	try {
+
 		if (window.webkitNotifications) {
-			$("notify_enable_btn").disabled = 0;
+			save_prefs(function (obj) {
+				new Ajax.Request("backend.php", {
+				parameters: "?op=prefs-edit-notify",
+				onComplete: function (transport) {
+					infobox_callback2(transport);
+				} });
+			});
+		} else {
+			alert(__("Your browser doesn't seem to support desktop notifications."));
 		}
+
 	} catch (e) {
-		exception_error("prefs_init_notify", e);
+		exception_error("configure_notifications", e);
+	}
+}
+
+function save_notifications(callback) {
+	try {
+		var query = Form.serialize("prefs_notify_form");
+
+		debug(query);
+
+		new Ajax.Request("backend.php", {
+		parameters: query,
+		onComplete: function (transport) {
+
+			var obj = _eval(transport.responseText, true);
+
+			if (obj && obj.error) {
+				mini_error(obj.error);
+			} else if (callback) {
+				callback(obj);
+			} else {
+				//close_infobox();
+				show_prefs();
+			}
+
+			hide_spinner();
+		} });
+
+	} catch (e) {
+		exception_error("save_notifications", e);
 	}
 }

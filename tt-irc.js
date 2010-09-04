@@ -15,6 +15,7 @@ var last_update = false;
 var input_cache = [];
 var input_cache_offset = 0;
 var highlight_on = [];
+var notify_events = [];
 var theme_images = [];
 var update_delay_max = 0;
 
@@ -220,6 +221,8 @@ function handle_update(transport) {
 			for (var i = 0; i < highlight_on.length; i++) {
 				highlight_on[i] = highlight_on[i].toUpperCase();
 			}
+
+			notify_events = params.notify_events;
 		}
 
 		last_update = new Date();
@@ -766,9 +769,9 @@ function format_message(row_class, param, connection_id) {
 		if (is_hl) { 
 			++new_highlights;
 			if (param.channel != "---" && param.id > last_old_id) {
-				var tab = get_selected_tab();
+				var tab = find_tab(connection_id, param.channel);
 
-				if (tab && tab.getAttribute("channel") != param.channel) {
+				if (notify_events[1] && (tab != get_selected_tab() || !window_active)) {
 					var msg = __("Received highlight on %c by %n: %s");
 				
 					msg = msg.replace("%c", param.channel);
@@ -1243,7 +1246,8 @@ function handle_event(li_class, connection_id, line) {
 		case "DISCONNECT":
 			line.message = __("Connection terminated.");
 
-			if (last_id > last_old_id) notify("Disconnected from server.");
+			if (last_id > last_old_id && notify_events[3]) 
+				notify("Disconnected from server.");
 
 			push_message(connection_id, '---', line);
 			break;
@@ -1331,7 +1335,8 @@ function handle_event(li_class, connection_id, line) {
 		case "CONNECT":
 			line.message = __("Connection established.");
 
-			if (last_id > last_old_id) notify("Connected to server.");
+			if (last_id > last_old_id && notify_events[3]) 
+				notify("Connected to server.");
 
 			push_message(connection_id, '---', line);
 			break;
@@ -1390,7 +1395,7 @@ function push_message(connection_id, channel, message, message_type) {
 
 			var tab = find_tab(connection_id, channel);
 
-			if (tab && get_selected_tab() != tab) {
+			if (tab && notify_events[2] && (get_selected_tab() != tab || !window_active)) {
 				if (tab.getAttribute("tab_type") == "P" && message.id > last_old_id) {
 					var msg = __("Received new private message from %n: %s");
 					

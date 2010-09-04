@@ -64,6 +64,68 @@
 		}
 	}
 
+	function notification_editor($link) {
+
+		$notify_on = json_decode(get_pref($link, "NOTIFY_ON"));
+
+		if (!is_array($notify_on)) $notify_on = array();
+
+		$nev_checked = array();
+
+		foreach ($notify_on as $no) {
+			$nev_checked[$no] = "checked";
+		}
+	?> 
+
+	<div id="infoBoxTitle"><?php echo __("Configure Notifications") ?></div>
+	<div class="infoBoxContents">
+		<div id="mini-notice" style='display : none'>&nbsp;</div>
+
+		<?php echo T_sprintf("Desktop notifications are only shown for events happening in background channels or when your Tiny Tiny IRC window is unfocused.") ?>
+
+		<p><div class="dlgSec"><?php echo __('Show notifications on:') ?></div>
+
+		<form id="prefs_notify_form" onsubmit="return false;">
+
+		<input type="hidden" name="op" value="prefs-save-notify"/>
+
+		<div class="dlgSecCont">
+			<input name="notify_event[]" <?php echo $nev_checked[1] ?> 
+				id="n_highlight" type="checkbox" value="1">
+				<label for="n_highlight"><?php echo __('Channel highlight') ?>
+					</label>
+			<br clear='left'/>
+
+			<input name="notify_event[]" <?php echo $nev_checked[2] ?> 
+				id="n_privmsg" type="checkbox" value="2">
+				<label for="n_privmsg"><?php echo __('Private message') ?>
+					</label>
+			<br clear='left'/>
+
+			<input name="notify_event[]" <?php echo $nev_checked[3] ?> 
+				id="n_connstat" type="checkbox" value="3">
+				<label for="n_connstat"><?php echo __('Connection status change') ?>
+					</label>
+			<br clear='left'/>
+
+		</div>	
+
+		</form>
+
+		<div class="dlgButtons">
+			<div style='float : left'>
+				<button type="submit" onclick="notify_enable()"><?php echo __('Enable notifications') ?></button></div>
+
+			<button type="submit" onclick="save_notifications()"><?php echo __('Save') ?></button>
+			<button type="submit" onclick="show_prefs()"><?php echo __('Go back') ?></button></div>
+		</div>
+
+		</form>
+
+	</div>
+	<?php
+
+	}
 
 	function connection_editor($link, $id) {
 		$result = db_query($link, "SELECT * FROM ttirc_connections
@@ -258,6 +320,9 @@
 
 			<br clear='left'/>
 
+			<label class="fixed">&nbsp;</label>
+			<a href="#" onclick="configure_notifications()"><?php echo __('Configure desktop notifications') ?></a>
+
 		</div>
 
 		<div class="dlgSec"><?php echo __('Authentication') ?></div>
@@ -269,14 +334,6 @@
 
 			<label class="fixed"><?php echo __('Confirm:') ?></label>
 			<input name="confirm_password" type="password" size="30" value="">
-		</div>
-
-		<div class="dlgSec"><?php echo __('Desktop notifications:') ?></div>
-
-		<div class="dlgSecCont">
-			<label class="fixed">&nbsp;</label>
-			<button id="notify_enable_btn" disabled="1" onclick="notify_enable()"><?php echo __('Enable notifications') ?></button>
-			<button type="submit" style="display : none" onclick="save_prefs()"></button>
 		</div>
 
 		</form>
