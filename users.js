@@ -59,7 +59,7 @@ function delete_user() {
 
 				var query = "?op=delete-user&ids=" + param_escape(ids.toString());
 
-				debug(query);
+				console.log(query);
 
 				show_spinner();
 
@@ -92,7 +92,7 @@ function reset_user() {
 
 				var query = "?op=reset-password&id=" + param_escape(id);
 
-				debug(query);
+				console.log(query);
 
 				show_spinner();
 

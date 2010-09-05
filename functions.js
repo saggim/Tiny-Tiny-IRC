@@ -10,14 +10,17 @@ Array.prototype.remove = function(s) {
 	}
 }
 
-function is_opera() {
-	return window.opera;
-}
+/* create console.log if it doesn't exist */
+
+if (!window.console) console = {};
+console.log = console.log || function(msg) { debug(msg); };
+console.warn = console.warn || function(msg) { debug(msg); };
+console.error = console.error || function(msg) { debug(msg); };
 
 function exception_error(location, e, ext_info) {
 	var msg = format_exception_error(location, e);
 
-	if (!ext_info) ext_info = "N/A";
+	if (!ext_info) ext_info = false;
 
 	disable_hotkeys();
 
@@ -38,9 +41,15 @@ function exception_error(location, e, ext_info) {
 	
 			ebc.innerHTML = 
 				"<div><b>Error message:</b></div>" +
-				"<pre>" + msg + "</pre>" +
-				"<div><b>Additional information:</b></div>" +
+				"<pre>" + msg + "</pre>";
+
+			if (ext_info) {
+				ebc.innerHTML += "<div><b>Additional information:</b></div>" +
 				"<textarea readonly=\"1\">" + ext_info + "</textarea>";
+			}
+
+			ebc.innerHTML += "<div><b>Stack trace:</b></div>" +
+				"<textarea readonly=\"1\">" + e.stack + "</textarea>";
 	
 		} else {
 			alert(msg);
@@ -69,7 +78,7 @@ function format_exception_error(location, e) {
 		msg = "Exception: " + e + "\nFunction: " + location + "()";
 	}
 
-	debug("<b>EXCEPTION: " + msg + "</b>");
+	console.error("EXCEPTION: " + msg);
 
 	return msg;
 }
@@ -125,6 +134,9 @@ function debug(msg) {
 		c.innerHTML = "<li class=\"" + debug_last_class + "\"><span class=\"debugTS\">[" + ts + "]</span> " + 
 			msg + "</li>" + c.innerHTML;
 	}
+
+//	if (window.console && console.log) 
+//		console.log("[" + make_timestamp() + "] " + msg);
 }
 
 // originally stolen from http://www.11tmr.com/11tmr.nsf/d6plinks/MWHE-695L9Z
@@ -267,8 +279,6 @@ function show_spinner() {
 		Element.show($("spinner"));
 		++spinner_refs;
 
-//		debug("show_spinner " + spinner_refs);
-
 	} catch (e) {
 		exception_error("show_spinner", e);
 	}
@@ -276,8 +286,6 @@ function show_spinner() {
 
 function hide_spinner() {
 	try {
-
-//		debug("hide_spinner " + spinner_refs);
 
 		if (spinner_refs > 0) spinner_refs--;
 		
@@ -290,8 +298,6 @@ function hide_spinner() {
 }
 
 function sort_connection_tabs(node) {
-
-//	debug("sort_connection_tabs " + node);
 
 	try {
 		var list = node.getElementsByTagName("li");
@@ -343,7 +349,7 @@ function set_cookie(name, value, lifetime, path, domain, secure) {
 		d.setTime(d.getTime() + (lifetime * 1000));
 	}
 
-	debug("setCookie: " + name + " => " + value + ": " + d);
+	console.log("setCookie: " + name + " => " + value + ": " + d);
 	
 	int_set_cookie(name, value, d, path, domain, secure);
 

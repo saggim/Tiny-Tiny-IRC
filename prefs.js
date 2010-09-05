@@ -2,7 +2,7 @@ function save_prefs(callback) {
 	try {
 		var query = Form.serialize("prefs_form");
 
-		debug(query);
+		console.log(query);
 
 		new Ajax.Request("backend.php", {
 		parameters: query,
@@ -118,7 +118,7 @@ function delete_connection() {
 
 				var query = "?op=delete-connection&ids=" + param_escape(ids.toString());
 
-				debug(query);
+				console.log(query);
 
 				show_spinner();
 
@@ -167,7 +167,7 @@ function save_conn(callback) {
 	try {
 		var query = Form.serialize("prefs_conn_form");
 
-		debug(query);
+		console.log(query);
 
 		new Ajax.Request("backend.php", {
 		parameters: query,
@@ -211,7 +211,7 @@ function delete_server() {
 				var query = "?op=delete-server&ids=" + param_escape(ids.toString()) + 
 					"&connection_id=" + param_escape(connection_id);
 
-				debug(query);
+				console.log(query);
 
 				show_spinner();
 
@@ -244,7 +244,7 @@ function create_server() {
 			var query = "?op=create-server&data=" + param_escape(data) + 			
 				"&connection_id=" + param_escape(connection_id);
 
-			debug(query);
+			console.log(query);
 
 			show_spinner();
 
@@ -290,7 +290,7 @@ function save_css(callback) {
 	try {
 		var query = Form.serialize("prefs_css_form");
 
-		debug(query);
+		console.log(query);
 
 		new Ajax.Request("backend.php", {
 		parameters: query,
@@ -339,7 +339,7 @@ function save_notifications(callback) {
 	try {
 		var query = Form.serialize("prefs_notify_form");
 
-		debug(query);
+		console.log(query);
 
 		new Ajax.Request("backend.php", {
 		parameters: query,

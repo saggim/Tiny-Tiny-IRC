@@ -75,7 +75,7 @@ function create_tab_if_needed(chan, connection_id, tab_type) {
 
 			tab += "<ul class=\"sub-tabs\" id=\"" + tab_list_id + "\"></ul>";
 
-			debug("creating tab+list: " + tab_id + " " + tab_type);
+			console.log("creating tab+list: " + tab_id + " " + tab_type);
 
 			$("tabs-list").innerHTML += tab;
 		} else if (!$(tab_id) && tab_type != "S") {
@@ -93,7 +93,7 @@ function create_tab_if_needed(chan, connection_id, tab_type) {
 		  		"onclick=\"change_tab(this)\">" + img +
 				"&nbsp;&nbsp;" + caption + "</li>";
 
-			debug("creating tab: " + tab_id + " " + tab_type);
+			console.log("creating tab: " + tab_id + " " + tab_type);
 
 			$(tab_list_id).innerHTML += tab;
 
@@ -113,7 +113,7 @@ function create_tab_if_needed(chan, connection_id, tab_type) {
 
 function show_nicklist(show) {
 /*	try {
-		debug("show_nicklist: " + show);
+		console.log("show_nicklist: " + show);
 		if (show) {
 			Element.show("userlist");
 			$("log-outer").style.right = ($("userlist").offsetWidth + 0) + "px";
@@ -153,7 +153,7 @@ function init_second_stage(transport) {
 		$("input-prompt").value = "";
 		$("input-prompt").focus();
 
-		debug("init_second_stage");
+		console.log("init_second_stage");
 
 		document.onkeydown = hotkey_handler;
 
@@ -172,7 +172,7 @@ function init() {
 	try {
 		if (getURLParam('debug')) {
 			Element.show("debug_output");
-			debug('debug mode activated');
+			console.log('debug mode activated');
 		}
 
 		show_spinner();
@@ -202,7 +202,7 @@ function handle_update(transport) {
 		var rv = _eval(transport.responseText, true);
 
 		if (!rv) {
-			debug("received null object from server, will try again.");
+			console.log("received null object from server, will try again.");
 			return true;
 		}
 
@@ -229,14 +229,14 @@ function handle_update(transport) {
 
 		handle_conn_data(conn_data);
 		handle_chan_data(chandata);
-	
+
 		var prev_last_id = last_id;
 
 		for (var i = 0; i < lines.length; i++) {
 
 			if (last_id < lines[i].id) {
 
-//				debug("processing line ID " + lines[i].id);
+//				console.log("processing line ID " + lines[i].id);
 
 				var chan = lines[i].channel;
 				var connection_id = lines[i].connection_id;
@@ -281,7 +281,7 @@ function handle_update(transport) {
 
 function timeout() {
 	try {
-		debug("update timeout detected, retrying...");
+		console.log("update timeout detected, retrying...");
 
 		window.clearTimeout(update_id);
 		update_id = window.setTimeout("update()", timeout_delay);
@@ -297,7 +297,7 @@ function update(init) {
 	  		
 		if (init) query += "&init=" + init;
 
-		debug("request update..." + query + " last: " + last_update);
+		console.log("request update..." + query + " last: " + last_update);
 
 		timeout_id = window.setTimeout("timeout()", 
 			(update_delay_max * 1000) + 10000);
@@ -309,7 +309,7 @@ function update(init) {
 			window.clearTimeout(update_id);
 			if (!handle_update(transport)) return;
 
-			debug("update done, next update in " + delay + " ms");
+			console.log("update done, next update in " + delay + " ms");
 
 			update_id = window.setTimeout("update()", delay);
 		} });
@@ -622,7 +622,7 @@ function change_topic(elem, evt) {
 				"&connection=" + param_escape(connection_id) +
 				"&last_id=" + last_id;
 	
-			debug(query);
+			console.log(query);
 
 			show_spinner();
 
@@ -668,7 +668,7 @@ function send(elem, evt) {
 
 			elem.value = '';
 
-			debug(query);
+			console.log(query);
 
 			show_spinner();
 
@@ -709,7 +709,7 @@ function change_tab(elem) {
 
 		elem.className = "selected";
 
-		debug("changing tab to " + elem.id);
+		console.log("changing tab to " + elem.id);
 
 		update_buffer();
 
@@ -729,7 +729,7 @@ function toggle_connection(elem) {
 			param_escape(elem.getAttribute("set_enabled")) + 
 			"&connection_id=" + param_escape(elem.getAttribute("connection_id"));
 
-		debug(query);
+		console.log(query);
 
 		show_spinner();
 
@@ -1000,7 +1000,7 @@ function send_command(command) {
 				"&connection=" + param_escape(tab.getAttribute("connection_id")) +
 				"&last_id=" + last_id;
 	
-			debug(query);
+			console.log(query);
 
 			show_spinner();
 
@@ -1041,7 +1041,7 @@ function join_channel() {
 
 function handle_action(elem) {
 	try {
-		debug("action: " + elem[elem.selectedIndex].value);
+		console.log("action: " + elem[elem.selectedIndex].value);
 
 		elem.selectedIndex = 0;
 	} catch (e) {
@@ -1060,7 +1060,7 @@ function cleanup_tabs(chandata) {
 			if (tabs[i].getAttribute("tab_type") == "S") {
 				if (conndata_last && !conndata_last[connection_id]) {
 
-					debug("removing unnecessary S-tab: " + tabs[i].id);
+					console.log("removing unnecessary S-tab: " + tabs[i].id);
 
 					var tab_list = $("tabs-" + connection_id);
 
@@ -1073,7 +1073,7 @@ function cleanup_tabs(chandata) {
 				if (!chandata[connection_id] || 
 						(chandata[connection_id] && !chandata[connection_id][chan])) {
 
-					debug("removing unnecessary C/P-tab: " + tabs[i].id);
+					console.log("removing unnecessary C/P-tab: " + tabs[i].id);
 
 					var tab_list = $("tabs-" + connection_id);
 					
@@ -1103,7 +1103,7 @@ function close_tab(elem) {
 				"&connection=" + param_escape(tab.getAttribute("connection_id")) +
 				"&last_id=" + last_id;
 
-			debug(query);
+			console.log(query);
 
 			show_spinner();
 
@@ -1135,7 +1135,7 @@ function query_user(elem) {
 				"&connection=" + param_escape(tab.getAttribute("connection_id")) +
 				"&last_id=" + last_id;
 
-			debug(query);
+			console.log(query);
 
 			show_spinner();
 
@@ -1157,7 +1157,7 @@ function handle_event(li_class, connection_id, line) {
 	try {
 		var params = line.message.split(":", 3);
 
-		debug("handle_event " + params[0]);
+		console.log("handle_event " + params[0]);
 
 		switch (params[0]) {
 		case "TOPIC":
@@ -1477,7 +1477,7 @@ function show_thumbnail(img) {
 
 			scaled_height = parseInt(scaled_height);
 
-			//debug("SH:" + scaled_height);
+			//console.log("SH:" + scaled_height);
 
 			if (xy[1] + scaled_height >= $("log").offsetHeight - 50) {
 				xy[1] -= 10;
@@ -1487,7 +1487,7 @@ function show_thumbnail(img) {
 				xy[1] += 10;
 			}
 
-			debug(xy[1]);
+			console.log(xy[1]);
 
 			$("image-tooltip").style.left = xy[0] + "px";
 			$("image-tooltip").style.top = xy[1] + "px";
@@ -1626,12 +1626,12 @@ function hotkey_handler(e) {
 		} 
 
 		if (!hotkeys_enabled) {
-			debug("hotkeys disabled");
+			console.log("hotkeys disabled");
 			return;
 		}
 
 		if (keycode == 38 && e.ctrlKey) {
-			debug("moving up...");
+			console.log("moving up...");
 
 			var tabs = get_all_tabs();
 			var tab = get_selected_tab();
@@ -1649,7 +1649,7 @@ function hotkey_handler(e) {
 		}
 
 		if (keycode == 40 && e.ctrlKey) {
-			debug("moving down...");
+			console.log("moving down...");
 
 			var tabs = get_all_tabs();
 			var tab = get_selected_tab();
@@ -1679,7 +1679,7 @@ function hotkey_handler(e) {
 				elem.setSelectionRange(elem.value.length, elem.value.length);
 			}
 
-//			debug(input_cache_offset + " " + real_offset);
+//			console.log(input_cache_offset + " " + real_offset);
 
 			return false;
 		}
@@ -1692,7 +1692,7 @@ function hotkey_handler(e) {
 
 				var real_offset = input_cache.length + input_cache_offset;
 
-//				debug(input_cache_offset + " " + real_offset);
+//				console.log(input_cache_offset + " " + real_offset);
 
 				if (input_cache[real_offset]) {
 					elem.value = input_cache[real_offset];
@@ -1723,7 +1723,7 @@ function hotkey_handler(e) {
 				comp_str = str.substring(str.lastIndexOf(" ")+1);
 			}
 
-//			debug("COMP STR [" + comp_str + "]");
+//			console.log("COMP STR [" + comp_str + "]");
 		
 			if (tab) {
 
@@ -1761,7 +1761,7 @@ function hotkey_handler(e) {
 			return false;
 		}
 
-		//debug(keychar + " " + keycode + " " + e.ctrlKey);
+		//console.log(keychar + " " + keycode + " " + e.ctrlKey);
 
 		//if (!e.ctrlKey) $("input-prompt").focus();
 
@@ -1859,7 +1859,7 @@ function highlight_tab_if_needed(connection_id, channel, message) {
 	try {
 		var tab = find_tab(connection_id, channel);
 
-		debug("highlight_tab_if_needed " + connection_id + " " + channel);
+		console.log("highlight_tab_if_needed " + connection_id + " " + channel);
 
 		//if (message.id <= last_old_id) return;
 
@@ -1886,7 +1886,7 @@ function find_tab(connection_id, channel) {
 	try {
 		var tabs;
 
-//		debug("find_tab : " + connection_id + ";" + channel);
+//		console.log("find_tab : " + connection_id + ";" + channel);
 
 		if (channel == "---") {
 			return $("tab-" + connection_id);
